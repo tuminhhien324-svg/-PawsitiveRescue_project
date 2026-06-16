@@ -1,0 +1,842 @@
+@{
+    ViewData["Title"] = "Nhận nuôi";
+    Layout = "_Layout";
+}
+
+<!-- Banner / Hero Section -->
+    <header class="py-5" style="background-color: var(--pawsitive-background)">
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <span
+              class="text-danger fw-bold small text-uppercase"
+              style="letter-spacing: 0.1em"
+              >Tìm Người Bạn</span
+            >
+            <h1 class="display-4 mb-4 brand-font" style="font-weight: 800">
+              Bốn Chân Của Bạn
+            </h1>
+            <p class="lead mb-4 text-muted" style="font-size: 1.1rem">
+              Hàng ngàn chú chó, mèo đang chờ đợi một mái ấm yêu thương. Hãy
+              trao cho các em một cơ hội thứ hai.
+            </p>
+          </div>
+          <div class="col-lg-6">
+            <div class="position-relative">
+              <div
+                class="p-3 bg-warning rounded-md border border-3 border-dark shadow-flat transform -rotate-2"
+                style="background-color: #fbd38d !important"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=800"
+                  alt="Happy dogs"
+                  class="img-fluid rounded-default border border-2 border-dark"
+                />
+              </div>
+              <!-- Floating Heart -->
+              <div
+                class="position-absolute top-0 end-0 translate-middle bg-danger text-white rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer shadow-flat hover-scale"
+                style="width: 52px; height: 52px"
+              >
+                <i class="bi bi-heart-fill fs-5"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Advocacy Section -->
+    <section class="container my-5">
+      <div
+        class="p-4 border border-2 border-dark rounded-md shadow-flat"
+        style="background-color: var(--pawsitive-secondary-container)"
+      >
+        <div class="row align-items-center">
+          <div class="col-lg-9 mb-3 mb-lg-0 text-dark">
+            <h2
+              class="brand-font fs-5 mb-2"
+              style="
+                color: var(--pawsitive-on-secondary-container);
+                font-weight: 700;
+              "
+            >
+              Tại sao nên nhận nuôi thay vì mua?
+            </h2>
+            <p class="small m-0 text-muted">
+              Nhận nuôi không chỉ cứu sống một sinh mạng mà còn giúp ngăn chặn
+              nạn nhân giống vô nhân đạo. Mỗi lần bạn nhận nuôi, bạn dành chỗ
+              cho một bé khác được cứu hộ tại trạm.
+            </p>
+          </div>
+          <div class="col-lg-3 text-lg-end">
+            <button
+              class="btn btn-pawsitive btn-pawsitive-secondary rounded-full py-2"
+              data-bs-toggle="modal"
+              data-bs-target="#advocacyModal"
+            >
+              Tìm hiểu thêm
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter & Catalog Section -->
+    <main class="container mb-5">
+      <!-- Filter Panel -->
+      <div
+        class="p-4 bg-white border border-2 border-dark rounded-md shadow-flat mb-5"
+      >
+        <!-- Species selector tabs -->
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <button
+            class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-4 active"
+            id="filter-all"
+          >
+            🐾 Tất cả
+          </button>
+          <button
+            class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-4"
+            id="filter-dog"
+          >
+            🐶 Chó
+          </button>
+          <button
+            class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-4"
+            id="filter-cat"
+          >
+            🐱 Mèo
+          </button>
+          <button
+            class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-4"
+            id="filter-other"
+          >
+            🦜 Khác
+          </button>
+        </div>
+
+        <!-- Advanced Filters Row -->
+        <div class="row g-3">
+          <div class="col-md-3">
+            <select
+              class="form-select form-control-pawsitive"
+              id="select-age"
+              aria-label="Độ tuổi"
+            >
+              <option value="">Độ tuổi: Tất cả</option>
+              <option value="baby">Sơ sinh (0 - 6 tháng)</option>
+              <option value="young">Trưởng thành nhỏ (6 - 18 tháng)</option>
+              <option value="adult">Trưởng thành lớn (> 18 tháng)</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select
+              class="form-select form-control-pawsitive"
+              id="select-gender"
+              aria-label="Giới tính"
+            >
+              <option value="">Giới tính: Tất cả</option>
+              <option value="male">Đực</option>
+              <option value="female">Cái</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select
+              class="form-select form-control-pawsitive"
+              id="select-size"
+              aria-label="Kích thước"
+            >
+              <option value="">Kích thước: Tất cả</option>
+              <option value="small">Nhỏ (&lt; 5kg)</option>
+              <option value="medium">Vừa (5 - 15kg)</option>
+              <option value="large">Lớn (&gt; 15kg)</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <div class="input-group">
+              <span
+                class="input-group-text bg-white border-2 border-end-0 border-dark rounded-start-1"
+                style="border-radius: 1rem 0 0 1rem"
+                ><i class="bi bi-search"></i
+              ></span>
+              <input
+                type="text"
+                class="form-control form-control-pawsitive border-start-0 rounded-start-0"
+                id="search-name"
+                placeholder="Tìm tên pet..."
+                style="border-radius: 0 1rem 1rem 0"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Catalog Grid -->
+      <div class="row g-4" id="pet-catalog-grid">
+        <!-- Pet 1 (Mochi) -->
+        <div
+          class="col-lg-4 col-md-6 pet-card-item dog"
+          data-age="baby"
+          data-gender="female"
+          data-size="small"
+        >
+          <div
+            class="card-pawsitive h-100 d-flex flex-column justify-content-between"
+          >
+            <div>
+              <div class="pet-frame ratio ratio-1x1 mb-3">
+                <img
+                  src="https://images.unsplash.com/photo-1537151608828-ea2b117b62e4?auto=format&fit=crop&q=80&w=400"
+                  alt="Mochi"
+                />
+                <div
+                  class="position-absolute top-0 end-0 m-2 bg-white text-danger rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger"
+                  style="width: 38px; height: 38px"
+                >
+                  <i class="bi bi-heart-fill"></i>
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <h3 class="brand-font h4 m-0 text-danger">Mochi</h3>
+                <span class="badge badge-pawsitive badge-pawsitive-primary"
+                  ><i class="bi bi-gender-female"></i> 6 tháng</span
+                >
+              </div>
+              <p class="small text-muted mb-3">
+                Ham chơi, rất thích được gãi bụng và cực kỳ quấn người...
+              </p>
+            </div>
+            <div>
+              <div class="d-flex gap-2 mb-3">
+                <span class="badge badge-pawsitive badge-pawsitive-secondary"
+                  >TIÊM PHÒNG</span
+                >
+                <span class="badge badge-pawsitive badge-pawsitive-secondary"
+                  >NGOAN</span
+                >
+              </div>
+              <div class="d-flex gap-2">
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-secondary rounded-full flex-grow-1 justify-content-center"
+                  asp-controller="Home" asp-action="Detail"
+                >
+                  Chi tiết
+                </a>
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-3"
+                  asp-controller="Home" asp-action="AdoptFlow" asp-route-pet="Mochi"
+                >
+                  <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pet 2 (Bông) -->
+        <div
+          class="col-lg-4 col-md-6 pet-card-item cat"
+          data-age="adult"
+          data-gender="female"
+          data-size="small"
+        >
+          <div
+            class="card-pawsitive h-100 d-flex flex-column justify-content-between"
+          >
+            <div>
+              <div class="pet-frame ratio ratio-1x1 mb-3">
+                <img
+                  src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&q=80&w=400"
+                  alt="Bông"
+                />
+                <div
+                  class="position-absolute top-0 end-0 m-2 bg-white text-muted rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger"
+                  style="width: 38px; height: 38px"
+                >
+                  <i class="bi bi-heart"></i>
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <h3 class="brand-font h4 m-0 text-danger">Bông</h3>
+                <span class="badge badge-pawsitive badge-pawsitive-secondary"
+                  ><i class="bi bi-gender-female"></i> 2 tuổi</span
+                >
+              </div>
+              <p class="small text-muted mb-3">
+                Ngoan ngoãn, thích yên tĩnh và ngắm chim qua cửa sổ...
+              </p>
+            </div>
+            <div>
+              <div class="d-flex gap-2 mb-3">
+                <span class="badge badge-pawsitive badge-pawsitive-secondary"
+                  >ĐÃ TRIỆT SẢN</span
+                >
+              </div>
+              <div class="d-flex gap-2">
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-secondary rounded-full flex-grow-1 justify-content-center"
+                  asp-controller="Home" asp-action="Detail"
+                >
+                  Chi tiết
+                </a>
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-3"
+                  asp-controller="Home" asp-action="AdoptFlow" asp-route-pet="Bông"
+                >
+                  <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pet 3 (Lu) -->
+        <div
+          class="col-lg-4 col-md-6 pet-card-item dog"
+          data-age="young"
+          data-gender="male"
+          data-size="medium"
+        >
+          <div
+            class="card-pawsitive h-100 d-flex flex-column justify-content-between"
+          >
+            <div>
+              <div class="pet-frame ratio ratio-1x1 mb-3">
+                <img
+                  src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400"
+                  alt="Lu"
+                />
+                <div
+                  class="position-absolute top-0 end-0 m-2 bg-white text-muted rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger"
+                  style="width: 38px; height: 38px"
+                >
+                  <i class="bi bi-heart"></i>
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <h3 class="brand-font h4 m-0 text-danger">Lu</h3>
+                <span class="badge badge-pawsitive badge-pawsitive-primary"
+                  ><i class="bi bi-gender-male"></i> 1.5 tuổi</span
+                >
+              </div>
+              <p class="small text-muted mb-3">
+                Năng động, thông minh, biết nghe lệnh cơ bản cực nhanh...
+              </p>
+            </div>
+            <div>
+              <div class="d-flex gap-2 mb-3">
+                <span class="badge badge-pawsitive badge-pawsitive-secondary"
+                  >THÔNG MINH</span
+                >
+              </div>
+              <div class="d-flex gap-2">
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-secondary rounded-full flex-grow-1 justify-content-center"
+                  asp-controller="Home" asp-action="Detail"
+                >
+                  Chi tiết
+                </a>
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-3"
+                  asp-controller="Home" asp-action="AdoptFlow" asp-route-pet="Lu"
+                >
+                  <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pet 4 (Simba) -->
+        <div
+          class="col-lg-4 col-md-6 pet-card-item cat"
+          data-age="baby"
+          data-gender="male"
+          data-size="small"
+        >
+          <div
+            class="card-pawsitive h-100 d-flex flex-column justify-content-between"
+          >
+            <div>
+              <div class="pet-frame ratio ratio-1x1 mb-3">
+                <img
+                  src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&q=80&w=400"
+                  alt="Simba"
+                />
+                <div
+                  class="position-absolute top-0 end-0 m-2 bg-white text-muted rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger"
+                  style="width: 38px; height: 38px"
+                >
+                  <i class="bi bi-heart"></i>
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <h3 class="brand-font h4 m-0 text-danger">Simba</h3>
+                <span class="badge badge-pawsitive badge-pawsitive-primary"
+                  ><i class="bi bi-gender-male"></i> 3 tháng</span
+                >
+              </div>
+              <p class="small text-muted mb-3">
+                Ham học hỏi, hơi nhát lúc đầu nhưng sau đó cực kỳ quấn chủ...
+              </p>
+            </div>
+            <div>
+              <div class="d-flex gap-2 mb-3">
+                <span class="badge badge-pawsitive badge-pawsitive-secondary"
+                  >DỄ THƯƠNG</span
+                >
+              </div>
+              <div class="d-flex gap-2">
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-secondary rounded-full flex-grow-1 justify-content-center"
+                  asp-controller="Home" asp-action="Detail"
+                >
+                  Chi tiết
+                </a>
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-3"
+                  asp-controller="Home" asp-action="AdoptFlow" asp-route-pet="Simba"
+                >
+                  <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pet 5 (Tuti) -->
+        <div
+          class="col-lg-4 col-md-6 pet-card-item dog"
+          data-age="young"
+          data-gender="female"
+          data-size="medium"
+        >
+          <div
+            class="card-pawsitive h-100 d-flex flex-column justify-content-between"
+          >
+            <div>
+              <div class="pet-frame ratio ratio-1x1 mb-3">
+                <img
+                  src="https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&q=80&w=400"
+                  alt="Tuti"
+                />
+                <div
+                  class="position-absolute top-0 end-0 m-2 bg-white text-muted rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger"
+                  style="width: 38px; height: 38px"
+                >
+                  <i class="bi bi-heart"></i>
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <h3 class="brand-font h4 m-0 text-danger">Tuti</h3>
+                <span class="badge badge-pawsitive badge-pawsitive-primary"
+                  ><i class="bi bi-gender-female"></i> 1 tuổi</span
+                >
+              </div>
+              <p class="small text-muted mb-3">
+                Thích đi dạo phố, rất hiền lành và thân thiện với các bé khác...
+              </p>
+            </div>
+            <div>
+              <div class="d-flex gap-2 mb-3">
+                <span class="badge badge-pawsitive badge-pawsitive-secondary"
+                  >HIỀN LÀNH</span
+                >
+              </div>
+              <div class="d-flex gap-2">
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-secondary rounded-full flex-grow-1 justify-content-center"
+                  asp-controller="Home" asp-action="Detail"
+                >
+                  Chi tiết
+                </a>
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-3"
+                  asp-controller="Home" asp-action="AdoptFlow" asp-route-pet="Tuti"
+                >
+                  <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pet 6 (Mây) -->
+        <div
+          class="col-lg-4 col-md-6 pet-card-item cat"
+          data-age="adult"
+          data-gender="female"
+          data-size="medium"
+        >
+          <div
+            class="card-pawsitive h-100 d-flex flex-column justify-content-between"
+          >
+            <div>
+              <div class="pet-frame ratio ratio-1x1 mb-3">
+                <img
+                  src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=400"
+                  alt="Mây"
+                />
+                <div
+                  class="position-absolute top-0 end-0 m-2 bg-white text-muted rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger"
+                  style="width: 38px; height: 38px"
+                >
+                  <i class="bi bi-heart"></i>
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <h3 class="brand-font h4 m-0 text-danger">Mây</h3>
+                <span class="badge badge-pawsitive badge-pawsitive-primary"
+                  ><i class="bi bi-gender-female"></i> 4 tuổi</span
+                >
+              </div>
+              <p class="small text-muted mb-3">
+                Điềm tĩnh, độc lập, rất thích được chải lông vào ban đêm...
+              </p>
+            </div>
+            <div>
+              <div class="d-flex gap-2 mb-3">
+                <span class="badge badge-pawsitive badge-pawsitive-secondary"
+                  >TRẦM TĨNH</span
+                >
+              </div>
+              <div class="d-flex gap-2">
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-secondary rounded-full flex-grow-1 justify-content-center"
+                  asp-controller="Home" asp-action="Detail"
+                >
+                  Chi tiết
+                </a>
+                <a
+                  class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-3"
+                  asp-controller="Home" asp-action="AdoptFlow" asp-route-pet="Mây"
+                >
+                  <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View more triggers -->
+      <div class="text-center mt-5">
+        <button
+          class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-5 py-3"
+          onclick="
+            showToast(
+              '🐾 Đang tải danh sách các bé thú cưng tiếp theo...',
+              'info',
+            )
+          "
+        >
+          Xem thêm nhiều bạn nhỏ khác <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+    </main>
+
+    
+
+    <!-- Advocacy Modal -->
+    <div
+      class="modal fade"
+      id="advocacyModal"
+      tabindex="-1"
+      aria-labelledby="advocacyModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div
+          class="modal-content border border-3 border-dark rounded-md"
+          style="background-color: var(--pawsitive-surface)"
+        >
+          <div class="modal-header border-0 pb-0">
+            <h5
+              class="modal-title brand-font fs-4 text-danger"
+              id="advocacyModalLabel"
+            >
+              🐾 Tại sao nên nhận nuôi?
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-4 text-dark">
+            <p class="fw-bold">1. Cứu sống một cuộc đời</p>
+            <p class="small text-muted mb-3">
+              Mỗi bé động vật nhận nuôi từ trạm sẽ trực tiếp giải phóng không
+              gian để cứu trợ một động vật lang thang khác ngoài phố.
+            </p>
+
+            <p class="fw-bold">2. Nói KHÔNG với các trang trại nhân giống</p>
+            <p class="small text-muted mb-3">
+              Mua thú cưng từ các cơ sở thương mại thiếu đạo đức vô tình tiếp
+              tay cho môi trường nuôi nhốt tồi tàn.
+            </p>
+
+            <p class="fw-bold">3. Chi phí hợp lý & Đã kiểm tra y tế</p>
+            <p class="small text-muted m-0">
+              Tất cả các bé tại Pawsitive Rescue đều được triệt sản, tiêm
+              vắc-xin và kiểm tra y tế toàn diện miễn phí cho bạn.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <!-- Interactive Filters Script -->
+    <script>
+      let activeSpecies = "all";
+      let userFavorites = [];
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Load favorites first if logged in
+        await loadUserFavorites();
+
+        // Initial pets load
+        await loadPets();
+
+        // Species tabs binding
+        const buttons = {
+          all: document.getElementById("filter-all"),
+          dog: document.getElementById("filter-dog"),
+          cat: document.getElementById("filter-cat"),
+          other: document.getElementById("filter-other"),
+        };
+
+        function clearActive() {
+          Object.values(buttons).forEach((btn) => {
+            btn.classList.remove("btn-pawsitive-primary");
+            btn.classList.add("btn-pawsitive-secondary");
+          });
+        }
+
+        buttons.all.addEventListener("click", () => {
+          clearActive();
+          buttons.all.classList.add("btn-pawsitive-primary");
+          activeSpecies = "all";
+          loadPets();
+        });
+
+        buttons.dog.addEventListener("click", () => {
+          clearActive();
+          buttons.dog.classList.add("btn-pawsitive-primary");
+          activeSpecies = "chó";
+          loadPets();
+        });
+
+        buttons.cat.addEventListener("click", () => {
+          clearActive();
+          buttons.cat.classList.add("btn-pawsitive-primary");
+          activeSpecies = "mèo";
+          loadPets();
+        });
+
+        buttons.other.addEventListener("click", () => {
+          clearActive();
+          buttons.other.classList.add("btn-pawsitive-primary");
+          activeSpecies = "khác";
+          loadPets();
+        });
+
+        // Advanced filter bindings
+        document.getElementById("select-age").addEventListener("change", loadPets);
+        document.getElementById("select-gender").addEventListener("change", loadPets);
+        document.getElementById("select-size").addEventListener("change", loadPets);
+        
+        let searchTimeout;
+        document.getElementById("search-name").addEventListener("input", () => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(loadPets, 400);
+        });
+      });
+
+      async function loadUserFavorites() {
+        const user = pawsitiveCurrentUser();
+        if (!user) return;
+
+        try {
+          const res = await fetch("/api/pets/favorites");
+          const json = await res.json();
+          if (json.success && json.data) {
+            userFavorites = json.data.map(p => p.maThuCung);
+          }
+        } catch (err) {
+          console.error("Failed to load user favorites:", err);
+        }
+      }
+
+      function getFilterQuery() {
+        const age = document.getElementById("select-age").value;
+        const gender = document.getElementById("select-gender").value;
+        const size = document.getElementById("select-size").value;
+        const search = document.getElementById("search-name").value.trim();
+
+        let query = "?";
+        if (activeSpecies !== "all") {
+          query += `loai=${encodeURIComponent(activeSpecies)}&`;
+        }
+        if (age) {
+          query += `tuoi=${encodeURIComponent(age)}&`;
+        }
+        if (gender) {
+          query += `gioitinh=${encodeURIComponent(gender)}&`;
+        }
+        if (size) {
+          query += `kichthuoc=${encodeURIComponent(size)}&`;
+        }
+        if (search) {
+          query += `q=${encodeURIComponent(search)}&`;
+        }
+        return query;
+      }
+
+      async function loadPets() {
+        const grid = document.getElementById("pet-catalog-grid");
+        grid.innerHTML = `
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-danger" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Đang tải danh sách thú cưng...</p>
+          </div>
+        `;
+
+        const query = getFilterQuery();
+        try {
+          const res = await fetch("/api/pets" + query);
+          const json = await res.json();
+
+          if (json.success && json.data) {
+            const availablePets = json.data.filter(p => p.trangThaiNhanNuoi !== "Đã nhận nuôi");
+            renderPets(availablePets);
+          } else {
+            showToast("❌ Không thể tải danh sách thú cưng: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối đến máy chủ", "error");
+        }
+      }
+
+      async function toggleLike(petId, btnElement) {
+        const user = pawsitiveCurrentUser();
+        if (!user) {
+          showToast("⚠️ Vui lòng đăng nhập để lưu thú cưng yêu thích!", "error");
+          setTimeout(() => {
+            window.location.href = "/Account/Login?ReturnUrl=" + encodeURIComponent(window.location.pathname);
+          }, 1500);
+          return;
+        }
+
+        const icon = btnElement.querySelector("i");
+        const isLiked = icon.classList.contains("bi-heart-fill");
+
+        const method = isLiked ? "DELETE" : "POST";
+        const toastMsg = isLiked ? "💔 Đang xóa khỏi mục yêu thích..." : "💖 Đang thêm vào mục yêu thích...";
+
+        showToast(toastMsg, "info");
+
+        try {
+          const res = await fetch(`/api/pets/${petId}/favorite`, { method: method });
+          const json = await res.json();
+
+          if (json.success) {
+            if (isLiked) {
+              icon.className = "bi bi-heart";
+              btnElement.className = "position-absolute top-0 end-0 m-2 bg-white text-muted rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger";
+              showToast("💔 Đã xóa khỏi danh sách yêu thích!", "success");
+              userFavorites = userFavorites.filter(id => id !== petId);
+            } else {
+              icon.className = "bi bi-heart-fill";
+              btnElement.className = "position-absolute top-0 end-0 m-2 bg-white text-danger rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger";
+              showToast("💖 Đã thêm vào danh sách yêu thích thành công!", "success");
+              userFavorites.push(petId);
+            }
+          } else {
+            showToast("❌ Thao tác thất bại: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối đến máy chủ", "error");
+        }
+      }
+
+      function renderPets(pets) {
+        const grid = document.getElementById("pet-catalog-grid");
+        grid.innerHTML = "";
+
+        if (!pets || pets.length === 0) {
+          grid.innerHTML = `
+            <div class="col-12 text-center py-5">
+              <span class="fs-1">🐾</span>
+              <h3 class="brand-font mt-3">Không tìm thấy bạn nhỏ nào</h3>
+              <p class="text-muted">Thử thay đổi bộ lọc hoặc tìm kiếm xem sao nhé!</p>
+            </div>
+          `;
+          return;
+        }
+
+        pets.forEach(pet => {
+          const isLiked = userFavorites.includes(pet.maThuCung);
+          const heartClass = isLiked ? "bi-heart-fill" : "bi-heart";
+          const heartColorClass = isLiked ? "text-danger" : "text-muted";
+          
+          const avatarUrl = pet.anhChinh || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400";
+          const ageDisplay = pet.giaTriTuoi ? `${pet.giaTriTuoi} ${pet.donViTuoi || 'Tuổi'}` : 'Chưa rõ';
+          
+          grid.innerHTML += `
+            <div class="col-lg-4 col-md-6 pet-card-item">
+              <div class="card-pawsitive h-100 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="pet-frame ratio ratio-1x1 mb-3">
+                    <img src="${avatarUrl}" alt="${pet.tenThuCung}" />
+                    <div class="position-absolute top-0 end-0 m-2 bg-white ${heartColorClass} rounded-full border border-2 border-dark d-flex align-items-center justify-content-center cursor-pointer liked-trigger" style="width: 38px; height: 38px" onclick="event.preventDefault(); toggleLike(${pet.maThuCung}, this)">
+                      <i class="bi ${heartClass}"></i>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h3 class="brand-font h4 m-0 text-danger">${pet.tenThuCung}</h3>
+                    <span class="badge badge-pawsitive badge-pawsitive-primary">
+                      <i class="bi ${pet.gioiTinh === 'Đực' ? 'bi-gender-male' : 'bi-gender-female'}"></i> ${ageDisplay}
+                    </span>
+                  </div>
+                  <p class="small text-muted mb-3">${pet.moTa || 'Đang cập nhật mô tả...'}</p>
+                </div>
+                <div>
+                  <div class="d-flex gap-2 mb-3">
+                    <span class="badge badge-pawsitive badge-pawsitive-secondary">${pet.giongThuCung || 'Ngoại lai'}</span>
+                    <span class="badge badge-pawsitive badge-pawsitive-secondary">${pet.trangThaiNhanNuoi || 'Chưa nhận nuôi'}</span>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <a class="btn btn-pawsitive btn-pawsitive-secondary rounded-full flex-grow-1 justify-content-center" href="/Home/Detail?id=${pet.maThuCung}">
+                      Chi tiết
+                    </a>
+                    <a class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-3" href="/Home/AdoptFlow?petId=${pet.maThuCung}">
+                      <i class="bi bi-box-arrow-in-right"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+    </script>

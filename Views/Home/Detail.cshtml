@@ -1,0 +1,267 @@
+@model WebApplication1.Models.ThuCung
+@{
+    ViewData["Title"] = "Chi tiết thú cưng - " + Model.TenThuCung;
+    Layout = "_Layout";
+    var avatarUrl = Model.AnhChinh ?? "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=600";
+}
+
+<!-- Main Showcase Section -->
+  <main class="container py-5">
+    <div class="row align-items-start g-5 mb-5">
+      <!-- Pet Portait -->
+      <div class="col-lg-6">
+        <div class="p-3 bg-info rounded-md border border-3 border-dark shadow-flat transform rotate-1" style="background-color: #bee3f8 !important;">
+          <div class="pet-frame ratio ratio-1x1 border border-2 border-dark overflow-hidden position-relative">
+            <img src="@avatarUrl" alt="@Model.TenThuCung">
+            <div class="position-absolute bottom-0 end-0 m-3 d-flex gap-2">
+              <button class="bg-white text-danger border border-2 border-dark rounded-full d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;" onclick="showToast('💖 Đã thêm @Model.TenThuCung vào danh sách yêu thích!', 'success')">
+                <i class="bi bi-heart-fill fs-5"></i>
+              </button>
+              <button class="bg-white text-dark border border-2 border-dark rounded-full d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;" onclick="showToast('🔗 Đã sao chép liên kết chia sẻ!', 'info')">
+                <i class="bi bi-share-fill fs-5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Pet Info Details -->
+      <div class="col-lg-6">
+        <h1 class="brand-font display-4 text-danger mb-3" style="font-weight: 800;">@Model.TenThuCung</h1>
+        
+        <div class="d-flex gap-2 mb-4">
+          <span class="badge badge-pawsitive badge-pawsitive-secondary px-3 py-2"><i class="bi bi-tag-fill"></i> @(Model.LoaiNguonGoc) @(Model.GiongThuCung)</span>
+          <span class="badge badge-pawsitive badge-pawsitive-primary px-3 py-2">@(Model.GiaTriTuoi) @(Model.DonViTuoi ?? "Tuổi")</span>
+          <span class="badge badge-pawsitive badge-pawsitive-primary px-3 py-2">@Model.GioiTinh</span>
+        </div>
+
+        <div class="p-4 border border-2 border-dark rounded-md shadow-flat mb-4" style="background-color: #fffaf0;">
+          <p class="m-0 text-muted" style="font-size: 1.05rem;">
+            @(Model.MoTa ?? "Đang cập nhật thông tin...")
+          </p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mb-5">
+          @if (!string.IsNullOrEmpty(Model.DacDiem))
+          {
+              @foreach(var item in Model.DacDiem.Split(',', StringSplitOptions.RemoveEmptyEntries))
+              {
+                  <span class="badge badge-pawsitive badge-pawsitive-secondary"><i class="bi bi-emoji-smile-fill text-success"></i> @item.Trim()</span>
+              }
+          }
+          @if (!string.IsNullOrEmpty(Model.TiemNgua))
+          {
+              <span class="badge badge-pawsitive badge-pawsitive-secondary"><i class="bi bi-shield-fill-check text-warning"></i> @Model.TiemNgua</span>
+          }
+          @if (!string.IsNullOrEmpty(Model.SoThich))
+          {
+              @foreach(var item in Model.SoThich.Split(',', StringSplitOptions.RemoveEmptyEntries))
+              {
+                  <span class="badge badge-pawsitive badge-pawsitive-secondary"><i class="bi bi-heart-fill text-danger"></i> @item.Trim()</span>
+              }
+          }
+        </div>
+
+        @if (Model.TrangThaiNhanNuoi == "Đã nhận nuôi")
+        {
+            <button class="btn btn-pawsitive btn-pawsitive-primary w-100 rounded-full justify-content-center py-3 fs-4" disabled style="background-color: var(--pawsitive-secondary, #2a9d8f); cursor: not-allowed; border-color: #000; box-shadow: none; opacity: 0.8;">
+                Đã được nhận nuôi 💖
+            </button>
+        }
+        else
+        {
+            <a class="btn btn-pawsitive btn-pawsitive-primary w-100 rounded-full justify-content-center py-3 fs-4" asp-controller="Home" asp-action="AdoptFlow" asp-route-pet="@Model.TenThuCung" asp-route-petId="@Model.MaThuCung">
+              Nhận nuôi ngay 🐾
+            </a>
+        }
+      </div>
+    </div>
+
+    <!-- Development Stages -->
+    @{
+        double ageInMonths = 0;
+        string unit = Model.DonViTuoi ?? "Tuổi";
+        if (unit.Contains("Tháng") || unit.Contains("tháng"))
+        {
+            ageInMonths = Model.GiaTriTuoi.HasValue ? (double)Model.GiaTriTuoi.Value : 0;
+        }
+        else
+        {
+            ageInMonths = Model.GiaTriTuoi.HasValue ? (double)Model.GiaTriTuoi.Value * 12 : 0;
+        }
+
+        int activeStage = 3;
+        string progressWidth = "70%";
+        if (ageInMonths <= 2)
+        {
+            activeStage = 1;
+            progressWidth = "10%";
+        }
+        else if (ageInMonths <= 6)
+        {
+            activeStage = 2;
+            progressWidth = "40%";
+        }
+        else if (ageInMonths <= 84)
+        {
+            activeStage = 3;
+            progressWidth = "70%";
+        }
+        else
+        {
+            activeStage = 4;
+            progressWidth = "90%";
+        }
+    }
+    <section class="py-4 mb-5">
+      <h2 class="brand-font h3 mb-4 d-flex align-items-center gap-2">Các giai đoạn phát triển <i class="bi bi-graph-up-arrow text-danger"></i></h2>
+      
+      <div class="p-4 bg-white border border-2 border-dark rounded-md shadow-flat">
+        <div class="position-relative py-3">
+          <div class="timeline-track">
+            <!-- Progress till active node -->
+            <div class="timeline-progress" style="width: @progressWidth;"></div>
+            
+            <!-- Node 1: Sơ sinh -->
+            <div class="timeline-node @(activeStage == 1 ? "active" : "")" style="left: 10%;">
+              <div class="timeline-node-dot">
+                <i class="bi bi-baby-carriage @(activeStage == 1 ? "text-white" : "text-primary")"></i>
+              </div>
+              <span class="timeline-node-label text-danger">Sơ sinh</span>
+              <span class="timeline-node-sub">0-2 tháng</span>
+            </div>
+
+            <!-- Node 2: Tò mò -->
+            <div class="timeline-node @(activeStage == 2 ? "active" : "")" style="left: 40%;">
+              <div class="timeline-node-dot">
+                <i class="bi bi-balloon-fill @(activeStage == 2 ? "text-white" : "text-warning")"></i>
+              </div>
+              <span class="timeline-node-label text-danger">Tò mò</span>
+              <span class="timeline-node-sub">3-6 tháng</span>
+            </div>
+
+            <!-- Node 3: Trưởng thành -->
+            <div class="timeline-node @(activeStage == 3 ? "active" : "")" style="left: 70%;">
+              <div class="timeline-node-dot">
+                <i class="bi bi-shield-fill-check @(activeStage == 3 ? "text-white" : "text-success")"></i>
+              </div>
+              <span class="timeline-node-label text-danger">Trưởng thành</span>
+              <span class="timeline-node-sub">Hiện tại (@(Model.GiaTriTuoi) @(Model.DonViTuoi ?? "Tuổi"))</span>
+            </div>
+
+            <!-- Node 4: Lão niên -->
+            <div class="timeline-node @(activeStage == 4 ? "active" : "")" style="left: 90%;">
+              <div class="timeline-node-dot">
+                <i class="bi bi-heart-pulse-fill @(activeStage == 4 ? "text-white" : "text-danger")"></i>
+              </div>
+              <span class="timeline-node-label text-danger">Lão niên</span>
+              <span class="timeline-node-sub">7+ năm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Care Guides -->
+    <section class="py-4 mb-5">
+      <h2 class="brand-font h3 mb-4">Cách chăm sóc tại nhà</h2>
+      <div class="row g-4">
+        <!-- Nutrition -->
+        <div class="col-lg-4">
+          <div class="card-pawsitive p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="bg-danger text-white border border-2 border-dark rounded-full d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i class="bi bi-egg-fried fs-5"></i>
+              </div>
+              <div>
+                <span class="small text-muted text-uppercase font-bold">Dinh dưỡng</span>
+                <h3 class="brand-font fs-6 m-0 text-danger">Chế độ ăn</h3>
+              </div>
+            </div>
+            <p class="small text-muted mb-4">Sử dụng hạt khô chất lượng cao kết hợp với pate gan gà 2 lần mỗi ngày.</p>
+            <ul class="list-unstyled d-flex flex-column gap-2 small font-bold">
+              <li><i class="bi bi-check-circle-fill text-success"></i> Nước sạch luôn sẵn có</li>
+              <li><i class="bi bi-check-circle-fill text-success"></i> Tránh ăn sô-cô-la & hành</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Exercise -->
+        <div class="col-lg-4">
+          <div class="card-pawsitive p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="bg-primary text-white border border-2 border-dark rounded-full d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i class="bi bi-person-walking fs-5"></i>
+              </div>
+              <div>
+                <span class="small text-muted text-uppercase font-bold">Vận động</span>
+                <h3 class="brand-font fs-6 m-0 text-primary">Rèn luyện</h3>
+              </div>
+            </div>
+            <p class="small text-muted mb-4">Bánh Bao cần đi dạo ít nhất 30 phút vào buổi sáng và chiều tối hàng ngày.</p>
+            <ul class="list-unstyled d-flex flex-column gap-2 small font-bold">
+              <li><i class="bi bi-check-circle-fill text-success"></i> Trò chơi nhặt bóng</li>
+              <li><i class="bi bi-check-circle-fill text-success"></i> Khám phá công viên mới</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Hygiene -->
+        <div class="col-lg-4">
+          <div class="card-pawsitive p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="bg-warning text-dark border border-2 border-dark rounded-full d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i class="bi bi-scissors fs-5"></i>
+              </div>
+              <div>
+                <span class="small text-muted text-uppercase font-bold">Vệ sinh</span>
+                <h3 class="brand-font fs-6 m-0 text-warning">Làm sạch</h3>
+              </div>
+            </div>
+            <p class="small text-muted mb-4">Chải lông 1 lần/tuần để giảm rụng lông và tắm định kỳ 2 tuần 1 lần.</p>
+            <ul class="list-unstyled d-flex flex-column gap-2 small font-bold">
+              <li><i class="bi bi-check-circle-fill text-success"></i> Cắt móng tay định kỳ</li>
+              <li><i class="bi bi-check-circle-fill text-success"></i> Vệ sinh tai beagle rất quan trọng</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Adoption Steps -->
+    <section class="py-4">
+      <h2 class="brand-font h3 mb-4">Quy trình nhận nuôi</h2>
+      <div class="p-4 bg-white border border-2 border-dark rounded-md shadow-flat">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="d-flex gap-3">
+              <span class="brand-font text-danger display-5" style="line-height: 1;">01</span>
+              <div>
+                <h4 class="brand-font fs-6 mb-1">Đăng ký hồ sơ</h4>
+                <p class="small text-muted m-0">Điền form thông tin về điều kiện nuôi dưỡng và môi trường sống của bạn.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 border-md-start border-2 border-dark">
+            <div class="d-flex gap-3">
+              <span class="brand-font text-danger display-5" style="line-height: 1;">02</span>
+              <div>
+                <h4 class="brand-font fs-6 mb-1">Phỏng vấn & Gặp mặt</h4>
+                <p class="small text-muted m-0">Gặp gỡ trực tiếp bé Bánh Bao tại trạm cứu hộ để đánh giá sự tương thích.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 border-md-start border-2 border-dark">
+            <div class="d-flex gap-3">
+              <span class="brand-font text-danger display-5" style="line-height: 1;">03</span>
+              <div>
+                <h4 class="brand-font fs-6 mb-1">Chào đón thành viên</h4>
+                <p class="small text-muted m-0">Hoàn tất các cam kết bảo trợ và chào đón bé chính thức gia nhập gia đình mới!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  
+
+  <!-- Bootstrap 5 JS Bundle -->

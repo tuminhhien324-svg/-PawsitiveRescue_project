@@ -1,0 +1,879 @@
+@{
+    ViewData["Title"] = "Quản lý thú cưng";
+    Layout = "_AdminLayout";
+}
+
+<div class="db-layout">
+      <!-- ═══ Sidebar ═══ -->
+      <aside class="db-sidebar" id="dbSidebar">
+        <a asp-controller="Admin" asp-action="Index" class="db-sidebar-logo">
+          <div class="db-sidebar-logo-icon">🐾</div>
+          <div>
+            <div class="db-sidebar-logo-text">Pawsitive Rescue</div>
+            <span class="db-sidebar-logo-sub">Hệ thống Quản trị</span>
+          </div>
+        </a>
+        <nav class="db-sidebar-nav">
+          <a asp-controller="Admin" asp-action="Index" class="db-sidebar-link"
+            ><i class="bi bi-grid-1x2-fill"></i> Tổng quan</a>
+          <a asp-controller="Admin" asp-action="ManageAnimals" class="db-sidebar-link active"
+            ><i class="bi bi-heart-pulse-fill"></i> Quản lý Động vật</a>
+          <a asp-controller="Admin" asp-action="ManageAdopters" class="db-sidebar-link"
+            ><i class="bi bi-house-heart-fill"></i> Nhận nuôi</a>
+          <a asp-controller="Admin" asp-action="ManageVolunteers" class="db-sidebar-link"
+            ><i class="bi bi-people-fill"></i> Tình nguyện viên</a>
+          <a asp-controller="Admin" asp-action="ManageDonations" class="db-sidebar-link"
+            ><i class="bi bi-gift-fill"></i> Quyên góp</a>
+          <a asp-controller="Admin" asp-action="ManageRescues" class="db-sidebar-link">
+            <i class="bi bi-exclamation-triangle-fill"></i> Cứu hộ Khẩn cấp
+          </a>
+        </nav>
+        <div class="db-sidebar-bottom">
+          <a href="#" class="db-sidebar-link" onclick="pawsitiveLogout(); return false;"><i class="bi bi-box-arrow-left"></i> Đăng xuất</a>
+        </div>
+      </aside>
+
+      <div class="db-overlay" id="dbOverlay"></div>
+
+      <!-- ═══ Main Content ═══ -->
+      <main class="db-main">
+        <!-- Top Bar -->
+        <header class="db-topbar">
+          <button class="db-mobile-toggle" id="dbMobileToggle">
+            <i class="bi bi-list"></i>
+          </button>
+          <nav class="d-none d-md-flex gap-3 me-auto">
+            <a asp-controller="Home" asp-action="Index" class="pawsitive-nav-link">Trang chủ</a>
+            <a asp-controller="Admin" asp-action="ManageAnimals" class="pawsitive-nav-link active">Động vật</a>
+          </nav>
+          <div class="db-topbar-icon"><i class="bi bi-bell-fill"></i></div>
+          <div class="db-topbar-icon"><i class="bi bi-gear-fill"></i></div>
+          <div class="db-topbar-avatar">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              alt="Avatar"
+            />
+          </div>
+        </header>
+
+        <div class="db-content">
+          <!-- Page Header -->
+          <div class="db-page-header db-animate-in">
+            <div>
+              <h1 class="db-page-title">Quản lý Động vật</h1>
+              <p class="db-page-subtitle">
+                Xem, thêm, sửa và xóa thông tin các bé thú cưng tại trạm Pawsitive.
+              </p>
+            </div>
+            <div class="db-page-actions">
+              <button class="db-btn db-btn-primary" data-bs-toggle="modal" data-bs-target="#addPetModal">
+                <i class="bi bi-plus-lg"></i> Thêm thú cưng
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats Summary Card -->
+          <div class="row g-3 mb-4 db-animate-in">
+            <div class="col-md-3">
+              <div class="db-stat-card">
+                <div class="db-stat-icon primary"><i class="bi bi-heart-fill"></i></div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Tổng số bé</div>
+                  <div class="db-stat-value" id="statTotalPets">0</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="db-stat-card">
+                <div class="db-stat-icon secondary">🐕</div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Số lượng Chó</div>
+                  <div class="db-stat-value" id="statDogs">0</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="db-stat-card">
+                <div class="db-stat-icon tertiary">🐈</div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Số lượng Mèo</div>
+                  <div class="db-stat-value" id="statCats">0</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="db-stat-card">
+                <div class="db-stat-icon accent"><i class="bi bi-check-circle-fill"></i></div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Đã nhận nuôi</div>
+                  <div class="db-stat-value" id="statAdopted">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Table Card -->
+          <div class="db-card db-animate-in">
+            <!-- Filter Row -->
+            <div class="row g-3 mb-4 align-items-center">
+              <div class="col-md-4">
+                <div class="db-topbar-search w-100 m-0">
+                  <i class="bi bi-search"></i>
+                  <input type="text" id="filterSearch" placeholder="Tìm tên, giống hoặc mô tả..." />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <select class="form-select form-control-pawsitive" id="filterSpecies">
+                  <option value="">Tất cả loài (Chó & Mèo)</option>
+                  <option value="chó">Chó</option>
+                  <option value="mèo">Mèo</option>
+                  <option value="khác">Khác</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select class="form-select form-control-pawsitive" id="filterAdoptionStatus">
+                  <option value="">Tất cả trạng thái nhận nuôi</option>
+                  <option value="Chưa nhận nuôi">Chưa nhận nuôi</option>
+                  <option value="Đang xử lý">Đang xử lý</option>
+                  <option value="Đã nhận nuôi">Đã nhận nuôi</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button class="db-btn db-btn-secondary w-100 animate-hover" onclick="loadPets()">
+                  <i class="bi bi-funnel-fill"></i> Lọc
+                </button>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+              <table class="db-table">
+                <thead>
+                  <tr>
+                    <th>Ảnh</th>
+                    <th>Tên</th>
+                    <th>Loài / Giống</th>
+                    <th>Tuổi / Giới tính</th>
+                    <th>Sức khỏe</th>
+                    <th>Cứu hộ</th>
+                    <th>Nhận nuôi</th>
+                    <th style="width: 120px;">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="petTableBody">
+                  <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">Đang tải danh sách thú cưng...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="db-footer">
+          <span class="db-footer-text"
+            >© 2026 Pawsitive Rescue. Hệ thống Quản trị</span
+          >
+          <div class="db-footer-links">
+            <a href="#">Trung tâm trợ giúp</a>
+            <a href="#">Báo cáo lỗi</a>
+          </div>
+        </footer>
+      </main>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Add Pet Modal -->
+<div class="modal fade" id="addPetModal" tabindex="-1" aria-labelledby="addPetModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000;">
+      <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+        <h5 class="modal-title font-bold" id="addPetModalLabel">🐾 Thêm thú cưng mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="addPetForm">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12 pb-3 border-bottom border-2 border-secondary border-opacity-10">
+              <label class="form-label font-bold text-primary"><i class="bi bi-download"></i> Nhập dữ liệu tự động từ ca cứu hộ đã hoàn thành</label>
+              <select class="form-select border-2 border-primary" id="importRescueSelect">
+                <option value="">-- Chọn ca cứu hộ đã hoàn thành --</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Tên thú cưng <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="TenThuCung" required placeholder="Nhập tên bé..." />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Loài <span class="text-danger">*</span></label>
+              <select class="form-select" name="LoaiNguonGoc" id="addPetSpeciesSelect" required>
+                <option value="Chó">Chó</option>
+                <option value="Mèo">Mèo</option>
+                <option value="Khác">Khác</option>
+              </select>
+              <div class="mt-2 d-none" id="addPetOtherSpeciesContainer">
+                <input type="text" class="form-control" id="addPetOtherSpeciesInput" placeholder="Nhập loài động vật khác (vd: Thỏ, Rùa...)" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Giống thú cưng</label>
+              <input type="text" class="form-control" name="GiongThuCung" placeholder="Ví dụ: Poodle, Mèo Anh lông ngắn..." />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-semibold">Tuổi</label>
+              <input type="number" step="0.1" class="form-control" name="GiaTriTuoi" placeholder="Ví dụ: 1.5, 2..." />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-semibold">Đơn vị tuổi</label>
+              <select class="form-select" name="DonViTuoi">
+                <option value="Tuổi">Tuổi</option>
+                <option value="Tháng">Tháng</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Giới tính</label>
+              <select class="form-select" name="GioiTinh">
+                <option value="Đực">Đực</option>
+                <option value="Cái">Cái</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Ảnh chính <span class="text-danger">*</span></label>
+              <input type="file" class="form-control" id="addPetImageFile" accept="image/*" />
+              <input type="hidden" name="AnhChinh" id="addPetImageUrl" required />
+              <div class="mt-2 border border-2 border-dark rounded-md overflow-hidden d-none" id="addPetImagePreviewContainer" style="width: 100px; height: 100px;">
+                <img id="addPetImagePreview" class="w-100 h-100" style="object-fit: cover;" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Tình trạng sức khỏe</label>
+              <input type="text" class="form-control" name="TinhTrangSucKhoe" placeholder="Ví dụ: Khỏe mạnh, Đang hồi phục..." />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Ngày cứu hộ</label>
+              <input type="date" class="form-control" name="NgayCuuHo" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Trạng thái cứu hộ <span class="text-danger">*</span></label>
+              <select class="form-select" name="TrangThaiCuuHo" required>
+                <option value="ĐANG CHỜ">ĐANG CHỜ</option>
+                <option value="ĐÃ NHẬN">ĐÃ NHẬN</option>
+                <option value="ĐANG CỨU HỘ">ĐANG CỨU HỘ</option>
+                <option value="ĐÃ HOÀN THÀNH">ĐÃ HOÀN THÀNH</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Trạng thái nhận nuôi <span class="text-danger">*</span></label>
+              <select class="form-select" name="TrangThaiNhanNuoi" required>
+                <option value="Chưa nhận nuôi">Chưa nhận nuôi</option>
+                <option value="Đang xử lý">Đang xử lý</option>
+                <option value="Đã nhận nuôi">Đã nhận nuôi</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label font-semibold">Mô tả chi tiết</label>
+              <textarea class="form-control" name="MoTa" rows="3" placeholder="Mô tả về tính cách, hoàn cảnh cứu hộ..."></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Đặc điểm (cách nhau bởi dấu phẩy)</label>
+              <input type="text" class="form-control" name="DacDiem" placeholder="Ví dụ: Thân thiện trẻ nhỏ, Thích ở trong nhà..." />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Tiêm ngừa hay chưa</label>
+              <input type="text" class="form-control" name="TiemNgua" placeholder="Ví dụ: Đã tiêm ngừa, Chưa tiêm..." />
+            </div>
+            <div class="col-12">
+              <label class="form-label font-semibold">Sở thích (cách nhau bởi dấu phẩy)</label>
+              <input type="text" class="form-control" name="SoThich" placeholder="Ví dụ: Thích ăn hạt, Thích đi dạo..." />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+          <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Lưu thú cưng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Pet Modal -->
+<div class="modal fade" id="editPetModal" tabindex="-1" aria-labelledby="editPetModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000;">
+      <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+        <h5 class="modal-title font-bold" id="editPetModalLabel">✏️ Chỉnh sửa thông tin thú cưng</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editPetForm">
+        <input type="hidden" name="MaThuCung" />
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Tên thú cưng <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="TenThuCung" required placeholder="Nhập tên bé..." />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Loài <span class="text-danger">*</span></label>
+              <select class="form-select" name="LoaiNguonGoc" id="editPetSpeciesSelect" required>
+                <option value="Chó">Chó</option>
+                <option value="Mèo">Mèo</option>
+                <option value="Khác">Khác</option>
+              </select>
+              <div class="mt-2 d-none" id="editPetOtherSpeciesContainer">
+                <input type="text" class="form-control" id="editPetOtherSpeciesInput" placeholder="Nhập loài động vật khác (vd: Thỏ, Rùa...)" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Giống thú cưng</label>
+              <input type="text" class="form-control" name="GiongThuCung" placeholder="Ví dụ: Poodle, Mèo Anh lông ngắn..." />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-semibold">Tuổi</label>
+              <input type="number" step="0.1" class="form-control" name="GiaTriTuoi" placeholder="Ví dụ: 1.5, 2..." />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-semibold">Đơn vị tuổi</label>
+              <select class="form-select" name="DonViTuoi">
+                <option value="Tuổi">Tuổi</option>
+                <option value="Tháng">Tháng</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Giới tính</label>
+              <select class="form-select" name="GioiTinh">
+                <option value="Đực">Đực</option>
+                <option value="Cái">Cái</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Ảnh chính <span class="text-danger">*</span></label>
+              <input type="file" class="form-control" id="editPetImageFile" accept="image/*" />
+              <input type="hidden" name="AnhChinh" id="editPetImageUrl" required />
+              <div class="mt-2 border border-2 border-dark rounded-md overflow-hidden" id="editPetImagePreviewContainer" style="width: 100px; height: 100px;">
+                <img id="editPetImagePreview" class="w-100 h-100" style="object-fit: cover;" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Tình trạng sức khỏe</label>
+              <input type="text" class="form-control" name="TinhTrangSucKhoe" placeholder="Ví dụ: Khỏe mạnh, Đang hồi phục..." />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Ngày cứu hộ</label>
+              <input type="date" class="form-control" name="NgayCuuHo" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Trạng thái cứu hộ <span class="text-danger">*</span></label>
+              <select class="form-select" name="TrangThaiCuuHo" required>
+                <option value="ĐANG CHỜ">ĐANG CHỜ</option>
+                <option value="ĐÃ NHẬN">ĐÃ NHẬN</option>
+                <option value="ĐANG CỨU HỘ">ĐANG CỨU HỘ</option>
+                <option value="ĐÃ HOÀN THÀNH">ĐÃ HOÀN THÀNH</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Trạng thái nhận nuôi <span class="text-danger">*</span></label>
+              <select class="form-select" name="TrangThaiNhanNuoi" required>
+                <option value="Chưa nhận nuôi">Chưa nhận nuôi</option>
+                <option value="Đang xử lý">Đang xử lý</option>
+                <option value="Đã nhận nuôi">Đã nhận nuôi</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label font-semibold">Mô tả chi tiết</label>
+              <textarea class="form-control" name="MoTa" rows="3" placeholder="Mô tả về tính cách, hoàn cảnh cứu hộ..."></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Đặc điểm (cách nhau bởi dấu phẩy)</label>
+              <input type="text" class="form-control" name="DacDiem" placeholder="Ví dụ: Thân thiện trẻ nhỏ, Thích ở trong nhà..." />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-semibold">Tiêm ngừa hay chưa</label>
+              <input type="text" class="form-control" name="TiemNgua" placeholder="Ví dụ: Đã tiêm ngừa, Chưa tiêm..." />
+            </div>
+            <div class="col-12">
+              <label class="form-label font-semibold">Sở thích (cách nhau bởi dấu phẩy)</label>
+              <input type="text" class="form-control" name="SoThich" placeholder="Ví dụ: Thích ăn hạt, Thích đi dạo..." />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+          <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Cập nhật</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deletePetModal" tabindex="-1" aria-labelledby="deletePetModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+    <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000;">
+      <div class="modal-header border-bottom border-2 border-dark bg-danger bg-opacity-10 text-danger">
+        <h5 class="modal-title font-bold" id="deletePetModalLabel">⚠️ Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4 text-center">
+        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 3rem;"></i>
+        <h5 class="font-bold mt-3">Xóa bé <span id="deletePetName" class="text-danger"></span>?</h5>
+        <p class="text-muted small mt-2 mb-0">Hành động này không thể hoàn tác. Mọi hồ sơ sức khỏe và dữ liệu liên quan sẽ bị xóa vĩnh viễn.</p>
+      </div>
+      <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+        <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger text-white rounded-xl py-2 px-4">Đồng ý xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="db-toast" id="dbToast"></div>
+
+@section Scripts {
+  <script>
+    let currentPets = [];
+    let deleteTargetId = null;
+
+    // Bootstrap Modal instances
+    const addPetModal = new bootstrap.Modal(document.getElementById('addPetModal'));
+    const editPetModal = new bootstrap.Modal(document.getElementById('editPetModal'));
+    const deletePetModal = new bootstrap.Modal(document.getElementById('deletePetModal'));
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPets();
+        loadCompletedRescues();
+
+        // Toggle Custom Animal Species input
+        const addSelect = document.getElementById('addPetSpeciesSelect');
+        const addOtherContainer = document.getElementById('addPetOtherSpeciesContainer');
+        const addOtherInput = document.getElementById('addPetOtherSpeciesInput');
+        if (addSelect && addOtherContainer) {
+            addSelect.addEventListener('change', () => {
+                if (addSelect.value === 'Khác') {
+                    addOtherContainer.classList.remove('d-none');
+                    addOtherInput.setAttribute('required', 'required');
+                } else {
+                    addOtherContainer.classList.add('d-none');
+                    addOtherInput.removeAttribute('required');
+                }
+            });
+        }
+
+        const editSelect = document.getElementById('editPetSpeciesSelect');
+        const editOtherContainer = document.getElementById('editPetOtherSpeciesContainer');
+        const editOtherInput = document.getElementById('editPetOtherSpeciesInput');
+        if (editSelect && editOtherContainer) {
+            editSelect.addEventListener('change', () => {
+                if (editSelect.value === 'Khác') {
+                    editOtherContainer.classList.remove('d-none');
+                    editOtherInput.setAttribute('required', 'required');
+                } else {
+                    editOtherContainer.classList.add('d-none');
+                    editOtherInput.removeAttribute('required');
+                }
+            });
+        }
+
+        // Register form submissions
+        document.getElementById('addPetForm').addEventListener('submit', handleAddPet);
+        document.getElementById('editPetForm').addEventListener('submit', handleEditPet);
+        document.getElementById('confirmDeleteBtn').addEventListener('click', handleDeletePet);
+
+        // Upload image event listeners
+        document.getElementById('addPetImageFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                dbToast('📤 Đang tải ảnh lên...');
+                const res = await fetch('/api/pets/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                const json = await res.json();
+                if (json.success) {
+                    document.getElementById('addPetImageUrl').value = json.data.path;
+                    const preview = document.getElementById('addPetImagePreview');
+                    preview.src = json.data.path;
+                    document.getElementById('addPetImagePreviewContainer').classList.remove('d-none');
+                    dbToast('✔️ Tải ảnh lên thành công!');
+                } else {
+                    alert('Tải ảnh thất bại: ' + json.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi khi tải ảnh lên.');
+            }
+        });
+
+        document.getElementById('editPetImageFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                dbToast('📤 Đang tải ảnh lên...');
+                const res = await fetch('/api/pets/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                const json = await res.json();
+                if (json.success) {
+                    document.getElementById('editPetImageUrl').value = json.data.path;
+                    const preview = document.getElementById('editPetImagePreview');
+                    preview.src = json.data.path;
+                    dbToast('✔️ Tải ảnh lên thành công!');
+                } else {
+                    alert('Tải ảnh thất bại: ' + json.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi khi tải ảnh lên.');
+            }
+        });
+
+        // Optional search input behavior (trigger search on enter)
+        document.getElementById('filterSearch').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadPets();
+            }
+        });
+
+        // Listen for completed rescue reports import selection
+        document.getElementById('importRescueSelect').addEventListener('change', (e) => {
+            const option = e.target.selectedOptions[0];
+            if (!option || !option.value) return;
+
+            const desc = option.getAttribute('data-desc') || '';
+            const loc = option.getAttribute('data-loc') || '';
+            const date = option.getAttribute('data-date') || '';
+
+            const form = document.getElementById('addPetForm');
+            form.querySelector('input[name="TenThuCung"]').value = `Bé SOS-${option.value}`;
+            form.querySelector('textarea[name="MoTa"]').value = `Địa điểm cứu hộ: ${loc}.\nChi tiết: ${desc}`;
+            if (date) {
+                form.querySelector('input[name="NgayCuuHo"]').value = date.substring(0, 10);
+            }
+
+            // Simple auto-casing logic
+            const lowercaseDesc = desc.toLowerCase();
+            const speciesSelect = form.querySelector('select[name="LoaiNguonGoc"]');
+            if (lowercaseDesc.includes('chó') || lowercaseDesc.includes('dog') || lowercaseDesc.includes('cún')) {
+                speciesSelect.value = "Chó";
+            } else if (lowercaseDesc.includes('mèo') || lowercaseDesc.includes('cat') || lowercaseDesc.includes('kitten')) {
+                speciesSelect.value = "Mèo";
+            } else {
+                speciesSelect.value = "Khác";
+            }
+            if (speciesSelect) {
+                speciesSelect.dispatchEvent(new Event('change'));
+            }
+
+            dbToast('📥 Nhập dữ liệu cứu hộ thành công!');
+        });
+    });
+
+    async function loadCompletedRescues() {
+        try {
+            const res = await fetch('/api/Rescue/admin/rescue-reports?trangthai=Đã hoàn thành');
+            const json = await res.json();
+            if (json.success) {
+                const select = document.getElementById('importRescueSelect');
+                select.innerHTML = '<option value="">-- Chọn ca cứu hộ đã hoàn thành --</option>';
+                json.data.forEach(r => {
+                    const option = document.createElement('option');
+                    option.value = r.maBaoCao;
+                    option.setAttribute('data-desc', r.moTaChiTiet);
+                    option.setAttribute('data-loc', r.diaDiem);
+                    option.setAttribute('data-date', r.ngayBaoCao);
+                    option.textContent = `Ca SOS-${r.maBaoCao} - ${r.diaDiem.substring(0, 30)} (${r.tenNguoiBaoCao || 'Khách'})`;
+                    select.appendChild(option);
+                });
+            }
+        } catch (err) {
+            console.error('Error loading completed rescues:', err);
+        }
+    }
+
+    // Helper: Form data to JSON object
+    function getFormData(formElement) {
+        const formData = new FormData(formElement);
+        const obj = {};
+        formData.forEach((value, key) => {
+            if (key === 'GiaTriTuoi') {
+                obj[key] = value ? parseFloat(value) : null;
+            } else if (key === 'NgayCuuHo') {
+                obj[key] = value ? value : null;
+            } else {
+                obj[key] = value;
+            }
+        });
+
+        // Use custom species if select value is "Khác"
+        if (obj['LoaiNguonGoc'] === 'Khác') {
+            const otherInput = formElement.querySelector('#addPetOtherSpeciesInput, #editPetOtherSpeciesInput');
+            if (otherInput && otherInput.value.trim() !== '') {
+                obj['LoaiNguonGoc'] = otherInput.value.trim();
+            }
+        }
+        return obj;
+    }
+
+    // Helper: Fill form fields
+    function fillForm(formElement, data) {
+        Object.keys(data).forEach(key => {
+            // Find key in camelCase or TitleCase
+            let formField = formElement.elements[key];
+            if (!formField) {
+                // Try casing difference
+                const upperKey = key.charAt(0).toUpperCase() + key.slice(1);
+                formField = formElement.elements[upperKey];
+            }
+
+            if (formField) {
+                if ((key === 'ngayCuuHo' || key === 'NgayCuuHo') && data[key]) {
+                    formField.value = data[key].substring(0, 10);
+                } else {
+                    formField.value = data[key] === null ? '' : data[key];
+                }
+            }
+        });
+    }
+
+    // Load pets with dynamic filters
+    async function loadPets() {
+        const search = document.getElementById('filterSearch').value.trim();
+        const species = document.getElementById('filterSpecies').value;
+        const adoptionStatus = document.getElementById('filterAdoptionStatus').value;
+
+        const tableBody = document.getElementById('petTableBody');
+        tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Đang tải danh sách...</td></tr>`;
+
+        try {
+            const params = new URLSearchParams();
+            if (search) params.append('q', search);
+            if (species) params.append('loai', species);
+            if (adoptionStatus) params.append('trangthai', adoptionStatus);
+
+            const res = await fetch(`/api/pets?${params.toString()}`);
+            const json = await res.json();
+
+            if (json.success) {
+                currentPets = json.data || [];
+                renderPetsTable(currentPets);
+                updateStats(currentPets);
+            } else {
+                tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger">Lỗi: ${json.message}</td></tr>`;
+            }
+        } catch (err) {
+            console.error(err);
+            tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger">Không thể kết nối đến máy chủ.</td></tr>`;
+        }
+    }
+
+    // Render Table Rows
+    function renderPetsTable(pets) {
+        const tableBody = document.getElementById('petTableBody');
+        if (pets.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Không tìm thấy thú cưng nào.</td></tr>`;
+            return;
+        }
+
+        tableBody.innerHTML = pets.map(pet => {
+            const avatarUrl = pet.anhChinh || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=200';
+            const genderBadge = pet.gioiTinh === 'Đực' ? '<span class="text-primary"><i class="bi bi-gender-male"></i> Đực</span>' : pet.gioiTinh === 'Cái' ? '<span class="text-danger"><i class="bi bi-gender-female"></i> Cái</span>' : '<span class="text-muted">Chưa rõ</span>';
+            const ageDisplay = pet.giaTriTuoi ? `${pet.giaTriTuoi} ${pet.donViTuoi || 'Tuổi'}` : 'Chưa rõ';
+
+            // Adoption Status Badges
+            let adoptBadge = '<span class="db-badge db-badge-info">Chưa nhận nuôi</span>';
+            if (pet.trangThaiNhanNuoi === 'Đang xử lý') {
+                adoptBadge = '<span class="db-badge db-badge-warning">Đang xử lý</span>';
+            } else if (pet.trangThaiNhanNuoi === 'Đã nhận nuôi') {
+                adoptBadge = '<span class="db-badge db-badge-success">Đã nhận nuôi</span>';
+            }
+
+            // Rescue Status Badges
+            let rescueBadge = '<span class="db-badge db-badge-secondary">ĐANG CHỜ</span>';
+            if (pet.trangThaiCuuHo === 'ĐÃ NHẬN') {
+                rescueBadge = '<span class="db-badge db-badge-info">ĐÃ NHẬN</span>';
+            } else if (pet.trangThaiCuuHo === 'ĐANG CỨU HỘ') {
+                rescueBadge = '<span class="db-badge db-badge-warning">ĐANG CỨU HỘ</span>';
+            } else if (pet.trangThaiCuuHo === 'ĐÃ HOÀN THÀNH') {
+                rescueBadge = '<span class="db-badge db-badge-success">HOÀN THÀNH</span>';
+            }
+
+            return `
+              <tr>
+                <td>
+                  <div class="db-pet-avatar">
+                    <img src="${avatarUrl}" alt="${pet.tenThuCung}" onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=200'" />
+                  </div>
+                </td>
+                <td><strong class="text-dark">${pet.tenThuCung}</strong></td>
+                <td>
+                  <div class="font-semibold">${pet.loaiNguonGoc}</div>
+                  <small class="text-muted">${pet.giongThuCung || 'Lai / Khác'}</small>
+                </td>
+                <td>
+                  <div>${ageDisplay}</div>
+                  <small>${genderBadge}</small>
+                </td>
+                <td>
+                  <span class="text-truncate d-inline-block" style="max-width: 150px;" title="${pet.tinhTrangSucKhoe || 'Bình thường'}">
+                    ${pet.tinhTrangSucKhoe || '<span class="text-muted">Bình thường</span>'}
+                  </span>
+                </td>
+                <td>${rescueBadge}</td>
+                <td>${adoptBadge}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary border-0" onclick="openEditModal(${pet.maThuCung})" title="Chỉnh sửa">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger border-0" onclick="openDeleteModal(${pet.maThuCung}, '${pet.tenThuCung}')" title="Xóa">
+                      <i class="bi bi-trash3-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+        }).join('');
+    }
+
+    // Update Top Stat Cards dynamically based on full list
+    function updateStats(pets) {
+        document.getElementById('statTotalPets').textContent = pets.length;
+        const dogs = pets.filter(p => p.loaiNguonGoc === 'Chó').length;
+        const cats = pets.filter(p => p.loaiNguonGoc === 'Mèo').length;
+        const adopted = pets.filter(p => p.trangThaiNhanNuoi === 'Đã nhận nuôi').length;
+
+        document.getElementById('statDogs').textContent = dogs;
+        document.getElementById('statCats').textContent = cats;
+        document.getElementById('statAdopted').textContent = adopted;
+    }
+
+    // POST - Add Pet
+    async function handleAddPet(e) {
+        e.preventDefault();
+        const data = getFormData(e.target);
+
+        try {
+            const res = await fetch('/api/pets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                dbToast('🎉 Thêm thú cưng mới thành công!');
+                addPetModal.hide();
+                e.target.reset();
+                loadPets();
+            } else {
+                alert('Lỗi: ' + json.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi kết nối máy chủ khi thêm thú cưng.');
+        }
+    }
+
+    // Open Edit Modal and fill data
+    function openEditModal(id) {
+        const pet = currentPets.find(p => p.maThuCung === id);
+        if (!pet) return;
+
+        const form = document.getElementById('editPetForm');
+        fillForm(form, pet);
+
+        // Handle custom animal species in Edit mode
+        const species = pet.loaiNguonGoc;
+        const editSelect = document.getElementById('editPetSpeciesSelect');
+        const editOtherContainer = document.getElementById('editPetOtherSpeciesContainer');
+        const editOtherInput = document.getElementById('editPetOtherSpeciesInput');
+
+        if (editSelect && editOtherContainer && editOtherInput) {
+            if (species !== 'Chó' && species !== 'Mèo') {
+                editSelect.value = 'Khác';
+                editOtherContainer.classList.remove('d-none');
+                editOtherInput.value = species;
+                editOtherInput.setAttribute('required', 'required');
+            } else {
+                editSelect.value = species;
+                editOtherContainer.classList.add('d-none');
+                editOtherInput.value = '';
+                editOtherInput.removeAttribute('required');
+            }
+        }
+        
+        // Update image preview
+        document.getElementById('editPetImagePreview').src = pet.anhChinh || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=200';
+        document.getElementById('editPetImageUrl').value = pet.anhChinh || '';
+        document.getElementById('editPetImageFile').value = '';
+        
+        editPetModal.show();
+    }
+
+    // PUT - Edit Pet
+    async function handleEditPet(e) {
+        e.preventDefault();
+        const data = getFormData(e.target);
+        const id = data.MaThuCung || data.maThuCung;
+
+        try {
+            const res = await fetch(`/api/pets/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                dbToast('✏️ Cập nhật thông tin thành công!');
+                editPetModal.hide();
+                loadPets();
+            } else {
+                alert('Lỗi: ' + json.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi kết nối máy chủ khi cập nhật.');
+        }
+    }
+
+    // Open Delete Modal
+    function openDeleteModal(id, name) {
+        deleteTargetId = id;
+        document.getElementById('deletePetName').textContent = name;
+        deletePetModal.show();
+    }
+
+    // DELETE - Delete Pet
+    async function handleDeletePet() {
+        if (!deleteTargetId) return;
+
+        try {
+            const res = await fetch(`/api/pets/${deleteTargetId}`, {
+                method: 'DELETE'
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                dbToast('🗑️ Đã xóa hồ sơ thú cưng thành công.');
+                deletePetModal.hide();
+                loadPets();
+            } else {
+                alert('Lỗi: ' + json.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi kết nối máy chủ khi xóa.');
+        } finally {
+            deleteTargetId = null;
+        }
+    }
+  </script>
+}

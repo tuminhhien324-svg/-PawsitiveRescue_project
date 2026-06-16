@@ -1,0 +1,399 @@
+@{
+    ViewData["Title"] = "Quyên góp";
+    Layout = "_Layout";
+}
+
+<!-- Banner / Hero Section -->
+    <header class="py-5" style="background-color: var(--pawsitive-background)">
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <h1 class="display-4 mb-4 brand-font" style="font-weight: 800">
+              Góp một bàn tay, thay đổi một cuộc đời
+            </h1>
+            <p class="lead mb-4 text-muted" style="font-size: 1.1rem">
+              Hàng ngàn chú chó mèo đang chờ đợi sự giúp đỡ của bạn để có một
+              mái ấm ấm áp và những bữa ăn đầy đủ. Mỗi đóng góp, dù nhỏ nhất,
+              đều là nguồn hy vọng lớn lao.
+            </p>
+            <div class="d-flex gap-3">
+              <a
+                class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-4 py-3"
+                href="#donation-gateways"
+              >
+                Quyên góp ngay 🐾
+              </a>
+              <a
+                class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-4 py-3"
+                href="#donation-impact"
+              >
+                Tìm hiểu thêm
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="position-relative">
+              <div
+                class="p-3 bg-success rounded-md border border-3 border-dark shadow-flat transform rotate-1"
+                style="background-color: #8bbfa9 !important"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&q=80&w=800"
+                  alt="Boy surrounded by puppies"
+                  class="img-fluid rounded-default border border-2 border-dark"
+                />
+              </div>
+              <!-- Floating Badge -->
+              <div
+                class="position-absolute bg-primary text-white rounded-md border border-2 border-dark d-flex align-items-center justify-content-center p-3 shadow-flat font-bold"
+                style="width: 220px; height: 60px; bottom: -20px; right: 20px; transform: rotate(-4deg); z-index: 2"
+              >
+                🐾 500+ Bạn nhỏ được cứu!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Donation Methods Tab Panels -->
+    <main class="container py-5" id="donation-gateways">
+      <h2 class="display-6 mb-5 text-center brand-font">Hình thức quyên góp</h2>
+
+      <div class="row g-4">
+        <!-- Card 1: Online Donation Presets -->
+        <div class="col-lg-4 col-md-6">
+          <div
+            class="card-pawsitive p-4 bg-white h-100 d-flex flex-column justify-content-between"
+          >
+            <form id="online-donation-form">
+              <h3 class="brand-font h5 text-danger mb-3">
+                <i class="bi bi-credit-card-2-front-fill"></i> Trực tiếp
+              </h3>
+
+              <label class="small text-muted font-bold mb-2"
+                >Chọn số tiền (VND)</label
+              >
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <button
+                  type="button"
+                  class="btn btn-pawsitive btn-pawsitive-secondary btn-preset rounded-full px-2"
+                  data-amount="50000"
+                >
+                  50.000
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-pawsitive btn-pawsitive-primary btn-preset rounded-full px-2"
+                  data-amount="100000"
+                >
+                  100.000
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-pawsitive btn-pawsitive-secondary btn-preset rounded-full px-2"
+                  data-amount="200000"
+                >
+                  200.000
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-pawsitive btn-pawsitive-secondary btn-preset rounded-full px-2"
+                  data-amount="custom"
+                >
+                  Khác
+                </button>
+              </div>
+
+              <!-- Custom Amount input -->
+              <div
+                class="form-group-pawsitive mb-3 d-none"
+                id="custom-amount-box"
+              >
+                <input
+                  type="number"
+                  class="form-control form-control-pawsitive"
+                  id="input-custom-amount"
+                  placeholder="Nhập số tiền khác (VND)"
+                />
+              </div>
+
+              <!-- Campaign Dropdown -->
+              <div class="form-group-pawsitive mb-3">
+                <label for="select-campaign" class="small text-muted font-bold mb-2">Chọn chiến dịch / quỹ</label>
+                <select class="form-select form-control-pawsitive" id="select-campaign" required>
+                  <option value="" disabled selected>-- Chọn Quỹ Quyên Góp --</option>
+                  <option value="Mái ấm mùa đông">Mái ấm mùa đông</option>
+                  <option value="Quỹ y tế khẩn cấp">Quỹ y tế khẩn cấp</option>
+                  <option value="Quỹ chung Pawsitive">Quỹ chung Pawsitive</option>
+                </select>
+              </div>
+
+              <!-- Message input -->
+              <div class="form-group-pawsitive mb-3">
+                <label for="input-message" class="small text-muted font-bold mb-2">Lời nhắn gửi các bé</label>
+                <textarea class="form-control form-control-pawsitive" id="input-message" rows="2" placeholder="Gửi lời chúc đến các bé..."></textarea>
+              </div>
+
+              <!-- Anonymous choice -->
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="check-anonymous">
+                <label class="form-check-label small cursor-pointer font-bold" for="check-anonymous">
+                  Quyên góp ẩn danh
+                </label>
+              </div>
+
+              <label class="small text-muted font-bold mb-2"
+                >Phương thức thanh toán</label
+              >
+              <div class="d-flex gap-2 mb-4">
+                <div
+                  class="payment-method-card active-method"
+                  data-method="Momo"
+                >
+                  <i class="bi bi-wallet2 fs-4 text-danger"></i>
+                </div>
+                <div class="payment-method-card" data-method="ZaloPay">
+                  <i class="bi bi-phone-fill fs-4 text-primary"></i>
+                </div>
+                <div class="payment-method-card" data-method="Thẻ Visa/Master">
+                  <i class="bi bi-credit-card-fill fs-4 text-warning"></i>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-pawsitive btn-pawsitive-primary w-100 rounded-full justify-content-center py-2 fs-6"
+              >
+                Tiến hành thanh toán
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Card 2: Bank Transfer Credentials (Clipboard copy triggers!) -->
+        <div class="col-lg-4 col-md-6">
+          <div
+            class="card-pawsitive p-4 bg-white h-100 d-flex flex-column justify-content-between"
+          >
+            <div>
+              <h3 class="brand-font h5 text-danger mb-3">
+                <i class="bi bi-bank2"></i> Chuyển khoản
+              </h3>
+
+              <div
+                class="p-3 border border-2 border-dark rounded-md bg-light mb-3"
+              >
+                <span class="small text-muted d-block">Ngân hàng</span>
+                <h4 class="brand-font fs-6 m-0 text-dark">
+                  MB BANK (Ngân hàng Quân Đội)
+                </h4>
+              </div>
+
+              <div
+                class="p-3 border border-2 border-dark rounded-md bg-light mb-3 d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  <span class="small text-muted d-block">Số tài khoản</span>
+                  <h4 class="brand-font fs-5 m-0 text-danger" id="bank-acc-no">
+                    0987654321
+                  </h4>
+                </div>
+                <button
+                  class="bg-white text-primary border border-2 border-dark rounded-md d-flex align-items-center justify-content-center"
+                  style="width: 38px; height: 38px"
+                  data-copy="#bank-acc-no"
+                >
+                  <i class="bi bi-copy"></i>
+                </button>
+              </div>
+
+              <div
+                class="p-3 border border-2 border-dark rounded-md bg-light mb-3"
+              >
+                <span class="small text-muted d-block">Chủ tài khoản</span>
+                <h4 class="brand-font fs-6 m-0 text-dark">
+                  PAWSITIVE RESCUE VIETNAM
+                </h4>
+              </div>
+            </div>
+            <span class="small text-muted text-center font-bold"
+              >Vui lòng ghi nội dung chuyển khoản:
+              <strong class="text-danger">QuyenGop Pawsitive</strong></span
+            >
+          </div>
+        </div>
+
+        <!-- Card 3: QR Code scanner -->
+        <div class="col-lg-4 col-md-12">
+          <div
+            class="card-pawsitive p-4 bg-white h-100 d-flex flex-column justify-content-between text-center"
+          >
+            <h3 class="brand-font h5 text-danger mb-3 text-start">
+              <i class="bi bi-qr-code-scan"></i> Quét mã QR
+            </h3>
+
+            <div
+              class="border border-2 border-dark rounded-default bg-white p-3 mx-auto shadow-flat"
+              style="width: 170px; height: 170px"
+            >
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PAWSITIVE%20RESCUE%20VIETNAM"
+                alt="Transfer QR code"
+                class="w-100 h-100"
+              />
+            </div>
+
+            <p class="small text-muted mt-3 mb-0 font-bold px-2">
+              Sử dụng ứng dụng ngân hàng hoặc ví điện tử bất kỳ để quét mã
+              chuyển tiền nhanh 24/7.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Impact Section -->
+    <section
+      class="py-5"
+      style="background-color: var(--pawsitive-secondary-container)"
+      id="donation-impact"
+    >
+      <div class="container py-lg-4">
+        <h2 class="display-6 mb-2 text-center brand-font text-dark">
+          Sự đóng góp của bạn đi về đâu?
+        </h2>
+        <p class="text-muted text-center mb-5">
+          Mọi khoản đóng góp đều được kiểm toán và phân phối minh bạch.
+        </p>
+
+        <div class="row g-4">
+          <!-- Meal Tier -->
+          <div class="col-lg-3 col-md-6">
+            <div class="impact-card">
+              <div
+                class="bg-danger text-white border border-2 border-dark rounded-full d-flex align-items-center justify-content-center mx-auto mb-3"
+                style="width: 48px; height: 48px"
+              >
+                <i class="bi bi-egg-fried fs-5"></i>
+              </div>
+              <h4 class="brand-font fs-5 text-danger mb-1">50.000đ</h4>
+              <p class="small text-muted m-0">
+                Cung cấp đầy đủ bữa ăn dinh dưỡng cho 1 bé tại trạm trong 2
+                ngày.
+              </p>
+            </div>
+          </div>
+          <!-- Vaccine Tier -->
+          <div class="col-lg-3 col-md-6">
+            <div class="impact-card">
+              <div
+                class="bg-primary text-white border border-2 border-dark rounded-full d-flex align-items-center justify-content-center mx-auto mb-3"
+                style="width: 48px; height: 48px"
+              >
+                <i class="bi bi-capsule-active fs-5"></i>
+              </div>
+              <h4 class="brand-font fs-5 text-primary mb-1">200.000đ</h4>
+              <p class="small text-muted m-0">
+                Tiêm ngừa vắc-xin dại và các bệnh truyền nhiễm cơ bản định kỳ.
+              </p>
+            </div>
+          </div>
+          <!-- Surgery Tier -->
+          <div class="col-lg-3 col-md-6">
+            <div class="impact-card">
+              <div
+                class="bg-warning text-dark border border-2 border-dark rounded-full d-flex align-items-center justify-content-center mx-auto mb-3"
+                style="width: 48px; height: 48px"
+              >
+                <i class="bi bi-clipboard2-pulse-fill fs-5"></i>
+              </div>
+              <h4 class="brand-font fs-5 text-warning mb-1">500.000đ</h4>
+              <p class="small text-muted m-0">
+                Chi phí phẫu thuật triệt sản và kiểm tra thú y toàn diện cho 1
+                bé.
+              </p>
+            </div>
+          </div>
+          <!-- Operation Tier -->
+          <div class="col-lg-3 col-md-6">
+            <div class="impact-card">
+              <div
+                class="bg-success text-white border border-2 border-dark rounded-full d-flex align-items-center justify-content-center mx-auto mb-3"
+                style="
+                  width: 48px;
+                  height: 48px;
+                  background-color: #319795 !important;
+                "
+              >
+                <i class="bi bi-house-heart-fill fs-5"></i>
+              </div>
+              <h4
+                class="brand-font fs-5 text-success mb-1"
+                style="color: #319795 !important"
+              >
+                1.000.000đ
+              </h4>
+              <p class="small text-muted m-0">
+                Hỗ trợ chi phí vận hành trạm, duy trì điện nước điều hòa trong 1
+                tuần.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Campaigns Tracker -->
+    <section class="container py-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="brand-font h3 m-0">Chiến dịch đang thực hiện</h2>
+        <a
+          href="#"
+          class="text-danger fw-bold text-decoration-none small"
+          onclick="
+            showToast('🐾 Đang tải thêm các chiến dịch quyên góp...', 'info')
+          "
+          >Xem tất cả</a>
+      </div>
+      <div class="row g-4" id="campaigns-tracker-container">
+        <div class="text-center py-5 text-muted">Đang tải danh sách chiến dịch...</div>
+      </div>
+    </section>
+
+    
+
+    <!-- Quyên góp Success Overlay -->
+    <div
+      class="position-fixed top-0 start-0 w-100 h-100 justify-content-center align-items-center d-none"
+      id="donate-success-overlay"
+      style="
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 10000;
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        class="card-pawsitive text-center p-5 bg-white border border-3 border-dark shadow-flat"
+        style="max-width: 450px; margin: 20px"
+      >
+        <span class="fs-1 d-block mb-2">💖</span>
+        <h2 class="brand-font text-danger mb-3">Quyên góp thành công!</h2>
+        <p class="small text-muted mb-3">
+          Cảm ơn bạn đã đóng góp
+          <strong class="text-dark" id="donate-success-amount">100.000đ</strong>
+          cho các bé thú cưng tại trạm. Đóng góp của bạn sẽ giúp duy trì cuộc
+          sống ấm no cho các con!
+        </p>
+        <button
+          class="btn btn-pawsitive btn-pawsitive-primary rounded-full justify-content-center w-100 py-2 fs-6 mt-3"
+          onclick="closeDonateSuccess()"
+        >
+          Đóng
+        </button>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <!-- Donation Calculators script -->
+    <script src="~/js/donate.js"></script>

@@ -1,0 +1,1113 @@
+@{
+    ViewData["Title"] = "Quản lý cứu hộ";
+    Layout = "_AdminLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .leaflet-popup-content-wrapper {
+            border: 2px solid #000 !important;
+            border-radius: 12px !important;
+            box-shadow: 4px 4px 0px #000 !important;
+            font-family: var(--font-body), sans-serif;
+        }
+        .leaflet-popup-tip {
+            border: 2px solid #000 !important;
+        }
+        @@keyframes markerPulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+        .leaflet-marker-pulse::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            animation: markerPulse 1.8s infinite;
+            z-index: -1;
+        }
+    </style>
+}
+
+<div class="db-layout">
+      <!-- ═══ Sidebar ═══ -->
+      <aside class="db-sidebar" id="dbSidebar">
+        <a asp-controller="Admin" asp-action="Index" class="db-sidebar-logo">
+          <div class="db-sidebar-logo-icon">🐾</div>
+          <div>
+            <div class="db-sidebar-logo-text">Pawsitive Rescue</div>
+            <span class="db-sidebar-logo-sub">Hệ thống Quản trị</span>
+          </div>
+        </a>
+
+        <nav class="db-sidebar-nav">
+          <a asp-controller="Admin" asp-action="Index" class="db-sidebar-link" data-view="overview">
+            <i class="bi bi-grid-1x2-fill"></i> Tổng quan
+          </a>
+          <a asp-controller="Admin" asp-action="ManageAnimals" class="db-sidebar-link" data-view="animals">
+            <i class="bi bi-heart-pulse-fill"></i> Quản lý Động vật
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageAdopters"
+            class="db-sidebar-link"
+            data-view="adopters"
+          >
+            <i class="bi bi-house-heart-fill"></i> Nhận nuôi
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageVolunteers"
+            class="db-sidebar-link"
+            data-view="volunteers"
+          >
+            <i class="bi bi-people-fill"></i> Tình nguyện viên
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageDonations"
+            class="db-sidebar-link"
+            data-view="donations"
+          >
+            <i class="bi bi-gift-fill"></i> Quyên góp
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageRescues"
+            class="db-sidebar-link active"
+            data-view="rescue"
+          >
+            <i class="bi bi-exclamation-triangle-fill"></i> Cứu hộ Khẩn cấp
+          </a>
+        </nav>
+
+        <div class="db-sidebar-bottom">
+          <a href="#" class="db-sidebar-link" onclick="pawsitiveLogout(); return false;"><i class="bi bi-box-arrow-left"></i> Đăng xuất</a>
+        </div>
+      </aside>
+
+      <div class="db-overlay" id="dbOverlay"></div>
+
+      <!-- ═══ Main Content ═══ -->
+      <main class="db-main">
+        <!-- Top Bar -->
+        <header class="db-topbar">
+          <button class="db-mobile-toggle" id="dbMobileToggle">
+            <i class="bi bi-list"></i>
+          </button>
+          <nav class="d-none d-md-flex gap-3 me-auto">
+            <a asp-controller="Home" asp-action="Index" class="pawsitive-nav-link">Trang chủ</a>
+            <a asp-controller="Admin" asp-action="ManageRescues" class="pawsitive-nav-link active">Cứu hộ</a>
+          </nav>
+          <input
+            type="text"
+            class="db-topbar-search"
+            placeholder="Tìm kiếm báo cáo cứu hộ..."
+          />
+          <div class="db-topbar-icon" title="Thông báo">
+            <i class="bi bi-bell-fill"></i>
+          </div>
+          <div class="db-topbar-icon" title="Cài đặt">
+            <i class="bi bi-gear-fill"></i>
+          </div>
+          <div class="db-topbar-avatar">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              alt="Admin Avatar"
+            />
+          </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="db-content">
+          <!-- Page Header -->
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+              <h1
+                class="h2 mb-1"
+                style="
+                  color: var(--pawsitive-primary-vibrant);
+                  font-weight: 800;
+                "
+              >
+                Cứu hộ Quản lý
+              </h1>
+              <p class="text-muted small mb-0">
+                Hệ thống theo dõi các hoạt động cứu hộ khẩn cấp và quản lý đội
+                ngũ cứu hộ.
+              </p>
+            </div>
+            <button
+              class="db-btn db-btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#createRescueModal"
+            >
+              <i class="bi bi-plus-lg"></i> Báo cáo mới
+            </button>
+          </div>
+
+          <!-- ── Stat Cards ── -->
+          <div class="row g-3 mb-4">
+            <div class="col-xl-3 col-md-6">
+              <div class="rescue-stat-box db-animate-in">
+                <div class="rescue-stat-number" id="stat-total-month">0</div>
+                <div class="rescue-stat-label">Cứu hộ tháng này</div>
+                <div class="rescue-stat-badge" id="stat-total-trend">Đang tải...</div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="rescue-stat-box db-animate-in">
+                <div style="color: #406376">
+                  <div class="rescue-stat-number" style="color: #406376" id="stat-pending">
+                    0
+                  </div>
+                  <div class="rescue-stat-label">Báo cáo chờ xử lý</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="rescue-stat-box db-animate-in">
+                <div style="color: #d97706">
+                  <div class="rescue-stat-number" style="color: #d97706" id="stat-ongoing">
+                    0
+                  </div>
+                  <div class="rescue-stat-label">Đang thực hiện</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="rescue-stat-box db-animate-in">
+                <div style="color: #2d8659">
+                  <div class="rescue-stat-number" style="color: #2d8659" id="stat-completed">
+                    0
+                  </div>
+                  <div class="rescue-stat-label">Đã hoàn thành</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Alert Box ── -->
+          <div class="rescue-alert-box db-animate-in mb-4" id="alert-high-alert-box">
+            <div class="rescue-alert-icon">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div class="rescue-alert-content">
+              <h4>Hệ thống đang tải dữ liệu cứu hộ SOS...</h4>
+              <p>Vui lòng đợi giây lát.</p>
+            </div>
+          </div>
+
+          <!-- ── Tab Filters ── -->
+          <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+            <button class="db-filter-tab active" id="filter-all-btn" onclick="filterRescue('')">
+              Tất cả
+            </button>
+            <button class="db-filter-tab" id="filter-urgent-btn" onclick="filterRescue('Khẩn cấp')">
+              Khẩn cấp
+            </button>
+            <button class="db-filter-tab" id="filter-pending-btn" onclick="filterRescue('Chờ xử lý')">
+              Chờ xử lý
+            </button>
+            <button class="db-filter-tab" id="filter-ongoing-btn" onclick="filterRescue('Đang thực hiện')">
+              Đang thực hiện
+            </button>
+            <button class="db-filter-tab" id="filter-completed-btn" onclick="filterRescue('Đã hoàn thành')">
+              Đã hoàn thành
+            </button>
+          </div>
+
+          <!-- ── Recent Requests ── -->
+          <div class="row g-3">
+            <div class="col-lg-7">
+              <h3
+                class="h5 mb-3"
+                style="color: var(--pawsitive-on-surface); font-weight: 700"
+              >
+                <i class="bi bi-clock-history"></i> Báo cáo gần đây
+              </h3>
+
+              <div id="rescue-requests-container">
+                <div class="text-center py-5 text-muted">Đang tải danh sách báo cáo cứu hộ SOS...</div>
+              </div>
+            </div>
+
+            <!-- ── Right Sidebar ── -->
+            <div class="col-lg-5">
+              <!-- Map -->
+              <div class="rescue-info-panel db-animate-in mb-3">
+                <h3
+                  class="h5 mb-3"
+                  style="color: var(--pawsitive-on-surface); font-weight: 700"
+                >
+                  <i class="bi bi-map"></i> Bản đồ cứu hộ
+                </h3>
+                <div class="rescue-map-container-new" style="height: 320px; width: 100%; position: relative; border: 2px solid #000; border-radius: 12px; box-shadow: 4px 4px 0px #000; overflow: hidden; margin-bottom: 1rem;">
+                  <div id="rescue-map" style="height: 100%; width: 100%; z-index: 1;"></div>
+                </div>
+                <button class="db-btn db-btn-secondary w-100" onclick="focusOnDefaultMapCenter()">
+                  <i class="bi bi-geo-alt-fill"></i> Căn giữa bản đồ
+                </button>
+              </div>
+
+              <!-- Top Volunteers -->
+              <div class="rescue-info-panel db-animate-in">
+                <h3
+                  class="h5 mb-3"
+                  style="color: var(--pawsitive-on-surface); font-weight: 700"
+                >
+                  <i class="bi bi-star-fill"></i> Tình nguyện viên cứu hộ hàng đầu
+                </h3>
+
+                <div class="rescue-team-list" id="top-rescuers-container">
+                  <div class="text-center py-3 text-muted">Đang tính toán thống kê...</div>
+                </div>
+
+                <button class="db-btn db-btn-secondary w-100 mt-3" onclick="window.location.href='/Admin/ManageVolunteers'">
+                  <i class="bi bi-list"></i> Xem tất cả tình nguyện viên
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create Rescue Case Modal -->
+    <div class="modal fade" id="createRescueModal" tabindex="-1" aria-labelledby="createRescueModalLabel" aria-hidden="true" style="z-index: 1055;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000; background: #fff;">
+          <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+            <h5 class="modal-title font-bold" id="createRescueModalLabel">🚨 Báo cáo SOS Cứu hộ Mới</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="createRescueForm">
+            <div class="modal-body text-start">
+              <div class="mb-3">
+                <label for="createReporterName" class="form-label font-semibold">Tên người báo cáo <span class="text-danger">*</span></label>
+                <input type="text" class="form-control border-2 border-dark" id="createReporterName" required placeholder="Ví dụ: Nguyễn Văn A..." style="border-radius: 8px;" />
+              </div>
+              <div class="mb-3">
+                <label for="createReporterPhone" class="form-label font-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                <input type="text" class="form-control border-2 border-dark" id="createReporterPhone" required placeholder="Ví dụ: 0912345678..." style="border-radius: 8px;" />
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-md-8">
+                  <label for="createLocation" class="form-label font-semibold">Địa chỉ cụ thể <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control border-2 border-dark" id="createLocation" required placeholder="Ví dụ: 123 Đường Lê Lợi..." style="border-radius: 8px;" />
+                </div>
+                <div class="col-md-4">
+                  <label for="createDistrict" class="form-label font-semibold">Quận/Huyện <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control border-2 border-dark" id="createDistrict" required placeholder="Quận 1..." style="border-radius: 8px;" />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="createEmergency" class="form-label font-semibold">Mức độ khẩn cấp <span class="text-danger">*</span></label>
+                <select class="form-select border-2 border-dark" id="createEmergency" style="border-radius: 8px;">
+                  <option value="Bình thường">Bình thường</option>
+                  <option value="Khẩn cấp">Khẩn cấp</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="createDescription" class="form-label font-semibold">Mô tả tình trạng bé <span class="text-danger">*</span></label>
+                <textarea class="form-control border-2 border-dark" id="createDescription" rows="3" required placeholder="Ví dụ: Chó Husky bị thương chân bên lề đường..." style="border-radius: 8px;"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+              <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+              <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Báo cáo</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dispatch Team Modal -->
+    <div class="modal fade" id="dispatchTeamModal" tabindex="-1" aria-labelledby="dispatchTeamModalLabel" aria-hidden="true" style="z-index: 1055;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000; background: #fff;">
+          <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+            <h5 class="modal-title font-bold" id="dispatchTeamModalLabel">🚒 Phân công Đội ngũ Cứu hộ</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="dispatchTeamForm">
+            <input type="hidden" id="dispatchCaseId" />
+            <div class="modal-body text-start">
+              <div class="mb-3">
+                <label for="dispatchVolSelect" class="form-label font-semibold">Chọn Tình nguyện viên <span class="text-danger">*</span></label>
+                <select class="form-select border-2 border-dark" id="dispatchVolSelect" required style="border-radius: 8px;">
+                  <option value="">-- Đang tải tình nguyện viên... --</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="dispatchNotesInput" class="form-label font-semibold">Ghi chú phân công</label>
+                <textarea class="form-control border-2 border-dark" id="dispatchNotesInput" rows="2" placeholder="Ví dụ: Vui lòng liên hệ người báo cáo trước khi đi..." style="border-radius: 8px;"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+              <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+              <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Xác nhận phân công</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rescue Details Modal -->
+    <div class="modal fade" id="rescueDetailsModal" tabindex="-1" aria-labelledby="rescueDetailsModalLabel" aria-hidden="true" style="z-index: 1055;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000; background: #fff;">
+          <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+            <h5 class="modal-title font-bold" id="rescueDetailsModalLabel">📋 Chi tiết Ca Cứu Hộ SOS</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-start" id="rescueDetailsContent">
+            <!-- Rendered dynamically -->
+          </div>
+          <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);" id="rescueDetailsFooter">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    @section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      // Sidebar Toggle
+      const dbMobileToggle = document.getElementById("dbMobileToggle");
+      const dbSidebar = document.getElementById("dbSidebar");
+      const dbOverlay = document.getElementById("dbOverlay");
+
+      if (dbMobileToggle && dbSidebar && dbOverlay) {
+        dbMobileToggle.addEventListener("click", () => {
+          dbSidebar.classList.toggle("active");
+          dbOverlay.classList.toggle("active");
+        });
+
+        dbOverlay.addEventListener("click", () => {
+          dbSidebar.classList.remove("active");
+          dbOverlay.classList.remove("active");
+        });
+      }
+
+      // Toast Notification
+      function showToast(message, type = "success") {
+        if (typeof dbToast === "function") {
+          dbToast(message);
+        } else {
+          const toast = document.createElement("div");
+          toast.className = `alert alert-${type === "error" ? "danger" : type} position-fixed`;
+          toast.style.bottom = "20px";
+          toast.style.right = "20px";
+          toast.style.zIndex = "9999";
+          toast.textContent = message;
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 3000);
+        }
+      }
+
+      // Bootstrap Modal Instances
+      const createRescueModal = new bootstrap.Modal(document.getElementById('createRescueModal'));
+      const dispatchTeamModal = new bootstrap.Modal(document.getElementById('dispatchTeamModal'));
+      const rescueDetailsModal = new bootstrap.Modal(document.getElementById('rescueDetailsModal'));
+
+      let currentReports = [];
+      let currentVolunteers = [];
+      let filterStatus = "";
+
+      // Leaflet Map State
+      let rescueMap = null;
+      let mapMarkers = [];
+      const defaultMapCenter = [21.0285, 105.8542];
+
+      const districtCoords = {
+        "ba đình": [21.0361, 105.8159],
+        "hoàn kiếm": [21.0287, 105.8524],
+        "đống đa": [21.0180, 105.8290],
+        "cầu giấy": [21.0362, 105.7906],
+        "tây hồ": [21.0717, 105.8190],
+        "hai bà trưng": [21.0125, 105.8550],
+        "thanh xuân": [21.0010, 105.8080],
+        "hoàng mai": [20.9723, 105.8450],
+        "long biên": [21.0400, 105.8850],
+        "hà đông": [20.9650, 105.7750],
+        "nam từ liêm": [21.0150, 105.7600],
+        "bắc từ liêm": [21.0650, 105.7750]
+      };
+
+      function getCoordsForReport(r) {
+        const districtStr = (r.quanHuyen || "").toLowerCase().trim();
+        for (const [name, coords] of Object.entries(districtCoords)) {
+          if (districtStr.includes(name) || name.includes(districtStr)) {
+            const offsetLat = ((r.maBaoCao * 17) % 100 - 50) * 0.00015;
+            const offsetLng = ((r.maBaoCao * 23) % 100 - 50) * 0.00015;
+            return [coords[0] + offsetLat, coords[1] + offsetLng];
+          }
+        }
+        const locationStr = (r.diaDiem || "").toLowerCase().trim();
+        for (const [name, coords] of Object.entries(districtCoords)) {
+          if (locationStr.includes(name)) {
+            const offsetLat = ((r.maBaoCao * 17) % 100 - 50) * 0.00015;
+            const offsetLng = ((r.maBaoCao * 23) % 100 - 50) * 0.00015;
+            return [coords[0] + offsetLat, coords[1] + offsetLng];
+          }
+        }
+        const latSeed = ((r.maBaoCao * 31) % 200 - 100) * 0.0002;
+        const lngSeed = ((r.maBaoCao * 37) % 200 - 100) * 0.0002;
+        return [defaultMapCenter[0] + latSeed, defaultMapCenter[1] + lngSeed];
+      }
+
+      function initMap() {
+        if (rescueMap) return;
+        const mapDiv = document.getElementById("rescue-map");
+        if (!mapDiv) return;
+
+        rescueMap = L.map('rescue-map').setView(defaultMapCenter, 12);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(rescueMap);
+      }
+
+      function focusOnDefaultMapCenter() {
+        if (rescueMap) {
+          rescueMap.setView(defaultMapCenter, 12);
+        }
+      }
+
+      function getMarkerIcon(status, isUrgent) {
+        let color = "#3b82f6"; // Blue for Đang thực hiện
+        if (status === "Chờ xử lý") {
+          color = "#ef4444"; // Red for Chờ xử lý
+        } else if (status === "Đã phân công") {
+          color = "#f59e0b"; // Orange for Đã phân công
+        } else if (status === "Đã hoàn thành") {
+          color = "#10b981"; // Green for Đã hoàn thành
+        }
+
+        const pulseClass = isUrgent ? "leaflet-marker-pulse" : "";
+
+        const svgHtml = `
+          <svg width="30" height="42" viewBox="0 0 30 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 0C6.7 0 0 6.7 0 15C0 26.2 15 42 15 42C15 42 30 26.2 30 15C30 6.7 23.3 0 15 0ZM15 20.5C12 20.5 9.5 18 9.5 15C9.5 12 12 9.5 15 9.5C18 9.5 20.5 12 20.5 15C20.5 18 18 20.5 15 20.5Z" fill="${color}" stroke="#000000" stroke-width="2"/>
+          </svg>
+        `;
+
+        return L.divIcon({
+          className: 'custom-map-marker',
+          html: `<div class="${pulseClass}" style="position:relative; width:30px; height:42px; transform:translate(-15px, -42px);">${svgHtml}</div>`,
+          iconSize: [30, 42],
+          iconAnchor: [15, 42],
+          popupAnchor: [0, -42]
+        });
+      }
+
+      function updateMapMarkers() {
+        if (!rescueMap) {
+          initMap();
+        }
+        if (!rescueMap) return;
+
+        mapMarkers.forEach(m => rescueMap.removeLayer(m));
+        mapMarkers = [];
+
+        currentReports.forEach(r => {
+          const coords = getCoordsForReport(r);
+          const icon = getMarkerIcon(r.trangThai, r.mucDoKhanCap === "Khẩn cấp");
+          
+          const popupContent = `
+            <div style="font-family: var(--font-body), sans-serif; padding: 4px; min-width: 180px;">
+              <h6 style="font-weight: 700; margin: 0 0 6px 0; color: var(--pawsitive-primary-vibrant);">SOS-${r.maBaoCao}</h6>
+              <p style="margin: 0 0 6px 0; font-size: 0.82rem; font-weight: 600;"><i class="bi bi-geo-alt-fill text-danger"></i> ${escapeHtml(r.diaDiem)}</p>
+              <p style="margin: 0 0 8px 0; font-size: 0.75rem; color: #555;">${escapeHtml(r.moTaChiTiet)}</p>
+              <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
+                <span class="badge ${r.trangThai === 'Chờ xử lý' ? 'bg-danger' : (r.trangThai === 'Đã phân công' ? 'bg-warning text-dark' : (r.trangThai === 'Đang thực hiện' ? 'bg-info' : 'bg-success'))}" style="font-size: 0.7rem; font-weight: 700; border: 1px solid #000;">${r.trangThai}</span>
+                <button onclick="openDetailsModal(${r.maBaoCao});" style="font-size: 0.72rem; padding: 2px 8px; font-weight:700; border: 1px solid #000; background: var(--pawsitive-secondary-light); border-radius: 4px; cursor: pointer;">Chi tiết</button>
+              </div>
+            </div>
+          `;
+
+          const marker = L.marker(coords, { icon: icon })
+            .bindPopup(popupContent)
+            .addTo(rescueMap);
+
+          marker.reportId = r.maBaoCao;
+          mapMarkers.push(marker);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initMap();
+        loadRescueReports();
+        loadVolunteers();
+
+        document.getElementById("createRescueForm").addEventListener("submit", handleCreateRescue);
+        document.getElementById("dispatchTeamForm").addEventListener("submit", handleDispatchTeam);
+      });
+
+      async function loadRescueReports() {
+        const container = document.getElementById("rescue-requests-container");
+        try {
+          const res = await fetch("/api/Rescue/admin/rescue-reports");
+          const json = await res.json();
+          if (json.success && json.data) {
+            currentReports = json.data;
+            updateStats(currentReports);
+            renderReports();
+            updateMapMarkers();
+            if (currentVolunteers.length > 0) {
+              renderTopRescuers(currentReports, currentVolunteers);
+            }
+          } else {
+            container.innerHTML = `<div class="text-center py-5 text-danger">Lỗi: ${json.message}</div>`;
+          }
+        } catch (err) {
+          console.error(err);
+          container.innerHTML = `<div class="text-center py-5 text-danger">Lỗi kết nối máy chủ.</div>`;
+        }
+      }
+
+      async function loadVolunteers() {
+        try {
+          const res = await fetch("/api/Volunteer/admin/volunteers");
+          const json = await res.json();
+          if (json.success && json.data) {
+            currentVolunteers = json.data;
+            
+            // Populate select dropdown
+            const select = document.getElementById("dispatchVolSelect");
+            select.innerHTML = '<option value="">-- Chọn Tình nguyện viên --</option>';
+            currentVolunteers.forEach(v => {
+              const user = v.nguoiDung || {};
+              const opt = document.createElement("option");
+              opt.value = v.maTinhNguyenVien;
+              opt.textContent = `${user.hoTen} (Mã số: ${v.maTinhNguyenVien})`;
+              select.appendChild(opt);
+            });
+
+            if (currentReports.length > 0) {
+              renderTopRescuers(currentReports, currentVolunteers);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function updateStats(reports) {
+        // Total rescues this month
+        const now = new Date();
+        const totalThisMonth = reports.filter(r => {
+          const date = new Date(r.ngayBaoCao);
+          return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        }).length;
+
+        document.getElementById("stat-total-month").textContent = totalThisMonth;
+        
+        // Mock trend
+        document.getElementById("stat-total-trend").textContent = `+15% so với tháng trước`;
+
+        const pending = reports.filter(r => r.trangThai === "Chờ xử lý").length;
+        const ongoing = reports.filter(r => r.trangThai === "Đang thực hiện" || r.trangThai === "Đã phân công").length;
+        const completed = reports.filter(r => r.trangThai === "Đã hoàn thành").length;
+
+        document.getElementById("stat-pending").textContent = pending;
+        document.getElementById("stat-ongoing").textContent = ongoing;
+        document.getElementById("stat-completed").textContent = completed;
+
+        // Update High Alert Box
+        const alertBox = document.getElementById("alert-high-alert-box");
+        if (pending > 0) {
+          alertBox.style.background = "var(--pawsitive-error-container)";
+          alertBox.style.color = "var(--pawsitive-on-error-container)";
+          alertBox.style.borderColor = "var(--pawsitive-outline)";
+          alertBox.innerHTML = `
+            <div class="rescue-alert-icon" style="color: var(--pawsitive-error);"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div class="rescue-alert-content">
+              <h4>Cảnh báo: Có ${pending} báo cáo SOS khẩn cấp chưa xử lý</h4>
+              <p class="mb-0">Vui lòng kiểm tra và phân công đội ngũ cứu hộ ngay lập tức để kịp thời giúp đỡ các bé.</p>
+            </div>
+          `;
+        } else {
+          alertBox.style.background = "#e6fffa";
+          alertBox.style.color = "#234e52";
+          alertBox.style.borderColor = "#319795";
+          alertBox.innerHTML = `
+            <div class="rescue-alert-icon" style="color: #319795;"><i class="bi bi-check-circle-fill"></i></div>
+            <div class="rescue-alert-content">
+              <h4 style="color: #234e52;">Tất cả ca cứu hộ đã được xử lý ổn định</h4>
+              <p class="mb-0">Hiện tại không có báo cáo cứu hộ nào đang chờ. Công tác cứu hộ diễn ra suôn sẻ!</p>
+            </div>
+          `;
+        }
+      }
+
+      function filterRescue(status) {
+        filterStatus = status;
+        
+        // Manage active button
+        const buttons = {
+          "": "filter-all-btn",
+          "Khẩn cấp": "filter-urgent-btn",
+          "Chờ xử lý": "filter-pending-btn",
+          "Đang thực hiện": "filter-ongoing-btn",
+          "Đã hoàn thành": "filter-completed-btn"
+        };
+
+        Object.keys(buttons).forEach(k => {
+          const btn = document.getElementById(buttons[k]);
+          if (btn) {
+            if (k === status) btn.classList.add("active");
+            else btn.classList.remove("active");
+          }
+        });
+
+        renderReports();
+      }
+
+      function renderReports() {
+        const container = document.getElementById("rescue-requests-container");
+        
+        let filtered = currentReports;
+        if (filterStatus === "Khẩn cấp") {
+          filtered = currentReports.filter(r => r.mucDoKhanCap === "Khẩn cấp");
+        } else if (filterStatus === "Đang thực hiện") {
+          filtered = currentReports.filter(r => r.trangThai === "Đang thực hiện" || r.trangThai === "Đã phân công");
+        } else if (filterStatus) {
+          filtered = currentReports.filter(r => r.trangThai === filterStatus);
+        }
+
+        if (filtered.length === 0) {
+          container.innerHTML = `<div class="text-center py-5 text-muted">Không tìm thấy yêu cầu cứu hộ nào.</div>`;
+          return;
+        }
+
+        container.innerHTML = filtered.map(r => {
+          const isUrgent = r.mucDoKhanCap === "Khẩn cấp";
+          const urgencyClass = isUrgent ? "rescue-status-urgent" : "rescue-status-normal";
+          const urgencyIcon = isUrgent ? "bi-exclamation-circle-fill" : "bi-info-circle-fill";
+          const urgencyLabel = isUrgent ? "Khẩn cấp" : "Bình thường";
+          
+          let statusClass = "rescue-status-pending";
+          let statusIcon = "bi-hourglass-split";
+          let statusLabel = "Chờ xử lý";
+          
+          if (r.trangThai === "Đã phân công") {
+            statusClass = "rescue-status-ongoing";
+            statusIcon = "bi-person-check-fill";
+            statusLabel = "Đã phân công";
+          } else if (r.trangThai === "Đang thực hiện") {
+            statusClass = "rescue-status-ongoing";
+            statusIcon = "bi-arrow-repeat";
+            statusLabel = "Đang thực hiện";
+          } else if (r.trangThai === "Đã hoàn thành") {
+            statusClass = "rescue-status-completed";
+            statusIcon = "bi-check-circle-fill";
+            statusLabel = "Hoàn thành";
+          }
+
+          const dateFormatted = new Date(r.ngayBaoCao).toLocaleDateString("vi-VN") + " " + new Date(r.ngayBaoCao).toLocaleTimeString("vi-VN", {hour: '2-digit', minute:'2-digit'});
+          
+          let actionButtons = "";
+          if (r.trangThai === "Chờ xử lý") {
+            actionButtons = `
+              <button class="rescue-action-btn" onclick="openDetailsModal(${r.maBaoCao})">
+                <i class="bi bi-eye"></i> Xem
+              </button>
+              <button class="rescue-action-btn primary" onclick="openDispatchModal(${r.maBaoCao})">
+                <i class="bi bi-share-fill"></i> Phân công
+              </button>
+            `;
+          } else if (r.trangThai === "Đã phân công") {
+            actionButtons = `
+              <button class="rescue-action-btn" onclick="openDetailsModal(${r.maBaoCao})">
+                <i class="bi bi-eye"></i> Xem
+              </button>
+              <button class="rescue-action-btn primary" onclick="openDispatchModal(${r.maBaoCao})">
+                <i class="bi bi-people-fill"></i> Sửa phân công
+              </button>
+            `;
+          } else if (r.trangThai === "Đang thực hiện") {
+            actionButtons = `
+              <button class="rescue-action-btn" onclick="openDetailsModal(${r.maBaoCao})">
+                <i class="bi bi-eye"></i> Xem
+              </button>
+              <button class="rescue-action-btn" style="background-color: #319795; color: white;" onclick="updateCaseStatus(${r.maBaoCao}, 'Đã hoàn thành')">
+                <i class="bi bi-check-lg"></i> Hoàn thành
+              </button>
+            `;
+          } else {
+            actionButtons = `
+              <button class="rescue-action-btn" onclick="openDetailsModal(${r.maBaoCao})">
+                <i class="bi bi-eye"></i> Chi tiết
+              </button>
+            `;
+          }
+
+          let imgUrl = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=100";
+          if (r.anhBaoCao) {
+            imgUrl = r.anhBaoCao.split(',')[0].trim();
+          } else {
+            const desc = (r.moTaChiTiet || "").toLowerCase();
+            if (desc.includes("mèo") || desc.includes("cat")) {
+              imgUrl = "https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&q=80&w=100";
+            } else if (desc.includes("thỏ") || desc.includes("rabbit")) {
+              imgUrl = "https://images.unsplash.com/photo-1452857297128-d9c29adba80b?auto=format&fit=crop&q=80&w=100";
+            }
+          }
+
+          return `
+            <div class="rescue-request-card db-animate-in">
+              <div class="rescue-request-header">
+                <img src="${imgUrl}" alt="Rescue Case" class="rescue-request-image" onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=100'" />
+                <div class="flex-grow-1">
+                  <div class="rescue-request-title font-bold">${escapeHtml(r.moTaChiTiet)}</div>
+                  <div class="rescue-request-location small text-muted">
+                    <i class="bi bi-geo-alt-fill text-danger"></i> ${escapeHtml(r.diaDiem)} (${escapeHtml(r.quanHuyen || '')})
+                  </div>
+                  <div class="rescue-request-time small text-muted">
+                    <i class="bi bi-clock-fill"></i> ${dateFormatted}
+                  </div>
+                </div>
+                <div>
+                  <div class="rescue-status-indicator ${urgencyClass} mb-1">
+                     <i class="bi ${urgencyIcon}"></i> ${urgencyLabel}
+                  </div>
+                  <div class="rescue-status-indicator ${statusClass}">
+                    <i class="bi ${statusIcon}"></i> ${statusLabel}
+                  </div>
+                </div>
+              </div>
+              <div class="rescue-request-meta">
+                <div class="rescue-request-meta-item">
+                  <i class="bi bi-person-circle"></i> Người báo: ${escapeHtml(r.tenNguoiBaoCao)}
+                </div>
+                <div class="rescue-request-meta-item">
+                  <i class="bi bi-telephone-fill"></i> ${escapeHtml(r.soDienThoai)}
+                </div>
+              </div>
+              <div class="rescue-request-actions">
+                ${actionButtons}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderTopRescuers(reports, volunteers) {
+        const counts = {};
+        reports.forEach(r => {
+          if (r.phanCongCuuHos && r.phanCongCuuHos.length > 0) {
+            r.phanCongCuuHos.forEach(pc => {
+              const volId = pc.maTinhNguyenVien;
+              counts[volId] = (counts[volId] || 0) + 1;
+            });
+          }
+        });
+
+        const sortedVolunteers = volunteers
+          .map(v => ({
+            ...v,
+            rescueCount: counts[v.maTinhNguyenVien] || 0
+          }))
+          .filter(v => v.rescueCount > 0)
+          .sort((a, b) => b.rescueCount - a.rescueCount)
+          .slice(0, 3);
+
+        const container = document.getElementById("top-rescuers-container");
+        if (sortedVolunteers.length === 0) {
+          container.innerHTML = `<div class="text-center py-3 text-muted">Chưa có ca cứu hộ nào được phân công.</div>`;
+          return;
+        }
+
+        container.innerHTML = sortedVolunteers.map((v, idx) => {
+          const user = v.nguoiDung || {};
+          const initials = getInitials(user.hoTen);
+          const rating = (5.0 - (idx * 0.15)).toFixed(1);
+          
+          return `
+            <div class="rescue-team-member" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 8px; background: var(--pawsitive-surface-container-low); border-radius: 8px; border: 1px solid var(--pawsitive-outline-variant);">
+              <div class="rescue-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--pawsitive-secondary); color: var(--pawsitive-on-secondary); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; border: 1px solid #000;">
+                ${initials}
+              </div>
+              <div class="rescue-team-info" style="flex-grow: 1;">
+                <div class="rescue-team-name font-bold">${escapeHtml(user.hoTen)}</div>
+                <div class="rescue-team-role small text-muted">${v.rescueCount} ca cứu hộ</div>
+              </div>
+              <div class="rescue-team-rating font-bold text-warning" style="flex-shrink: 0;">⭐ ${rating}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function openDispatchModal(caseId) {
+        document.getElementById("dispatchCaseId").value = caseId;
+        document.getElementById("dispatchVolSelect").value = "";
+        document.getElementById("dispatchNotesInput").value = "";
+        dispatchTeamModal.show();
+      }
+
+      async function handleDispatchTeam(e) {
+        e.preventDefault();
+        const caseId = parseInt(document.getElementById("dispatchCaseId").value);
+        const volId = parseInt(document.getElementById("dispatchVolSelect").value);
+        const notes = document.getElementById("dispatchNotesInput").value.trim();
+
+        if (!volId) {
+          showToast("⚠️ Vui lòng chọn tình nguyện viên!", "error");
+          return;
+        }
+
+        showToast("💾 Đang phân công cứu hộ...", "info");
+
+        try {
+          const res = await fetch(`/api/Rescue/admin/rescue-reports/${caseId}/assignments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ VolunteerId: volId, GhiChu: notes })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("✔️ Phân công đội cứu hộ thành công!", "success");
+            dispatchTeamModal.hide();
+            loadRescueReports();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      async function handleCreateRescue(e) {
+        e.preventDefault();
+        const payload = {
+          tenNguoiBaoCao: document.getElementById("createReporterName").value.trim(),
+          soDienThoai: document.getElementById("createReporterPhone").value.trim(),
+          diaDiem: document.getElementById("createLocation").value.trim(),
+          quanHuyen: document.getElementById("createDistrict").value.trim(),
+          mucDoKhanCap: document.getElementById("createEmergency").value,
+          moTaChiTiet: document.getElementById("createDescription").value.trim()
+        };
+
+        showToast("💾 Đang tạo báo cáo SOS mới...", "info");
+
+        try {
+          const res = await fetch("/api/Rescue/rescue-reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("🚨 Báo cáo SOS thành công!", "success");
+            createRescueModal.hide();
+            e.target.reset();
+            loadRescueReports();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      async function updateCaseStatus(caseId, status) {
+        const confirmMsg = `Xác nhận chuyển trạng thái ca cứu hộ thành "${status}"?`;
+        if (!confirm(confirmMsg)) return;
+
+        showToast("💾 Đang cập nhật trạng thái...", "info");
+
+        try {
+          const res = await fetch(`/api/Rescue/admin/rescue-reports/${caseId}/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ Status: status })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("✔️ Cập nhật trạng thái thành công!", "success");
+            loadRescueReports();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      async function openDetailsModal(id) {
+        try {
+          const res = await fetch(`/api/Rescue/admin/rescue-reports/${id}`);
+          const json = await res.json();
+          if (json.success && json.data) {
+            const r = json.data;
+            const dateFormatted = new Date(r.ngayBaoCao).toLocaleString("vi-VN");
+            
+            let volunteersHtml = "";
+            if (r.phanCongCuuHos && r.phanCongCuuHos.length > 0) {
+              volunteersHtml = r.phanCongCuuHos.map(pc => {
+                const name = pc.tinhNguyenVien?.nguoiDung?.hoTen || "Tình nguyện viên";
+                return `
+                  <li class="list-group-item d-flex justify-content-between align-items-center" style="border: 1px solid var(--pawsitive-outline-variant); margin-bottom: 4px; border-radius: 4px;">
+                    <div>
+                      <strong>${escapeHtml(name)}</strong>
+                      <span class="text-muted d-block small">Ghi chú: ${escapeHtml(pc.ghiChu || 'Không')}</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="removeAssignment(${r.maBaoCao}, ${pc.maTinhNguyenVien})">
+                      <i class="bi bi-trash"></i> Hủy
+                    </button>
+                  </li>
+                `;
+              }).join('');
+              volunteersHtml = `<ul class="list-group mt-2" style="padding-left: 0;">${volunteersHtml}</ul>`;
+            } else {
+              volunteersHtml = `<span class="text-muted">Chưa có tình nguyện viên nào được phân công.</span>`;
+            }
+
+            let imageHtml = "";
+            if (r.anhBaoCao) {
+              const images = r.anhBaoCao.split(',');
+              imageHtml = `
+                <div class="mb-3">
+                  <h6 class="font-bold text-danger">Hình ảnh hiện trường:</h6>
+                  <div class="d-flex flex-wrap gap-2">
+                    ${images.map(img => `
+                      <a href="${img.trim()}" target="_blank">
+                        <img src="${img.trim()}" style="max-width: 120px; max-height: 120px; object-fit: cover; border-radius: 8px; border: 2px solid #000; box-shadow: 2px 2px 0px #000;" onerror="this.style.display='none';" />
+                      </a>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+            }
+
+            document.getElementById("rescueDetailsContent").innerHTML = `
+              <div class="mb-3">
+                <h6 class="font-bold text-danger">Mô tả chi tiết tình trạng:</h6>
+                <div class="border p-2 bg-light rounded" style="border-radius: 8px;">${escapeHtml(r.moTaChiTiet)}</div>
+              </div>
+              ${imageHtml}
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <strong>Người báo cáo:</strong><br/> ${escapeHtml(r.tenNguoiBaoCao)}
+                </div>
+                <div class="col-6">
+                  <strong>Số điện thoại:</strong><br/> ${escapeHtml(r.soDienThoai)}
+                </div>
+              </div>
+              <div class="mb-3">
+                <strong>Địa điểm:</strong> ${escapeHtml(r.diaDiem)} (${escapeHtml(r.quanHuyen || '')})
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <strong>Mức độ khẩn cấp:</strong><br/> <span class="badge ${r.mucDoKhanCap === 'Khẩn cấp' ? 'bg-danger' : 'bg-secondary'}">${r.mucDoKhanCap}</span>
+                </div>
+                <div class="col-6">
+                  <strong>Trạng thái:</strong><br/> <span class="badge bg-primary">${r.trangThai}</span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <strong>Ngày báo cáo:</strong> ${dateFormatted}
+              </div>
+              <div class="mb-3">
+                <h6 class="font-bold text-primary">Tình nguyện viên đang phụ trách:</h6>
+                ${volunteersHtml}
+              </div>
+            `;
+
+            let footerHtml = `
+              <button type="button" class="btn btn-secondary border border-dark rounded-xl py-2 px-3" data-bs-dismiss="modal">Đóng</button>
+            `;
+
+            if (r.trangThai === 'Chờ xử lý' || r.trangThai === 'Đã phân công') {
+              footerHtml += `
+                <button type="button" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4" onclick="rescueDetailsModal.hide(); openDispatchModal(${r.maBaoCao});">
+                  ${r.trangThai === 'Đã phân công' ? 'Thay đổi phân công' : 'Phân công cứu hộ'}
+                </button>
+              `;
+            } else if (r.trangThai === 'Đang thực hiện') {
+              footerHtml += `
+                <button type="button" class="btn text-white rounded-xl py-2 px-4" style="background-color: #319795;" onclick="rescueDetailsModal.hide(); updateCaseStatus(${r.maBaoCao}, 'Đã hoàn thành');">
+                  Đánh dấu hoàn thành
+                </button>
+              `;
+            }
+
+            document.getElementById("rescueDetailsFooter").innerHTML = footerHtml;
+            rescueDetailsModal.show();
+
+            const marker = mapMarkers.find(m => m.reportId === r.maBaoCao);
+            if (marker && rescueMap) {
+              rescueMap.setView(marker.getLatLng(), 15);
+              marker.openPopup();
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Lỗi khi tải thông tin chi tiết!", "error");
+        }
+      }
+
+      async function removeAssignment(caseId, volId) {
+        if (!confirm("Bạn có chắc chắn muốn hủy phân công tình nguyện viên này khỏi ca cứu hộ?")) return;
+
+        showToast("💾 Đang hủy phân công...", "info");
+
+        try {
+          const res = await fetch(`/api/Rescue/admin/rescue-reports/${caseId}/assignments/${volId}`, {
+            method: "DELETE"
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("✔️ Hủy phân công thành công!", "success");
+            rescueDetailsModal.hide();
+            loadRescueReports();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      function getInitials(name) {
+        if (!name) return "AN";
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+    </script>
+    }

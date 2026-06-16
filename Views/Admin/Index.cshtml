@@ -1,0 +1,457 @@
+@{
+    ViewData["Title"] = "Tổng quan hệ thống";
+    Layout = "_AdminLayout";
+}
+
+<div class="db-layout">
+      <!-- ═══ Sidebar ═══ -->
+      <aside class="db-sidebar" id="dbSidebar">
+        <a asp-controller="Admin" asp-action="Index" class="db-sidebar-logo">
+          <div class="db-sidebar-logo-icon">🐾</div>
+          <div>
+            <div class="db-sidebar-logo-text">Pawsitive Rescue</div>
+            <span class="db-sidebar-logo-sub">Hệ thống Quản trị</span>
+          </div>
+        </a>
+
+        <nav class="db-sidebar-nav">
+          <a
+            asp-controller="Admin" asp-action="Index"
+            class="db-sidebar-link active"
+            data-view="overview"
+          >
+            <i class="bi bi-grid-1x2-fill"></i> Tổng quan
+          </a>
+          <a asp-controller="Admin" asp-action="ManageAnimals" class="db-sidebar-link" data-view="animals">
+            <i class="bi bi-heart-pulse-fill"></i> Quản lý Động vật
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageAdopters"
+            class="db-sidebar-link"
+            data-view="adopters"
+          >
+            <i class="bi bi-house-heart-fill"></i> Nhận nuôi
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageVolunteers"
+            class="db-sidebar-link"
+            data-view="volunteers"
+          >
+            <i class="bi bi-people-fill"></i> Tình nguyện viên
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageDonations"
+            class="db-sidebar-link"
+            data-view="donations"
+          >
+            <i class="bi bi-gift-fill"></i> Quyên góp
+          </a>
+          <a asp-controller="Admin" asp-action="ManageRescues" class="db-sidebar-link" data-view="rescue">
+            <i class="bi bi-exclamation-triangle-fill"></i> Cứu hộ Khẩn cấp
+          </a>
+        </nav>
+
+        <div class="db-sidebar-bottom">
+          <a href="#" class="db-sidebar-link" onclick="pawsitiveLogout(); return false;">
+            <i class="bi bi-box-arrow-left"></i> Đăng xuất
+          </a>
+        </div>
+      </aside>
+
+      <!-- Mobile Overlay -->
+      <div class="db-overlay" id="dbOverlay"></div>
+
+      <!-- ═══ Main Content ═══ -->
+      <main class="db-main">
+        <!-- Top Bar -->
+        <header class="db-topbar">
+          <button class="db-mobile-toggle" id="dbMobileToggle">
+            <i class="bi bi-list"></i>
+          </button>
+          <nav class="d-none d-md-flex gap-3 me-auto">
+            <a asp-controller="Home" asp-action="Index" class="pawsitive-nav-link">Trang chủ</a>
+            <a asp-controller="Admin" asp-action="Index" class="pawsitive-nav-link active">Tổng quan</a>
+          </nav>
+          <div class="db-topbar-icon" title="Thông báo">
+            <i class="bi bi-bell-fill"></i>
+          </div>
+          <div class="db-topbar-icon" title="Cài đặt">
+            <i class="bi bi-gear-fill"></i>
+          </div>
+          <div class="db-topbar-avatar">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              alt="Admin Avatar"
+            />
+          </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="db-content">
+          <!-- Welcome Header -->
+          <div class="db-welcome db-animate-in">
+            <div>
+              <h1>Xin chào, Admin! 👋</h1>
+              <p>
+                Hôm nay có <strong>12 yêu cầu cứu hộ</strong> mới cần xử lý.
+              </p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="db-btn db-btn-primary animate-hover" onclick="syncBlogsExternal()">
+                <i class="bi bi-arrow-repeat"></i> Đồng bộ bài viết từ mạng
+              </button>
+              <a asp-controller="Account" asp-action="Profile" class="db-btn db-btn-secondary">
+                <i class="bi bi-person-circle"></i> Xem hồ sơ người dùng
+              </a>
+            </div>
+          </div>
+
+          <!-- ── Stat Cards Row ── -->
+          <div class="row g-3 mb-4">
+            <div class="col-xl-3 col-md-6">
+              <div class="db-stat-card db-animate-in">
+                <div class="db-stat-icon primary">
+                  <i class="bi bi-heart-pulse-fill"></i>
+                </div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Tổng động vật cứu hộ</div>
+                  <div class="db-stat-value" id="overview-total-pets">0</div>
+                </div>
+                <span class="db-stat-change positive" id="change-total-pets">+0%</span>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="db-stat-card db-animate-in">
+                <div class="db-stat-icon secondary">
+                  <i class="bi bi-house-heart-fill"></i>
+                </div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Tìm được mái ấm</div>
+                  <div class="db-stat-value" id="overview-total-adoptions">0</div>
+                </div>
+                <span class="db-stat-change positive" id="change-total-adoptions">+0%</span>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="db-stat-card db-animate-in">
+                <div class="db-stat-icon tertiary">
+                  <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Tình nguyện viên</div>
+                  <div class="db-stat-value" id="overview-total-volunteers">0</div>
+                </div>
+                <span class="db-stat-change positive" id="change-total-volunteers">+0</span>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="db-stat-card db-animate-in">
+                <div class="db-stat-icon accent">
+                  <i class="bi bi-cash-coin"></i>
+                </div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Tổng quyên góp</div>
+                  <div class="db-stat-value" id="overview-total-donations">0đ</div>
+                </div>
+                <span class="db-stat-change positive" id="change-total-donations">+0đ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Charts Row ── -->
+          <div class="row g-3 mb-4">
+            <!-- Bar Chart -->
+            <div class="col-lg-8">
+              <div class="db-card db-animate-in">
+                <div class="db-card-header">
+                  <div class="db-card-title">
+                    <i
+                      class="bi bi-bar-chart-fill"
+                      style="color: var(--pawsitive-primary-vibrant)"
+                    ></i>
+                    Số lượng nhận nuôi theo tháng
+                  </div>
+                  <select class="db-year-select" id="barChartYear">
+                    <option value="2026" selected>Năm 2026</option>
+                    <option value="2025">Năm 2025</option>
+                    <option value="2024">Năm 2024</option>
+                  </select>
+                </div>
+                <div class="db-bar-chart" id="barChart">
+                  <div class="db-bar-col">
+                    <div class="db-bar" style="height: 35%"></div>
+                    <span class="db-bar-label">Th1</span>
+                  </div>
+                  <div class="db-bar-col">
+                    <div class="db-bar" style="height: 40%"></div>
+                    <span class="db-bar-label">Th2</span>
+                  </div>
+                  <div class="db-bar-col">
+                    <div class="db-bar" style="height: 72%"></div>
+                    <span class="db-bar-label">Th3</span>
+                  </div>
+                  <div class="db-bar-col">
+                    <div class="db-bar" style="height: 85%"></div>
+                    <span class="db-bar-label">Th4</span>
+                  </div>
+                  <div class="db-bar-col">
+                    <div class="db-bar" style="height: 90%"></div>
+                    <span class="db-bar-label">Th5</span>
+                  </div>
+                  <div class="db-bar-col">
+                    <div class="db-bar" style="height: 100%"></div>
+                    <span class="db-bar-label">Th6</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="col-lg-4">
+              <div class="db-card db-animate-in">
+                <div class="db-card-title">
+                  <i
+                    class="bi bi-pie-chart-fill"
+                    style="color: var(--pawsitive-primary-vibrant)"
+                  ></i>
+                  Tỉ lệ cứu trợ động vật
+                </div>
+                <div class="db-pie-chart" id="rescue-pie-chart"></div>
+                <div class="db-pie-legend" id="rescue-pie-legend">
+                  <div class="db-pie-legend-item">
+                    <div
+                      class="db-pie-legend-dot"
+                      style="background: var(--pawsitive-primary)"
+                    ></div>
+                    Chờ xử lý
+                    <span class="db-pie-legend-value" id="legend-pending">0%</span>
+                  </div>
+                  <div class="db-pie-legend-item">
+                    <div
+                      class="db-pie-legend-dot"
+                      style="background: var(--pawsitive-secondary)"
+                    ></div>
+                    Đang thực hiện
+                    <span class="db-pie-legend-value" id="legend-ongoing">0%</span>
+                  </div>
+                  <div class="db-pie-legend-item">
+                    <div
+                      class="db-pie-legend-dot"
+                      style="background: var(--pawsitive-surface-highest)"
+                    ></div>
+                    Đã hoàn thành
+                    <span class="db-pie-legend-value" id="legend-completed">0%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Recent Adoptions Table ── -->
+          <div class="db-card db-animate-in mb-4">
+            <div class="db-card-header">
+              <div class="db-card-title">
+                <i
+                  class="bi bi-clipboard2-check-fill"
+                  style="color: var(--pawsitive-primary-vibrant)"
+                ></i>
+                Nhận nuôi mới nhất
+              </div>
+              <a asp-controller="Admin" asp-action="ManageAdopters" class="db-link"
+                >Xem tất cả <i class="bi bi-arrow-right"></i
+              ></a>
+            </div>
+            <table class="db-table">
+              <thead>
+                <tr>
+                  <th>Thú cưng</th>
+                  <th>Người nhận nuôi</th>
+                  <th>Ngày</th>
+                  <th>Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody id="recent-adoptions-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Dashboard Footer -->
+        <footer class="db-footer">
+          <span class="db-footer-text"
+            >© 2024 Pawsitive Rescue. Dashboard Quản trị v2.1</span
+          >
+          <div class="db-footer-links">
+            <a href="#">Hỗ trợ kỹ thuật</a>
+            <a href="#">Báo cáo lỗi</a>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="db-toast" id="dbToast"></div>
+
+    @section Scripts {
+    <script>
+        async function syncBlogsExternal() {
+            if (typeof dbToast === "function") {
+                dbToast('🔄 Đang đồng bộ bài viết từ mạng...');
+            }
+            try {
+                const res = await fetch('/api/Blog/admin/sync-news', { method: 'POST' });
+                const json = await res.json();
+                if (json.success) {
+                    if (typeof dbToast === "function") {
+                        dbToast(`✔️ ${json.message}`);
+                    }
+                } else {
+                    alert('Đồng bộ thất bại: ' + json.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối máy chủ.');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Load statistics
+            loadOverview();
+            
+            const currentYear = document.getElementById("barChartYear").value;
+            loadCharts(currentYear);
+            
+            loadRecentAdoptions();
+            
+            // Listen to year dropdown change
+            document.getElementById("barChartYear").addEventListener("change", (e) => {
+                loadCharts(e.target.value);
+            });
+        });
+
+        function loadOverview() {
+            fetch("/api/admin/dashboard/overview")
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        const data = res.data;
+                        document.getElementById("overview-total-pets").textContent = data.tongThuCung.toLocaleString();
+                        document.getElementById("overview-total-adoptions").textContent = data.tongDonNhanNuoi.toLocaleString();
+                        document.getElementById("overview-total-volunteers").textContent = data.tongTinhNguyenVien.toLocaleString();
+                        document.getElementById("overview-total-donations").textContent = data.tongTienQuyenGop.toLocaleString() + "đ";
+
+                        // Dynamic changes badge representation
+                        document.getElementById("change-total-pets").textContent = `+${data.tongBaoCaoCuuHo} báo cáo`;
+                        document.getElementById("change-total-adoptions").textContent = `+${Math.round((data.tongDonNhanNuoi / (data.tongThuCung || 1)) * 100)}% tỉ lệ`;
+                        document.getElementById("change-total-volunteers").textContent = `+${data.soCongViecHoanThanh} việc xong`;
+                        document.getElementById("change-total-donations").textContent = `Y tế: ${data.tongChiPhiYTe.toLocaleString()}đ`;
+                    }
+                })
+                .catch(err => console.error("Error loading overview stats:", err));
+        }
+
+        function loadCharts(year) {
+            // Fetch adoptions by month
+            fetch(`/api/admin/dashboard/adoptions-by-month?year=${year}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        const data = res.data; // Array of 12 months { thang: 1, soLuong: 0 }
+                        const maxVal = Math.max(...data.map(d => d.soLuong), 1);
+                        
+                        const barChartContainer = document.getElementById("barChart");
+                        barChartContainer.innerHTML = "";
+                        
+                        data.forEach(d => {
+                            const heightPercent = (d.soLuong / maxVal) * 100;
+                            const labelText = `Th${d.thang}`;
+                            
+                            barChartContainer.innerHTML += `
+                                <div class="db-bar-col">
+                                    <div class="db-bar" style="height: ${heightPercent}%;" title="${d.soLuong} đơn hoàn tất"></div>
+                                    <span class="db-bar-label">${labelText}</span>
+                                </div>
+                            `;
+                        });
+                    }
+                })
+                .catch(err => console.error("Error loading bar chart:", err));
+
+            // Fetch rescue ratio
+            fetch("/api/admin/dashboard/rescue-ratio")
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        const data = res.data; // { choXuLy: 45, dangThucHien: 30, daHoanThanh: 25 }
+                        const p1 = data.choXuLy;
+                        const p2 = p1 + data.dangThucHien;
+                        
+                        document.getElementById("rescue-pie-chart").style.background = `conic-gradient(
+                            var(--pawsitive-primary) 0% ${p1}%,
+                            var(--pawsitive-secondary) ${p1}% ${p2}%,
+                            var(--pawsitive-surface-highest) ${p2}% 100%
+                        )`;
+
+                        document.getElementById("legend-pending").textContent = `${data.choXuLy}%`;
+                        document.getElementById("legend-ongoing").textContent = `${data.dangThucHien}%`;
+                        document.getElementById("legend-completed").textContent = `${data.daHoanThanh}%`;
+                    }
+                })
+                .catch(err => console.error("Error loading rescue ratio:", err));
+        }
+
+        function loadRecentAdoptions() {
+            fetch("/api/Adoption/admin")
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        const data = res.data.slice(0, 5); // Take top 5
+                        const tbody = document.getElementById("recent-adoptions-tbody");
+                        tbody.innerHTML = "";
+
+                        if (data.length === 0) {
+                            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">Không có đơn nhận nuôi mới nào.</td></tr>`;
+                            return;
+                        }
+
+                        data.forEach(app => {
+                            let badgeClass = "db-badge-warning";
+                            if (app.trangThaiDon === "Đã duyệt" || app.trangThaiDon === "Thành công" || app.trangThaiDon === "Hoàn tất") {
+                                badgeClass = "db-badge-success";
+                            } else if (app.trangThaiDon === "Phỏng vấn") {
+                                badgeClass = "db-badge-info";
+                            } else if (app.trangThaiDon === "Từ chối") {
+                                badgeClass = "db-badge-danger";
+                            }
+
+                            const petName = app.thuCung ? app.thuCung.tenThuCung : "Không xác định";
+                            const petBreed = app.thuCung && app.thuCung.giongThuCung ? app.thuCung.giongThuCung : "Ngoại lai";
+                            const petImg = app.thuCung && app.thuCung.anhChinh ? app.thuCung.anhChinh : "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=80";
+                            const adopterName = app.nguoiDung ? app.nguoiDung.hoTen : "Khách ẩn danh";
+                            const dateStr = new Date(app.ngayTao).toLocaleDateString("vi-VN");
+
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="db-pet-avatar">
+                                                <img src="${petImg}" alt="${petName}" />
+                                            </div>
+                                            <strong>${petName} (${petBreed})</strong>
+                                        </div>
+                                    </td>
+                                    <td>${adopterName}</td>
+                                    <td>${dateStr}</td>
+                                    <td>
+                                        <span class="db-badge ${badgeClass}">${app.trangThaiDon}</span>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                })
+                .catch(err => console.error("Error loading recent adoptions:", err));
+        }
+    </script>
+    }

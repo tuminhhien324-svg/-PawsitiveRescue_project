@@ -1,0 +1,339 @@
+@{
+    ViewData["Title"] = "Blogs";
+    Layout = "_Layout";
+}
+
+<!-- Featured Blog Header -->
+    <header class="container py-5" id="featured-blog-section">
+      <div class="text-center py-4 bg-light border border-2 border-dark rounded-md">
+        <div class="spinner-border text-danger" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Đang tải bài viết nổi bật...</p>
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="container mb-5">
+      <!-- Category Tabs -->
+      <div class="d-flex flex-wrap gap-2 mb-4" id="category-tabs">
+        <button class="btn btn-pawsitive btn-pawsitive-primary rounded-full py-2 px-3 active" data-category="all">Tất cả</button>
+        <button class="btn btn-pawsitive btn-pawsitive-secondary rounded-full py-2 px-3" data-category="Sức khỏe">Chăm sóc sức khỏe</button>
+        <button class="btn btn-pawsitive btn-pawsitive-secondary rounded-full py-2 px-3" data-category="Dinh dưỡng">Dinh dưỡng</button>
+        <button class="btn btn-pawsitive btn-pawsitive-secondary rounded-full py-2 px-3" data-category="Huấn luyện">Huấn luyện</button>
+        <button class="btn btn-pawsitive btn-pawsitive-secondary rounded-full py-2 px-3" data-category="Cứu hộ">Câu chuyện cứu hộ</button>
+      </div>
+
+      <div class="row g-5">
+        <!-- Left Blog Grid (2x2) -->
+        <div class="col-lg-8">
+          <div class="row g-4" id="blog-grid-container">
+            <div class="col-12 text-center py-5">
+              <div class="spinner-border text-danger" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted">Đang tải danh sách bài viết...</p>
+            </div>
+          </div>
+
+          <!-- Pagination (Will show/hide depending on items) -->
+          <div class="d-flex justify-content-center gap-2 mt-5" id="blog-pagination" style="display: none !important;">
+            <button class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-3 py-1" onclick="showToast('🐾 Đang tải trang trước...', 'info')">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-3 py-1">1</button>
+            <button class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-3 py-1" onclick="showToast('🐾 Đang tải trang tiếp theo...', 'info')">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Sidebar Columns -->
+        <div class="col-lg-4">
+          <!-- Widget 1: Newsletter -->
+          <div
+            class="p-4 border border-2 border-dark rounded-md text-white mb-4 shadow-flat"
+            style="background-color: var(--pawsitive-primary-vibrant)"
+          >
+            <h3 class="brand-font h4 mb-2">
+              <i class="bi bi-envelope-heart-fill"></i> Nhận tin mới nhất
+            </h3>
+            <p class="small opacity-90 mb-4">
+              Đừng bỏ lỡ những câu chuyện cứu hộ xúc động và bí kíp chăm sóc thú
+              cưng hữu ích.
+            </p>
+            <form
+              onsubmit="
+                event.preventDefault();
+                showToast(
+                  '🎉 Bạn đã đăng ký bản tin góc chia sẻ thành công!',
+                  'success',
+                );
+              "
+            >
+              <input
+                type="email"
+                class="form-control form-control-pawsitive mb-3 py-2 w-100 border-0"
+                placeholder="Email của bạn..."
+                required
+                style="box-shadow: none"
+              />
+              <button
+                type="submit"
+                class="btn btn-pawsitive btn-pawsitive-secondary rounded-full w-100 justify-content-center py-2"
+                style="
+                  background-color: white !important;
+                  color: var(--pawsitive-primary-vibrant) !important;
+                  border-color: white !important;
+                  box-shadow: none;
+                "
+              >
+                Đăng ký ngay
+              </button>
+            </form>
+          </div>
+
+          <!-- Widget 2: Featured posts -->
+          <div
+            class="p-4 border border-2 border-dark rounded-md bg-white mb-4 shadow-flat"
+            style="background-color: #fffaf0 !important"
+          >
+            <h3
+              class="brand-font h5 mb-4 text-dark pb-2 border-bottom border-secondary border-opacity-20"
+            >
+              <i class="bi bi-star-fill text-warning"></i> Bài viết nổi bật
+            </h3>
+
+            <div class="d-flex flex-column gap-3">
+              <!-- Item 1 -->
+              <div class="d-flex gap-3 align-items-center">
+                <div
+                  class="border border-2 border-dark rounded-md overflow-hidden"
+                  style="width: 52px; height: 52px; flex-shrink: 0"
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&q=80&w=100"
+                    class="w-100 h-100"
+                    style="object-fit: cover"
+                  />
+                </div>
+                <div>
+                  <h4
+                    class="brand-font fs-6 m-0 text-truncate"
+                    style="max-width: 200px"
+                  >
+                    5 món đồ chơi tự làm cho cún cưng
+                  </h4>
+                  <span class="small text-muted">20 lượt xem</span>
+                </div>
+              </div>
+              <!-- Item 2 -->
+              <div class="d-flex gap-3 align-items-center">
+                <div
+                  class="border border-2 border-dark rounded-md overflow-hidden"
+                  style="width: 52px; height: 52px; flex-shrink: 0"
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&q=80&w=100"
+                    class="w-100 h-100"
+                    style="object-fit: cover"
+                  />
+                </div>
+                <div>
+                  <h4
+                    class="brand-font fs-6 m-0 text-truncate"
+                    style="max-width: 200px"
+                  >
+                    Cách nhận diện mèo đang bị stress
+                  </h4>
+                  <span class="small text-muted">45 lượt xem</span>
+                </div>
+              </div>
+              <!-- Item 3 -->
+              <div class="d-flex gap-3 align-items-center">
+                <div
+                  class="border border-2 border-dark rounded-md overflow-hidden"
+                  style="width: 52px; height: 52px; flex-shrink: 0"
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&q=80&w=100"
+                    class="w-100 h-100"
+                    style="object-fit: cover"
+                  />
+                </div>
+                <div>
+                  <h4
+                    class="brand-font fs-6 m-0 text-truncate"
+                    style="max-width: 200px"
+                  >
+                    Tại sao nên triệt sản cho thú cưng?
+                  </h4>
+                  <span class="small text-muted">32 lượt xem</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Widget 3: Invite shelter link -->
+          <div
+            class="p-4 border border-2 border-dark rounded-md text-white mb-4 shadow-flat"
+            style="background-color: var(--pawsitive-secondary)"
+          >
+            <h3 class="brand-font h5 mb-2">Cần tìm bạn mới?</h3>
+            <p class="small opacity-90 mb-4">
+              Hàng trăm bé đang chờ đợi một gia đình yêu thương tại các cơ sở
+              cứu hộ.
+            </p>
+            <a
+              class="btn btn-pawsitive btn-pawsitive-secondary rounded-full w-100 justify-content-center py-2 text-dark font-bold"
+              asp-controller="Home" asp-action="Adopt"
+              style="background-color: var(--pawsitive-surface) !important"
+            >
+              Ghé thăm trạm cứu hộ 🐾
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    
+
+    <!-- Bootstrap 5 JS Bundle -->
+
+@section Scripts {
+<script>
+  let allBlogs = [];
+  let currentCategory = "all";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadBlogs();
+    setupCategoryTabs();
+  });
+
+  async function loadBlogs() {
+    try {
+      const res = await fetch("/api/Blog");
+      const json = await res.json();
+      if (json.success && json.data) {
+        allBlogs = json.data;
+        if (allBlogs.length > 0) {
+          renderFeatured(allBlogs[0]);
+        } else {
+          document.getElementById("featured-blog-section").style.display = "none";
+        }
+        renderGrid(allBlogs);
+      } else {
+        showToast("❌ Không thể tải danh sách bài viết", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("❌ Lỗi kết nối đến máy chủ", "error");
+    }
+  }
+
+  function renderFeatured(blog) {
+    const featuredSec = document.getElementById("featured-blog-section");
+    if (!blog) {
+      featuredSec.style.display = "none";
+      return;
+    }
+    featuredSec.style.display = "block";
+    const coverImg = blog.duongDanAnhDaiDien || "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=800";
+    
+    featuredSec.innerHTML = `
+      <div class="p-4 md-p-5 border border-2 border-dark rounded-md shadow-flat" style="background-color: var(--pawsitive-secondary-container)">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-6">
+            <span class="badge badge-pawsitive badge-pawsitive-tertiary mb-3">Nổi bật</span>
+            <h1 class="brand-font display-6 mb-3">${blog.tieuDe}</h1>
+            <p class="text-muted mb-4 small">${blog.noiDung.substring(0, 150)}...</p>
+            <a class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-4 text-decoration-none" href="/Home/BlogDetail?id=${blog.maBaiViet}">Đọc thêm</a>
+          </div>
+          <div class="col-lg-6">
+            <div class="pet-frame border border-2 border-dark ratio ratio-16x9 shadow-flat">
+              <img src="${coverImg}" alt="${blog.tieuDe}" />
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function getCategory(blog) {
+    if (blog.laCauChuyenThanhCong) return "Cứu hộ";
+    const txt = (blog.tieuDe + " " + blog.noiDung).toLowerCase();
+    if (txt.includes("dinh dưỡng") || txt.includes("ăn") || txt.includes("thực phẩm") || txt.includes("pate") || txt.includes("hạt")) return "Dinh dưỡng";
+    if (txt.includes("huấn luyện") || txt.includes("làm quen") || txt.includes("dạy") || txt.includes("lệnh")) return "Huấn luyện";
+    if (txt.includes("sức khỏe") || txt.includes("tiêm phòng") || txt.includes("vắc-xin") || txt.includes("bệnh") || txt.includes("triệt sản") || txt.includes("stress")) return "Sức khỏe";
+    return "Khác";
+  }
+
+  function renderGrid(blogs) {
+    const container = document.getElementById("blog-grid-container");
+    container.innerHTML = "";
+
+    let filtered = blogs;
+    if (currentCategory !== "all") {
+      filtered = blogs.filter(b => getCategory(b) === currentCategory);
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="col-12 text-center py-5">
+          <span class="fs-1">📝</span>
+          <h3 class="brand-font mt-3">Không có bài viết nào</h3>
+          <p class="text-muted">Danh mục này hiện chưa có nội dung bài viết.</p>
+        </div>
+      `;
+      return;
+    }
+
+    filtered.forEach(blog => {
+      const coverImg = blog.duongDanAnhDaiDien || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=400";
+      const catName = getCategory(blog);
+      const authorName = blog.tacGia ? blog.tacGia.hoTen : "Admin";
+      const dateStr = new Date(blog.ngayTao).toLocaleDateString("vi-VN");
+      
+      container.innerHTML += `
+        <div class="col-md-6">
+          <div class="card-pawsitive p-3 h-100 d-flex flex-column justify-content-between">
+            <div class="pet-frame ratio ratio-16x9 mb-3">
+              <img src="${coverImg}" alt="${blog.tieuDe}" />
+            </div>
+            <div>
+              <span class="badge badge-pawsitive badge-pawsitive-secondary mb-2">${catName}</span>
+              <h3 class="brand-font fs-6 mb-2 text-danger">
+                <a href="/Home/BlogDetail?id=${blog.maBaiViet}" class="text-danger text-decoration-none hover-underline">${blog.tieuDe}</a>
+              </h3>
+              <p class="small text-muted mb-3">${blog.noiDung.substring(0, 80)}...</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-2 border-top border-secondary border-opacity-10 pt-2">
+              <span class="small text-muted">${authorName} • ${dateStr}</span>
+              <a href="/Home/BlogDetail?id=${blog.maBaiViet}" class="text-danger"><i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function setupCategoryTabs() {
+    const tabs = document.querySelectorAll("#category-tabs button");
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => {
+          t.classList.remove("btn-pawsitive-primary");
+          t.classList.add("btn-pawsitive-secondary");
+          t.classList.remove("active");
+        });
+        tab.classList.add("btn-pawsitive-primary");
+        tab.classList.remove("btn-pawsitive-secondary");
+        tab.classList.add("active");
+        
+        currentCategory = tab.dataset.category;
+        renderGrid(allBlogs);
+      });
+    });
+  }
+</script>
+}

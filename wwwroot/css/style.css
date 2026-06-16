@@ -1,0 +1,1021 @@
+/* ==========================================================================
+   Pawsitive Rescue Brand Design System (style.css)
+   Extending Bootstrap with "Compassionate Playfulness"
+   ========================================================================== */
+
+/* 1. Imports & Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Comfortaa:wght@400;600;700&display=swap");
+
+:root {
+  /* Color Palette - YAML Defined */
+  --pawsitive-surface: #fcf9ee;
+  --pawsitive-surface-dim: #dcdad0;
+  --pawsitive-surface-bright: #fcf9ee;
+  --pawsitive-surface-lowest: #ffffff;
+  --pawsitive-surface-low: #f6f4e9;
+  --pawsitive-surface-container: #f1eee3;
+  --pawsitive-surface-high: #ebe8de;
+  --pawsitive-surface-highest: #e5e3d8;
+  --pawsitive-on-surface: #1c1c16;
+  --pawsitive-on-surface-variant: #5c4039;
+  --pawsitive-inverse-surface: #31312a;
+  --pawsitive-inverse-on-surface: #f3f1e6;
+  --pawsitive-outline: #907067;
+  --pawsitive-outline-variant: #e5beb4;
+  --pawsitive-surface-tint: #b22d00;
+
+  /* Primary (Playful Orange) */
+  --pawsitive-primary: #ad2b00;
+  --pawsitive-primary-vibrant: #eb4511;
+  --pawsitive-on-primary: #ffffff;
+  --pawsitive-primary-container: #d93800;
+  --pawsitive-on-primary-container: #fffbff;
+  --pawsitive-inverse-primary: #ffb5a1;
+
+  /* Secondary (Trusting Blue) */
+  --pawsitive-secondary: #406376;
+  --pawsitive-on-secondary: #ffffff;
+  --pawsitive-secondary-container: #c1e5fc;
+  --pawsitive-on-secondary-container: #44677b;
+  --pawsitive-secondary-light: #e0f2fe;
+
+  /* Tertiary (Emergency Dark Red SOS) */
+  --pawsitive-tertiary: #ad2c09;
+  --pawsitive-on-tertiary: #ffffff;
+  --pawsitive-tertiary-container: #cf4422;
+  --pawsitive-on-tertiary-container: #fffbff;
+  --pawsitive-tertiary-vibrant: #b02e0c;
+
+  /* Neutrals & Error */
+  --pawsitive-error: #ba1a1a;
+  --pawsitive-on-error: #ffffff;
+  --pawsitive-error-container: #ffdad6;
+  --pawsitive-on-error-container: #93000a;
+  --pawsitive-background: #fcf9ee;
+  --pawsitive-on-background: #1c1c16;
+  --pawsitive-surface-variant: #e5e3d8;
+
+  /* Fixed colors */
+  --pawsitive-primary-fixed: #ffdbd1;
+  --pawsitive-primary-fixed-dim: #ffb5a1;
+  --pawsitive-on-primary-fixed: #3b0900;
+  --pawsitive-secondary-fixed: #c4e7ff;
+  --pawsitive-secondary-fixed-dim: #a8cbe2;
+  --pawsitive-on-secondary-fixed: #001e2c;
+
+  /* Typography */
+  --font-headlines: "Bricolage Grotesque", cursive, sans-serif;
+  --font-body: "Comfortaa", cursive, sans-serif;
+
+  /* Shadows (Ambient Bubble Shadows) */
+  --pawsitive-shadow-color: rgba(64, 99, 118, 0.15);
+  --pawsitive-shadow-bubble: 0 8px 24px var(--pawsitive-shadow-color);
+  --pawsitive-shadow-bubble-lift: 0 16px 36px rgba(64, 99, 118, 0.22);
+  --pawsitive-shadow-flat: 4px 4px 0px 0px var(--pawsitive-on-surface);
+}
+
+/* 2. Global Styles */
+body {
+  font-family: var(--font-body);
+  background-color: var(--pawsitive-surface);
+  color: var(--pawsitive-on-surface);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.brand-font {
+  font-family: var(--font-headlines);
+  font-weight: 700;
+  color: var(--pawsitive-on-surface);
+  line-height: 1.2;
+}
+
+p,
+span,
+a,
+li,
+input,
+select,
+textarea,
+button {
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+/* Rounded Utilities */
+.rounded-sm {
+  border-radius: 0.5rem !important;
+}
+.rounded-default {
+  border-radius: 1rem !important;
+}
+.rounded-md {
+  border-radius: 1.5rem !important;
+}
+.rounded-lg {
+  border-radius: 2rem !important;
+}
+.rounded-xl {
+  border-radius: 3rem !important;
+}
+.rounded-full {
+  border-radius: 9999px !important;
+}
+
+/* Custom Highlighting Styles */
+.highlight-primary {
+  color: var(--pawsitive-primary-vibrant);
+  position: relative;
+  display: inline-block;
+}
+.highlight-primary::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M0,5 Q20,10 40,5 T80,5 T100,5' fill='none' stroke='%23eb4511' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  z-index: -1;
+}
+
+.highlight-secondary {
+  color: var(--pawsitive-secondary);
+  font-style: italic;
+}
+
+/* 3. Global Components */
+
+/* Custom Buttons (Cartoon-Tactile / Bouncy / "Squishy") */
+.btn-pawsitive {
+  border: 2px solid var(--pawsitive-on-surface);
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 0px var(--pawsitive-on-surface);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-pawsitive-primary {
+  background-color: var(--pawsitive-primary-vibrant);
+  color: #ffffff !important;
+}
+
+.btn-pawsitive-primary:hover {
+  background-color: #ff5722;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0px var(--pawsitive-on-surface);
+}
+
+.btn-pawsitive-primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0px var(--pawsitive-on-surface);
+}
+
+.btn-pawsitive-secondary {
+  background-color: var(--pawsitive-surface-container);
+  color: var(--pawsitive-on-surface) !important;
+}
+
+.btn-pawsitive-secondary:hover {
+  background-color: var(--pawsitive-surface-highest);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0px var(--pawsitive-on-surface);
+}
+
+.btn-pawsitive-secondary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0px var(--pawsitive-on-surface);
+}
+
+/* SOS Emergency Button (Pulsing Red) */
+.btn-pawsitive-sos {
+  background-color: var(--pawsitive-tertiary-vibrant);
+  color: #ffffff !important;
+  animation: sosPulse 2s infinite ease-in-out;
+}
+
+.btn-pawsitive-sos:hover {
+  background-color: #d83d1c;
+  transform: scale(1.05);
+}
+
+@keyframes sosPulse {
+  0% {
+    box-shadow:
+      0 4px 0px var(--pawsitive-on-surface),
+      0 0 0 0px rgba(176, 46, 12, 0.4);
+  }
+  70% {
+    box-shadow:
+      0 4px 0px var(--pawsitive-on-surface),
+      0 0 0 12px rgba(176, 46, 12, 0);
+  }
+  100% {
+    box-shadow:
+      0 4px 0px var(--pawsitive-on-surface),
+      0 0 0 0px rgba(176, 46, 12, 0);
+  }
+}
+
+/* Navbar */
+.pawsitive-navbar {
+  background-color: var(--pawsitive-surface);
+  border-bottom: 2px solid var(--pawsitive-surface-highest);
+  padding: 0.8rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.pawsitive-navbar.scrolled {
+  box-shadow: var(--pawsitive-shadow-bubble);
+  border-bottom: 2px solid var(--pawsitive-outline-variant);
+}
+
+.pawsitive-logo {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-headlines);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--pawsitive-primary-vibrant);
+  text-decoration: none;
+  gap: 8px;
+}
+
+.pawsitive-navbar .navbar-nav {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.pawsitive-nav-link {
+  color: var(--pawsitive-on-surface);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  position: relative;
+  white-space: nowrap;
+}
+
+.pawsitive-nav-link:hover,
+.pawsitive-nav-link.active {
+  color: var(--pawsitive-primary-vibrant);
+}
+
+.pawsitive-nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+  height: 4px;
+  background-color: var(--pawsitive-primary-vibrant);
+  border-radius: 2px;
+}
+
+/* Cards (Illustrated Cartoon Border & Soft Shadows) */
+.card-pawsitive {
+  background-color: var(--pawsitive-surface-lowest);
+  border: 2px solid var(--pawsitive-surface-highest);
+  border-radius: 1.5rem;
+  box-shadow: var(--pawsitive-shadow-bubble);
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-pawsitive:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--pawsitive-shadow-bubble-lift);
+  border-color: var(--pawsitive-outline-variant);
+}
+
+/* Pet Portrait Frame (With organic colors/borders) */
+.pet-frame {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid var(--pawsitive-surface-highest);
+  display: block;
+}
+
+.pet-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card-pawsitive:hover .pet-frame img {
+  transform: scale(1.06);
+}
+
+/* Custom Paw print badges/bullets */
+.badge-pawsitive {
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge-pawsitive-primary {
+  background-color: var(--pawsitive-primary-fixed);
+  color: var(--pawsitive-on-primary-fixed);
+}
+
+.badge-pawsitive-secondary {
+  background-color: var(--pawsitive-secondary-fixed);
+  color: var(--pawsitive-on-secondary-fixed);
+}
+
+.badge-pawsitive-tertiary {
+  background-color: var(--pawsitive-tertiary-fixed);
+  color: var(--pawsitive-on-tertiary-fixed);
+}
+
+/* Custom lists with paw icons */
+ul.paws-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.paws-list li {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 0.8rem;
+}
+
+ul.paws-list li::before {
+  content: "🐾";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  color: var(--pawsitive-primary-vibrant);
+  font-size: 1.1rem;
+}
+
+/* Inputs & Forms */
+.form-control-pawsitive {
+  background-color: #fefdff;
+  border: 2px solid var(--pawsitive-surface-highest);
+  border-radius: 1rem;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.95rem;
+  color: var(--pawsitive-on-surface);
+  transition: all 0.2s ease;
+}
+
+.form-control-pawsitive:focus {
+  border-color: var(--pawsitive-primary-vibrant);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(235, 69, 17, 0.15);
+}
+
+.form-group-pawsitive label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: var(--pawsitive-on-surface);
+}
+
+/* Custom Progress Bars (with paw print track!) */
+.progress-pawsitive {
+  height: 16px;
+  background-color: var(--pawsitive-surface-container);
+  border-radius: 9999px;
+  border: 2px solid var(--pawsitive-surface-highest);
+  overflow: visible;
+  position: relative;
+  margin-top: 10px;
+}
+
+.progress-bar-pawsitive {
+  background-color: var(--pawsitive-primary-vibrant);
+  border-radius: 9999px;
+  height: 100%;
+  position: relative;
+  transition: width 1s ease-in-out;
+}
+
+.progress-bar-paw-icon {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  width: 28px;
+  height: 28px;
+  background: white;
+  border: 2px solid var(--pawsitive-primary-vibrant);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--pawsitive-shadow-bubble);
+  font-size: 0.8rem;
+  z-index: 2;
+}
+
+/* Timeline Components */
+.timeline-track {
+  height: 8px;
+  background-color: var(--pawsitive-surface-container);
+  border-radius: 9999px;
+  position: relative;
+  margin: 40px 0;
+}
+
+.timeline-progress {
+  height: 100%;
+  background-color: var(--pawsitive-primary-vibrant);
+  border-radius: 9999px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.timeline-node {
+  position: absolute;
+  top: -12px;
+  transform: translateX(-50%);
+  text-align: center;
+  cursor: pointer;
+}
+
+.timeline-node-dot {
+  width: 32px;
+  height: 32px;
+  background-color: white;
+  border: 3px solid var(--pawsitive-surface-highest);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.timeline-node.active .timeline-node-dot {
+  border-color: var(--pawsitive-primary-vibrant);
+  background-color: var(--pawsitive-primary-vibrant);
+  color: white;
+  transform: scale(1.15);
+}
+
+.timeline-node-label {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.timeline-node-sub {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: #7c7c72;
+}
+
+/* SOS Banner Details */
+.sos-banner {
+  background-color: var(--pawsitive-primary-vibrant);
+  border-radius: 2rem;
+  border: 2px solid var(--pawsitive-on-surface);
+  box-shadow: var(--pawsitive-shadow-flat);
+  color: white;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.sos-banner-btn {
+  background-color: white;
+  color: var(--pawsitive-primary-vibrant) !important;
+  font-size: 1.4rem;
+  font-weight: 800;
+  border: 2px solid var(--pawsitive-on-surface);
+  border-radius: 9999px;
+  box-shadow: 0 4px 0 var(--pawsitive-on-surface);
+  padding: 1rem 2rem;
+}
+
+/* 4. Wizard Styles (Sliding forms) */
+.wizard-container {
+  overflow: hidden;
+  position: relative;
+  min-height: 450px;
+}
+
+.wizard-step {
+  transition:
+    transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.4s ease;
+  width: 100%;
+}
+
+.wizard-step.d-none {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(100%);
+}
+
+.wizard-step.active {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.wizard-step.exiting {
+  position: absolute;
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 5. Custom Card grids and shapes */
+.decor-blob {
+  position: absolute;
+  z-index: -1;
+  opacity: 0.15;
+}
+
+/* Toast Messages */
+.pawsitive-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background-color: var(--pawsitive-on-surface);
+  color: white;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--pawsitive-shadow-bubble);
+  border: 2px solid white;
+  transform: translateY(150px);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pawsitive-toast.show {
+  transform: translateY(0);
+}
+
+/* Animal image mask variations */
+.mask-organic {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M80,30 Q90,50 80,70 T50,90 T20,70 T10,50 T30,20 Q50,10 80,30 Z' fill='black'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M80,30 Q90,50 80,70 T50,90 T20,70 T10,50 T30,20 Q50,10 80,30 Z' fill='black'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+  .rounded-xl {
+    border-radius: 1.5rem !important;
+  }
+  .sos-banner {
+    padding: 1.5rem;
+  }
+}
+
+/* Volunteer Page */
+/* Custom FAQ accordion style */
+.faq-card-pawsitive {
+  background-color: white;
+  border: 2px solid var(--pawsitive-outline-variant);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--pawsitive-shadow-bubble);
+  margin-bottom: 1rem;
+}
+.faq-card-pawsitive:hover {
+  border-color: var(--pawsitive-primary-vibrant);
+  transform: translateY(-2px);
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+.faq-card-pawsitive.open .faq-answer {
+  max-height: 150px;
+  margin-top: 1rem;
+}
+.faq-card-pawsitive.open .faq-icon {
+  transform: rotate(180deg);
+}
+.faq-icon {
+  transition: transform 0.3s ease;
+}
+
+/* Process nodes connectors */
+.process-line {
+  height: 3px;
+  background-color: var(--pawsitive-outline-variant);
+  position: absolute;
+  top: 24px;
+  left: 10%;
+  right: 10%;
+  z-index: 1;
+}
+.process-circle {
+  width: 48px;
+  height: 48px;
+  background-color: #8a1c00;
+  color: white;
+  border: 3px solid var(--pawsitive-on-surface);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-family: var(--font-headlines);
+  z-index: 5;
+  position: relative;
+}
+
+.volunteer-img {
+  border-radius: 20px;
+}
+
+/* ==========================================================================
+   Authentication & Registration Wizard Styles
+   ========================================================================== */
+.auth-fullscreen {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--pawsitive-surface);
+}
+
+.auth-brand-side {
+  width: 45%;
+  background-color: var(--pawsitive-surface-low);
+  border-right: 3px solid var(--pawsitive-on-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.auth-form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background-color: var(--pawsitive-surface-lowest);
+}
+
+@media (max-width: 992px) {
+  .auth-fullscreen {
+    flex-direction: column;
+  }
+  .auth-brand-side {
+    width: 100%;
+    border-right: none;
+    border-bottom: 3px solid var(--pawsitive-on-surface);
+    padding: 2rem;
+  }
+  .auth-form-side {
+    padding: 2rem;
+  }
+}
+
+/* Preference Cards (Animal Type Selection in Step 3) */
+.pref-card {
+  background-color: #ffffff;
+  border: 2px solid var(--pawsitive-on-surface);
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 4px 4px 0px 0px var(--pawsitive-on-surface);
+  user-select: none;
+}
+
+.pref-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--pawsitive-on-surface);
+}
+
+.pref-card.active-pref {
+  background-color: var(--pawsitive-primary-fixed); /* Light orange secondary container */
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--pawsitive-on-surface);
+  border-color: var(--pawsitive-on-surface);
+}
+
+/* Common Neobrutalist Utilities */
+.shadow-flat {
+  box-shadow: 4px 4px 0px 0px var(--pawsitive-on-surface) !important;
+}
+
+.rounded-md {
+  border-radius: 1rem !important;
+}
+
+.rounded-full {
+  border-radius: 9999px !important;
+}
+
+.btn-pawsitive {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid var(--pawsitive-on-surface) !important;
+  font-family: var(--font-headlines);
+  font-weight: 700;
+  box-shadow: 3px 3px 0px 0px var(--pawsitive-on-surface);
+  transition: all 0.15s ease;
+}
+
+.btn-pawsitive:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px var(--pawsitive-on-surface);
+}
+
+.btn-pawsitive:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px 0px var(--pawsitive-on-surface);
+}
+
+.btn-pawsitive-primary {
+  background-color: var(--pawsitive-primary-vibrant) !important;
+  color: white !important;
+}
+
+.btn-pawsitive-secondary {
+  background-color: var(--pawsitive-surface-lowest) !important;
+  color: var(--pawsitive-on-surface) !important;
+}
+
+/* Progress Bar Pawsitive */
+.progress-pawsitive {
+  background-color: var(--pawsitive-surface-highest);
+  border: 2px solid var(--pawsitive-on-surface);
+  border-radius: 9999px;
+  overflow: visible;
+  position: relative;
+}
+
+.progress-bar-pawsitive {
+  background-color: var(--pawsitive-primary-vibrant);
+  border-radius: 9999px;
+  height: 100%;
+  position: relative;
+  transition: width 0.3s ease;
+}
+
+.progress-bar-paw-icon {
+  position: absolute;
+  background-color: white;
+  border: 2px solid var(--pawsitive-on-surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 0px var(--pawsitive-on-surface);
+}
+
+/* Option Card Pawsitive (Adoption flow history and housing selection cards) */
+.option-card-pawsitive {
+  background-color: #ffffff;
+  border: 2px solid var(--pawsitive-on-surface);
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 4px 4px 0px 0px var(--pawsitive-on-surface);
+  user-select: none;
+  height: 100%;
+}
+
+.option-card-pawsitive:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--pawsitive-on-surface);
+}
+
+.option-card-pawsitive.active-card {
+  background-color: var(--pawsitive-secondary-light); /* Light blue background for selected card */
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--pawsitive-on-surface);
+  border-color: var(--pawsitive-on-surface);
+}
+
+/* Species Card & Severity Card for SOS Page */
+.species-card {
+  background-color: #ffffff;
+  border: 2px solid var(--pawsitive-on-surface);
+  border-radius: 16px;
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 4px 4px 0px 0px var(--pawsitive-on-surface);
+  user-select: none;
+}
+
+.species-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--pawsitive-on-surface);
+}
+
+.species-card.active {
+  background-color: var(--pawsitive-primary-fixed) !important;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--pawsitive-on-surface);
+  border-color: var(--pawsitive-on-surface);
+}
+
+.species-card.active i {
+  color: var(--pawsitive-primary-vibrant) !important;
+}
+
+.severity-card {
+  background-color: #ffffff;
+  border: 2px solid var(--pawsitive-on-surface);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 4px 4px 0px 0px var(--pawsitive-on-surface);
+  user-select: none;
+}
+
+.severity-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--pawsitive-on-surface);
+}
+
+.severity-card.active {
+  background-color: var(--pawsitive-secondary-light) !important;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--pawsitive-on-surface);
+  border-color: var(--pawsitive-on-surface);
+}
+
+.upload-zone {
+  border: 3px dashed var(--pawsitive-on-surface);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  background-color: var(--pawsitive-surface-lowest);
+  transition: all 0.2s ease;
+}
+
+.upload-zone:hover {
+  background-color: var(--pawsitive-surface-container);
+  border-color: var(--pawsitive-primary-vibrant);
+}
+
+/* SOS Status Tracker Progress step circle */
+.progress-step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--pawsitive-on-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-family: var(--font-headlines);
+  background: #fff;
+  color: #000;
+  box-shadow: 2px 2px 0px var(--pawsitive-on-surface);
+  transition: all 0.2s ease;
+}
+
+.progress-step-circle.active {
+  background: var(--pawsitive-primary-vibrant) !important;
+  color: #fff !important;
+}
+
+.progress-step-circle.completed {
+  background: var(--pawsitive-secondary) !important;
+  color: #fff !important;
+}
+
+/* ==========================================================================
+   User Profile Dashboard & Activity Timeline Styles
+   ========================================================================== */
+
+.profile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  color: var(--pawsitive-on-surface);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.15s ease;
+  border: 2px solid transparent;
+}
+
+.profile-menu-item:hover {
+  background-color: var(--pawsitive-surface-container);
+  color: var(--pawsitive-primary-vibrant);
+}
+
+.profile-menu-item.active {
+  background-color: var(--pawsitive-secondary-light); /* Soft blue container */
+  color: var(--pawsitive-secondary) !important;
+  border-color: var(--pawsitive-on-surface);
+  box-shadow: 2px 2px 0px var(--pawsitive-on-surface);
+}
+
+.profile-stat-box {
+  background-color: var(--pawsitive-surface-lowest);
+  border: 2px solid var(--pawsitive-on-surface);
+  box-shadow: 2px 2px 0px var(--pawsitive-on-surface);
+  min-width: 110px;
+  text-align: center;
+  transition: transform 0.15s ease;
+}
+
+.profile-stat-box:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--pawsitive-on-surface);
+}
+
+/* Timeline Activity Pipe */
+.activity-pipe {
+  position: relative;
+  padding-left: 45px;
+  margin-bottom: 24px;
+}
+
+.activity-pipe::before {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 30px;
+  bottom: -30px;
+  width: 3px;
+  background-color: var(--pawsitive-on-surface);
+  z-index: 1;
+}
+
+.activity-pipe:last-child::before {
+  display: none;
+}
+
+.activity-pipe-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--pawsitive-on-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 2;
+  box-shadow: 2px 2px 0px var(--pawsitive-on-surface);
+}
+
+.activity-pipe-icon.bg-danger {
+  background-color: var(--pawsitive-primary-vibrant) !important;
+}
+
+.activity-pipe-icon.bg-secondary {
+  background-color: var(--pawsitive-secondary) !important;
+}
+
+.activity-pipe-icon.bg-info {
+  background-color: var(--pawsitive-secondary-container) !important;
+  color: var(--pawsitive-on-surface) !important;
+}

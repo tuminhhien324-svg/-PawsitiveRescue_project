@@ -1,0 +1,773 @@
+3@{
+    ViewData["Title"] = "Thông tin cá nhân";
+    Layout = "_Layout";
+}
+
+<!-- Profile Center -->
+<main class="container py-5">
+  <div class="row g-4">
+    <!-- Left Sidebar Profile Menus -->
+    <div class="col-lg-3 col-md-4">
+      <div class="card-pawsitive p-3 bg-white" style="border: 3px solid #000; box-shadow: 5px 5px 0px #000; border-radius: 12px;">
+        <h3 class="brand-font fs-6 mb-3 px-2 text-muted uppercase" style="font-weight: 800; letter-spacing: 0.05em;">
+          Menu Cá Nhân
+        </h3>
+        <div class="d-flex flex-column gap-1">
+          <a href="javascript:void(0)" onclick="scrollToSection('section-adoptions', 'adoptions')" class="profile-menu-item active" id="tab-adoptions">
+            <i class="bi bi-file-earmark-text-fill"></i> Đơn nhận nuôi
+          </a>
+          <a href="javascript:void(0)" onclick="scrollToSection('section-favorites', 'favorites')" class="profile-menu-item" id="tab-favorites">
+            <i class="bi bi-heart-fill"></i> Thú cưng yêu thích
+          </a>
+          <a href="javascript:void(0)" onclick="scrollToSection('section-donations', 'donations')" class="profile-menu-item" id="tab-donations">
+            <i class="bi bi-calendar-check-fill"></i> Hoạt động gần đây
+          </a>
+          <a href="javascript:void(0)" onclick="scrollToSection('section-volunteer-tasks', 'volunteer-tasks')" class="profile-menu-item" id="tab-volunteer-tasks" style="display: none;">
+            <div class="d-flex align-items-center justify-content-between w-100">
+              <div>
+                <i class="bi bi-clipboard-check-fill me-2"></i>Nhiệm vụ tình nguyện
+              </div>
+              <span id="volunteer-badge" class="badge bg-danger rounded-pill text-white ms-2" style="display: none; font-size: 0.75rem; padding: 4px 8px; border: 1.5px solid #000; box-shadow: 2px 2px 0px #000;">0</span>
+            </div>
+          </a>
+          <a href="javascript:void(0)" onclick="openSettingsModal()" class="profile-menu-item" id="tab-settings">
+            <i class="bi bi-gear-fill"></i> Cài đặt tài khoản
+          </a>
+          <hr class="my-2 border-secondary border-opacity-20" />
+          <a href="javascript:void(0)" onclick="pawsitiveLogout()" class="profile-menu-item text-danger">
+            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Dashboard Area -->
+    <div class="col-lg-9 col-md-8">
+      <!-- Header Info segment -->
+      <div class="card-pawsitive p-4 bg-white mb-4" style="border: 3px solid #000; box-shadow: 5px 5px 0px #000; border-radius: 12px;">
+        <div class="row align-items-center g-4">
+          <!-- Left Portrait and Bio -->
+          <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-3">
+              <div
+                class="position-relative overflow-hidden border border-2 border-dark rounded-full shadow-flat"
+                style="width: 86px; height: 86px; flex-shrink: 0"
+              >
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  class="w-100 h-100"
+                  style="object-fit: cover"
+                />
+                <button
+                  class="position-absolute bottom-0 end-0 bg-white border border-1 border-dark rounded-full d-flex align-items-center justify-content-center"
+                  style="width: 24px; height: 24px"
+                  onclick="openSettingsModal()"
+                >
+                  <i class="bi bi-pencil-fill" style="font-size: 0.7rem"></i>
+                </button>
+              </div>
+              <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <h2 class="brand-font h4 m-0 text-dark" id="profile-display-name">Loading...</h2>
+                  <span
+                    class="badge badge-pawsitive badge-pawsitive-primary py-1 px-2 text-xs"
+                    id="profile-display-rank"
+                    >Loading...</span
+                  >
+                </div>
+                <p class="small text-muted m-0 italic">
+                  "Yêu thương động vật, chung tay xây dựng mái ấm cho các bé rescue."
+                </p>
+              </div>
+            </div>
+
+            <!-- Mini Stats Row -->
+            <div class="d-flex gap-2 mt-3">
+              <div class="profile-stat-box p-2 border border-2 border-dark rounded-md bg-light" style="font-size: 0.85rem;">
+                <span class="small text-muted d-block text-xs">Tham gia từ</span>
+                <span class="font-bold small text-dark" id="profile-join-date">Loading...</span>
+              </div>
+              <div class="profile-stat-box p-2 border border-2 border-dark rounded-md bg-light" style="font-size: 0.85rem;">
+                <span class="small text-muted d-block text-xs">Loại tài khoản</span>
+                <span class="font-bold small text-dark" id="profile-role">Người dùng</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right points and rank -->
+          <div class="col-lg-4">
+            <div
+              class="p-3 border border-2 border-dark rounded-md text-white text-center shadow-flat"
+              style="background-color: var(--pawsitive-secondary, #2a9d8f); box-shadow: 4px 4px 0px #000;"
+            >
+              <i class="bi bi-award-fill fs-2 text-warning d-block mb-1"></i>
+              <span class="small opacity-80 d-block font-bold">Điểm Tích Lũy</span>
+              <h3 class="brand-font display-6 m-0 text-white" style="font-size: 2rem" id="profile-points">
+                0
+              </h3>
+              <span class="small opacity-80 font-bold d-block mt-1">Đóng góp cho trạm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Adoption application status list -->
+      <div class="card-pawsitive p-4 bg-white mb-4 profile-section" id="section-adoptions" style="border: 3px solid #000; box-shadow: 5px 5px 0px #000; border-radius: 12px;">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary border-opacity-20">
+          <h3 class="brand-font h5 m-0 text-danger" style="font-weight: 800;">
+            🐾 Hồ sơ nhận nuôi của tôi
+          </h3>
+        </div>
+        <div class="d-flex flex-column gap-3" id="adoptions-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Liked pets -->
+      <div class="card-pawsitive p-4 bg-white mb-4 profile-section" id="section-favorites" style="border: 3px solid #000; box-shadow: 5px 5px 0px #000; border-radius: 12px;">
+        <h3 class="brand-font h5 text-dark mb-3" style="font-weight: 800;">
+          ❤️ Thú cưng yêu thích
+        </h3>
+        <div class="row g-3" id="favorites-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Volunteer Tasks list (Visible only to active volunteers) -->
+      <div class="card-pawsitive p-4 bg-white mb-4 profile-section" id="section-volunteer-tasks" style="border: 3px solid #000; box-shadow: 5px 5px 0px #000; border-radius: 12px; display: none;">
+        <h3 class="brand-font h5 text-danger mb-4 pb-2 border-bottom border-secondary border-opacity-20" style="font-weight: 800;">
+          🤝 Nhiệm vụ Tình nguyện viên
+        </h3>
+        
+        <!-- Shelter Tasks Sub-section -->
+        <div class="mb-4">
+          <h4 class="brand-font fs-6 text-dark mb-3 font-bold">
+            🏠 Công việc tại trạm được giao
+          </h4>
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Công việc</th>
+                  <th>Ngày thực hiện</th>
+                  <th>Khung giờ</th>
+                  <th>Trạng thái</th>
+                  <th style="width: 180px;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="volunteer-tasks-list">
+                <tr>
+                  <td colspan="5" class="text-center text-muted">Đang tải danh sách nhiệm vụ...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Rescue Cases Sub-section -->
+        <div>
+          <h4 class="brand-font fs-6 text-dark mb-3 font-bold">
+            🚨 Ca cứu hộ được giao
+          </h4>
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Mã ca</th>
+                  <th>Người báo cáo / SĐT</th>
+                  <th>Địa điểm & Mô tả</th>
+                  <th>Độ khẩn cấp</th>
+                  <th>Ghi chú</th>
+                  <th>Trạng thái</th>
+                  <th style="width: 180px;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="volunteer-rescues-list">
+                <tr>
+                  <td colspan="7" class="text-center text-muted">Đang tải danh sách ca cứu hộ...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activities list -->
+      <div class="card-pawsitive p-4 bg-white profile-section" id="section-donations" style="border: 3px solid #000; box-shadow: 5px 5px 0px #000; border-radius: 12px;">
+        <h3 class="brand-font h5 text-dark mb-4 pb-2 border-bottom border-secondary border-opacity-20" style="font-weight: 800;">
+          🕒 Hoạt động gần đây & Quyên góp
+        </h3>
+        <div class="d-flex flex-column gap-4 py-2" id="donations-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true" style="z-index: 1055;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content card-pawsitive bg-white p-4" style="border: 3px solid #000; box-shadow: 8px 8px 0px #000; border-radius: 12px;">
+      <div class="modal-header border-0 p-0 mb-3">
+        <h5 class="modal-title brand-font fs-4 text-danger" id="editProfileModalLabel" style="font-weight: 800;">⚙️ Cập nhật thông tin</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <form id="edit-profile-form">
+          <div class="form-group-pawsitive mb-3">
+            <label for="edit-fullname" style="font-weight: bold;">Họ và tên</label>
+            <input type="text" class="form-control form-control-pawsitive" id="edit-fullname" required style="border: 2px solid #000; border-radius: 8px;" />
+          </div>
+          <div class="form-group-pawsitive mb-3">
+            <label for="edit-phone" style="font-weight: bold;">Số điện thoại</label>
+            <input type="text" class="form-control form-control-pawsitive" id="edit-phone" style="border: 2px solid #000; border-radius: 8px;" />
+          </div>
+          <div class="form-group-pawsitive mb-3">
+            <label for="edit-birthyear" style="font-weight: bold;">Năm sinh</label>
+            <input type="number" class="form-control form-control-pawsitive" id="edit-birthyear" style="border: 2px solid #000; border-radius: 8px;" />
+          </div>
+          <div class="form-group-pawsitive mb-4">
+            <label for="edit-address" style="font-weight: bold;">Địa chỉ</label>
+            <input type="text" class="form-control form-control-pawsitive" id="edit-address" style="border: 2px solid #000; border-radius: 8px;" />
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-4" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-4 justify-content-center">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+  let editModal;
+  window.currentPendingTasks = 0;
+  window.currentPendingRescues = 0;
+
+  function updateVolunteerBadge() {
+    const badge = document.getElementById("volunteer-badge");
+    if (!badge) return;
+    
+    const tasksCount = window.currentPendingTasks || 0;
+    const rescuesCount = window.currentPendingRescues || 0;
+    const total = tasksCount + rescuesCount;
+    
+    if (total > 0) {
+      badge.textContent = total;
+      badge.style.display = "inline-block";
+    } else {
+      badge.style.display = "none";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // Auth Guard
+    const user = pawsitiveCurrentUser();
+    if (!user) {
+      window.location.href = "/Account/Login?ReturnUrl=" + encodeURIComponent(window.location.pathname);
+      return;
+    }
+
+    // Initialize Edit Modal
+    editModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+
+    // Load Dashboard Data
+    loadDashboard();
+
+    // Handle settings form submit
+    document.getElementById("edit-profile-form").addEventListener("submit", updateProfile);
+  });
+
+  function loadDashboard() {
+    showToast("🔄 Đang tải thông tin cá nhân...", "info");
+    fetch("/api/users/me/dashboard")
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          const data = res.data;
+          bindProfile(data.profile);
+          bindAdoptions(data.adoptions);
+          bindFavorites(data.favorites);
+          bindDonations(data.donations);
+          showToast("✔️ Tải dữ liệu thành công!", "success");
+        } else {
+          showToast("❌ Không thể tải dữ liệu: " + res.message, "error");
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        showToast("❌ Lỗi kết nối đến máy chủ", "error");
+      });
+  }
+
+  function bindProfile(profile) {
+    document.getElementById("profile-display-name").textContent = profile.hoTen;
+    document.getElementById("profile-display-rank").textContent = profile.tenHang || "Thành viên mới";
+    document.getElementById("profile-points").textContent = profile.diemTichLuy.toLocaleString();
+    
+    // Save/update current user in localStorage to keep role in sync
+    let userObj = pawsitiveCurrentUser();
+    if (!userObj) {
+      userObj = {
+        email: profile.email,
+        role: profile.role,
+        displayName: profile.hoTen,
+        avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+      };
+    } else {
+      userObj.role = profile.role;
+      userObj.displayName = profile.hoTen;
+      userObj.email = profile.email;
+    }
+    localStorage.setItem(PAWSITIVE_AUTH_KEY, JSON.stringify(userObj));
+    
+    // Join date representation
+    const joinDate = profile.ngayTao ? new Date(profile.ngayTao).toLocaleDateString("vi-VN", { month: '2-digit', year: 'numeric' }) : "Chưa rõ";
+    document.getElementById("profile-join-date").textContent = joinDate;
+    
+    // Role translation
+    const roleText = profile.role === "admin" ? "Quản trị viên" : (profile.role === "volunteer" ? "Tình nguyện viên" : "Thành viên");
+    document.getElementById("profile-role").textContent = roleText;
+
+    if (profile.role === "volunteer") {
+        document.getElementById("tab-volunteer-tasks").style.display = "block";
+        document.getElementById("section-volunteer-tasks").style.display = "block";
+        loadVolunteerTasks();
+        loadVolunteerRescues();
+        
+        // Auto scroll to volunteer section if redirected from navbar click
+        const activeTab = sessionStorage.getItem("active_profile_tab");
+        if (activeTab === "volunteer-tasks") {
+            sessionStorage.removeItem("active_profile_tab");
+            setTimeout(() => {
+                scrollToSection('section-volunteer-tasks', 'volunteer-tasks');
+            }, 200);
+        }
+    } else {
+        document.getElementById("tab-volunteer-tasks").style.display = "none";
+        document.getElementById("section-volunteer-tasks").style.display = "none";
+    }
+
+    // Save values in edit form inputs
+    document.getElementById("edit-fullname").value = profile.hoTen || "";
+    document.getElementById("edit-phone").value = profile.soDienThoai || "";
+    document.getElementById("edit-birthyear").value = profile.namSinh || "";
+    document.getElementById("edit-address").value = profile.diaChi || "";
+  }
+
+  function bindAdoptions(adoptions) {
+    const container = document.getElementById("adoptions-list");
+    container.innerHTML = "";
+    
+    if (!adoptions || adoptions.length === 0) {
+      container.innerHTML = `
+        <div class="text-center p-4 border border-2 border-dark rounded-md bg-light shadow-flat">
+          <span class="fs-2 mb-2 d-block">🐾</span>
+          <p class="m-0 small text-muted">Bạn chưa gửi đơn nhận nuôi nào.</p>
+          <a href="/Home/Adopt" class="btn btn-pawsitive btn-pawsitive-primary rounded-full mt-2 py-1 small">Tìm thú cưng</a>
+        </div>
+      `;
+      return;
+    }
+
+    adoptions.forEach(app => {
+      let statusBadge = "";
+      if (app.trangThaiDon === "Đang xử lý") {
+        statusBadge = `<span class="badge bg-warning rounded-pill px-3 py-1 text-dark font-bold mb-1">Đang xử lý</span>`;
+      } else if (app.trangThaiDon === "Đã duyệt" || app.trangThaiDon === "Thành công" || app.trangThaiDon === "Hoàn tất") {
+        statusBadge = `<span class="badge bg-success rounded-pill px-3 py-1 text-white font-bold mb-1">Thành công</span>`;
+      } else {
+        statusBadge = `<span class="badge bg-danger rounded-pill px-3 py-1 text-white font-bold mb-1">${app.trangThaiDon}</span>`;
+      }
+
+      const petImg = app.thuCung.anhChinh || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=100";
+      const dateStr = new Date(app.ngayTao).toLocaleDateString("vi-VN");
+
+      container.innerHTML += `
+        <div class="p-3 border border-2 border-dark rounded-md d-flex align-items-center justify-content-between flex-column flex-sm-row gap-3 shadow-flat">
+          <div class="d-flex align-items-center gap-3">
+            <div class="border border-2 border-dark rounded-md overflow-hidden" style="width: 54px; height: 54px; flex-shrink: 0">
+              <img src="${petImg}" class="w-100 h-100" style="object-fit: cover" />
+            </div>
+            <div>
+              <h4 class="brand-font fs-6 mb-1">${app.thuCung.tenThuCung} (${app.thuCung.giongThuCung || "Ngoại lai"})</h4>
+              <p class="small text-muted m-0">Đơn gửi ngày: ${dateStr}</p>
+            </div>
+          </div>
+          <div class="text-sm-end">
+            ${statusBadge}
+            <span class="d-block small text-muted text-xs">Cập nhật: ${new Date(app.ngayCapNhat).toLocaleDateString("vi-VN")}</span>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function bindFavorites(favorites) {
+    const container = document.getElementById("favorites-list");
+    container.innerHTML = "";
+
+    const availableFavorites = (favorites || []).filter(pet => pet.trangThaiNhanNuoi !== "Đã nhận nuôi");
+
+    if (availableFavorites.length === 0) {
+      container.innerHTML = `
+        <div class="col-12 text-center p-4 border border-2 border-dark rounded-md bg-light shadow-flat">
+          <span class="fs-2 mb-2 d-block">❤️</span>
+          <p class="m-0 small text-muted">Danh sách yêu thích trống.</p>
+        </div>
+      `;
+      return;
+    }
+
+    availableFavorites.forEach(pet => {
+      const petImg = pet.anhChinh || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=200";
+      container.innerHTML += `
+        <div class="col-md-4 col-6">
+          <div class="card-pawsitive p-2 bg-white d-flex flex-column text-center h-100 shadow-flat">
+            <div class="pet-frame ratio ratio-1x1 border border-2 border-dark rounded-md overflow-hidden mb-2 position-relative">
+              <img src="${petImg}" style="object-fit: cover;" />
+              <span class="position-absolute top-0 end-0 m-1 bg-white text-danger border border-1 border-dark rounded-full d-flex align-items-center justify-content-center cursor-pointer" style="width: 28px; height: 28px;" onclick="removeFavorite(${pet.maThuCung})">
+                <i class="bi bi-heart-fill" style="font-size: 0.8rem"></i>
+              </span>
+            </div>
+            <h4 class="brand-font fs-6 m-0 text-danger">${pet.tenThuCung}</h4>
+            <span class="small text-muted text-xs">${pet.giongThuCung || "Ngoại lai"} • ${pet.giaTriTuoi} ${pet.donViTuoi}</span>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function bindDonations(donations) {
+    const container = document.getElementById("donations-list");
+    container.innerHTML = "";
+
+    if (!donations || donations.length === 0) {
+      container.innerHTML = `
+        <div class="text-center p-4 border border-2 border-dark rounded-md bg-light shadow-flat">
+          <span class="fs-2 mb-2 d-block">💳</span>
+          <p class="m-0 small text-muted">Bạn chưa thực hiện giao dịch quyên góp nào.</p>
+        </div>
+      `;
+      return;
+    }
+
+    donations.forEach(don => {
+      const dateStr = new Date(don.ngayQuyenGop).toLocaleDateString("vi-VN");
+      container.innerHTML += `
+        <div class="activity-pipe">
+          <div class="activity-pipe-icon bg-danger border-danger">
+            <i class="bi bi-heart-fill" style="font-size: 0.8rem"></i>
+          </div>
+          <p class="small text-muted m-0">
+            Bạn đã quyên góp
+            <strong class="text-dark">${don.soTien.toLocaleString("vi-VN")}đ</strong> cho quỹ
+            <strong>${don.tenQuyQuyenGop}</strong>.
+            ${don.loiNhan ? `<span class="d-block italic text-dark mt-1">"${don.loiNhan}"</span>` : ""}
+            <span class="d-block text-xs mt-1">Ngày: ${dateStr}</span>
+          </p>
+        </div>
+      `;
+    });
+  }
+
+  function removeFavorite(petId) {
+    showToast("💔 Đang bỏ yêu thích...", "info");
+    fetch(`/api/pets/${petId}/favorite`, { method: "DELETE" })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          showToast("💔 Đã bỏ bé khỏi mục yêu thích!", "success");
+          loadDashboard();
+        } else {
+          showToast("❌ Lỗi: " + res.message, "error");
+        }
+      })
+      .catch(err => console.error(err));
+  }
+
+  function scrollToSection(sectionId, tabName) {
+    // Switch active state
+    document.querySelectorAll(".profile-menu-item").forEach(item => item.classList.remove("active"));
+    document.getElementById(`tab-${tabName}`).classList.add("active");
+
+    // Scroll smoothly
+    const targetElement = document.getElementById(sectionId);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  function openSettingsModal() {
+    editModal.show();
+  }
+
+  function updateProfile(e) {
+    e.preventDefault();
+    const fullname = document.getElementById("edit-fullname").value.trim();
+    const phone = document.getElementById("edit-phone").value.trim();
+    const birthyear = document.getElementById("edit-birthyear").value ? parseInt(document.getElementById("edit-birthyear").value) : null;
+    const address = document.getElementById("edit-address").value.trim();
+
+    showToast("💾 Đang cập nhật thông tin cá nhân...", "info");
+
+    fetch("/api/users/me/profile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        hoTen: fullname,
+        soDienThoai: phone,
+        namSinh: birthyear,
+        diaChi: address
+      })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.success) {
+        showToast("💾 Cập nhật thông tin thành công!", "success");
+        const user = pawsitiveCurrentUser();
+        if (user) {
+          user.displayName = fullname;
+          localStorage.setItem(PAWSITIVE_AUTH_KEY, JSON.stringify(user));
+        }
+        editModal.hide();
+        loadDashboard();
+      } else {
+        showToast("❌ Cập nhật thất bại: " + res.message, "error");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      showToast("❌ Lỗi kết nối đến máy chủ", "error");
+    });
+  }
+
+  async function loadVolunteerTasks() {
+    const list = document.getElementById("volunteer-tasks-list");
+    if (!list) return;
+    
+    try {
+      const res = await fetch("/api/Volunteer/my-tasks");
+      const json = await res.json();
+      
+      if (json.success) {
+        const tasks = json.data || [];
+        
+        // Count pending tasks
+        const pendingTasksCount = tasks.filter(t => t.trangThai === "Đang chờ" || t.trangThai === "Được phân công").length;
+        window.currentPendingTasks = pendingTasksCount;
+        updateVolunteerBadge();
+
+        if (tasks.length === 0) {
+          list.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">Bạn chưa có nhiệm vụ nào được phân công.</td></tr>`;
+          return;
+        }
+        
+        list.innerHTML = tasks.map(t => {
+          const dateStr = new Date(t.ngayLamViec).toLocaleDateString("vi-VN");
+          const startTime = t.thoiGianBatDau.substring(0, 5);
+          const endTime = t.thoiGianKetThuc.substring(0, 5);
+          
+          let statusBadge = "";
+          let actionButton = "";
+          
+          if (t.trangThai === "Đang chờ" || t.trangThai === "Được phân công") {
+            statusBadge = `<span class="badge bg-warning text-dark px-3 py-1 font-bold">Đang chờ nhận</span>`;
+            actionButton = `<button class="btn btn-sm btn-pawsitive btn-pawsitive-primary rounded-full py-1 px-3 small animate-hover" onclick="acceptTask(${t.maChiTietPhanCong})">Nhận việc</button>`;
+          } else if (t.trangThai === "Đã nhận") {
+            statusBadge = `<span class="badge bg-info text-white px-3 py-1 font-bold">Đã nhận</span>`;
+            actionButton = `<button class="btn btn-sm btn-success rounded-full py-1 px-3 small text-white animate-hover" onclick="completeTask(${t.maChiTietPhanCong})">Hoàn thành</button>`;
+          } else {
+            statusBadge = `<span class="badge bg-success text-white px-3 py-1 font-bold">Hoàn thành</span>`;
+            actionButton = `<span class="text-success small font-bold"><i class="bi bi-check-circle-fill"></i> Đã xong</span>`;
+          }
+          
+          return `
+            <tr>
+              <td><strong>${t.tenCongViec}</strong></td>
+              <td>${dateStr}</td>
+              <td>${startTime} - ${endTime}</td>
+              <td>${statusBadge}</td>
+              <td>${actionButton}</td>
+            </tr>
+          `;
+        }).join('');
+      } else {
+        list.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Không thể tải: ${json.message}</td></tr>`;
+      }
+    } catch (err) {
+      console.error(err);
+      list.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Lỗi kết nối máy chủ.</td></tr>`;
+    }
+  }
+
+  async function acceptTask(id) {
+    showToast("💾 Đang nhận việc...", "info");
+    try {
+      const res = await fetch(`/api/Volunteer/tasks/${id}/accept`, { method: "POST" });
+      const json = await res.json();
+      if (json.success) {
+        showToast("🎉 Nhận việc thành công!", "success");
+        loadVolunteerTasks();
+      } else {
+        showToast("❌ Lỗi: " + json.message, "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("❌ Lỗi kết nối", "error");
+    }
+  }
+
+  async function completeTask(id) {
+    if (!confirm("Xác nhận bạn đã hoàn thành công việc này?")) return;
+    showToast("💾 Đang báo cáo hoàn thành...", "info");
+    try {
+      const res = await fetch(`/api/Volunteer/tasks/${id}/complete`, { method: "POST" });
+      const json = await res.json();
+      if (json.success) {
+        showToast("🎉 Đã hoàn thành công việc!", "success");
+        loadVolunteerTasks();
+        loadDashboard(); // Refresh overall stats/points
+      } else {
+        showToast("❌ Lỗi: " + json.message, "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("❌ Lỗi kết nối", "error");
+    }
+  }
+  async function loadVolunteerRescues() {
+    const list = document.getElementById("volunteer-rescues-list");
+    if (!list) return;
+    
+    try {
+      const res = await fetch("/api/Rescue/my-rescues");
+      const json = await res.json();
+      
+      if (json.success) {
+        const rescues = json.data || [];
+        
+        // Count pending rescues
+        const pendingRescuesCount = rescues.filter(r => r.trangThai === "Đã phân công").length;
+        window.currentPendingRescues = pendingRescuesCount;
+        updateVolunteerBadge();
+
+        // Show Toast notification if there are new pending rescues and we haven't notified the user in this session yet
+        if (pendingRescuesCount > 0 && !sessionStorage.getItem("notified_pending_rescues")) {
+          sessionStorage.setItem("notified_pending_rescues", "true");
+          setTimeout(() => {
+            showToast(`🚨 Bạn có ${pendingRescuesCount} ca cứu hộ mới được phân công đang chờ chấp nhận!`, "warning");
+          }, 1000);
+        }
+
+        if (rescues.length === 0) {
+          list.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">Bạn chưa được phân công ca cứu hộ nào.</td></tr>`;
+          return;
+        }
+        
+        list.innerHTML = rescues.map(r => {
+          let emergencyBadge = "";
+          if (r.mucDoKhanCap === "Khẩn cấp") {
+            emergencyBadge = `<span class="badge bg-danger text-white font-bold">Khẩn cấp</span>`;
+          } else {
+            emergencyBadge = `<span class="badge bg-secondary text-white font-bold">${r.mucDoKhanCap || "Bình thường"}</span>`;
+          }
+
+          let statusBadge = "";
+          let actionButton = "";
+          
+          if (r.trangThai === "Chờ xử lý") {
+            statusBadge = `<span class="badge bg-warning text-dark px-3 py-1 font-bold">Chờ xử lý</span>`;
+            actionButton = `<span class="text-muted small">Đang chuẩn bị</span>`;
+          } else if (r.trangThai === "Đã phân công") {
+            statusBadge = `<span class="badge bg-warning text-dark px-3 py-1 font-bold">Chờ chấp nhận</span>`;
+            actionButton = `<button class="btn btn-sm btn-pawsitive btn-pawsitive-primary rounded-full py-1 px-3 small text-white animate-hover" onclick="acceptRescue(${r.maPhanCong})">Chấp nhận</button>`;
+          } else if (r.trangThai === "Đang thực hiện") {
+            statusBadge = `<span class="badge bg-info text-white px-3 py-1 font-bold">Đang thực hiện</span>`;
+            actionButton = `<button class="btn btn-sm btn-success rounded-full py-1 px-3 small text-white animate-hover" onclick="completeRescue(${r.maPhanCong})">Báo cáo hoàn thành</button>`;
+          } else {
+            statusBadge = `<span class="badge bg-success text-white px-3 py-1 font-bold">Đã hoàn thành</span>`;
+            actionButton = `<span class="text-success small font-bold"><i class="bi bi-check-circle-fill"></i> Đã hoàn tất</span>`;
+          }
+          
+          return `
+            <tr>
+              <td><strong>${r.code}</strong></td>
+              <td>
+                <div class="font-bold">${r.tenNguoiBaoCao}</div>
+                <div class="small text-muted">${r.soDienThoai || 'N/A'}</div>
+              </td>
+              <td>
+                <div class="small font-bold text-dark">${r.diaDiem}</div>
+                <div class="small text-muted italic mt-1" style="max-width: 250px; white-space: normal; word-wrap: break-word;">"${r.moTaChiTiet}"</div>
+              </td>
+              <td>${emergencyBadge}</td>
+              <td><span class="small">${r.ghiChu || '-'}</span></td>
+              <td>${statusBadge}</td>
+              <td>${actionButton}</td>
+            </tr>
+          `;
+        }).join('');
+      } else {
+        list.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-3">Không thể tải: ${json.message}</td></tr>`;
+      }
+    } catch (err) {
+      console.error(err);
+      list.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-3">Lỗi kết nối máy chủ.</td></tr>`;
+    }
+  }
+
+  async function acceptRescue(id) {
+    showToast("💾 Đang chấp nhận ca cứu hộ...", "info");
+    try {
+      const res = await fetch(`/api/Rescue/my-rescues/${id}/accept`, { method: "POST" });
+      const json = await res.json();
+      if (json.success) {
+        showToast("🎉 Đã nhận ca cứu hộ thành công!", "success");
+        loadVolunteerRescues();
+        loadDashboard(); // Refresh overall stats/points
+      } else {
+        showToast("❌ Lỗi: " + json.message, "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("❌ Lỗi kết nối", "error");
+    }
+  }
+
+  async function completeRescue(id) {
+    if (!confirm("Xác nhận bạn đã hoàn thành ca cứu hộ này?")) return;
+    showToast("💾 Đang báo cáo hoàn thành...", "info");
+    try {
+      const res = await fetch(`/api/Rescue/my-rescues/${id}/complete`, { method: "POST" });
+      const json = await res.json();
+      if (json.success) {
+        showToast("🎉 Đã hoàn thành ca cứu hộ!", "success");
+        loadVolunteerRescues();
+        loadDashboard(); // Refresh overall stats/points
+      } else {
+        showToast("❌ Lỗi: " + json.message, "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("❌ Lỗi kết nối", "error");
+    }
+  }
+</script>
+
+@if (TempData["ErrorMessage"] != null)
+{
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        showToast("@Html.Raw(TempData["ErrorMessage"])", "error");
+      }, 500);
+    });
+  </script>
+}
+}

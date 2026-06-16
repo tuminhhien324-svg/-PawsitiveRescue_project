@@ -1,0 +1,594 @@
+@{
+    ViewData["Title"] = "Quản lý quyên góp";
+    Layout = "_AdminLayout";
+}
+
+<div class="db-layout">
+      <!-- ═══ Sidebar ═══ -->
+      <aside class="db-sidebar" id="dbSidebar">
+        <a asp-controller="Admin" asp-action="Index" class="db-sidebar-logo">
+          <div class="db-sidebar-logo-icon">🐾</div>
+          <div>
+            <div class="db-sidebar-logo-text">Pawsitive Rescue</div>
+            <span class="db-sidebar-logo-sub">Hệ thống Quản trị</span>
+          </div>
+        </a>
+
+        <nav class="db-sidebar-nav">
+          <a asp-controller="Admin" asp-action="Index" class="db-sidebar-link" data-view="overview">
+            <i class="bi bi-grid-1x2-fill"></i> Tổng quan
+          </a>
+          <a asp-controller="Admin" asp-action="ManageAnimals" class="db-sidebar-link" data-view="animals">
+            <i class="bi bi-heart-pulse-fill"></i> Quản lý Động vật
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageAdopters"
+            class="db-sidebar-link"
+            data-view="adopters"
+          >
+            <i class="bi bi-house-heart-fill"></i> Nhận nuôi
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageVolunteers"
+            class="db-sidebar-link"
+            data-view="volunteers"
+          >
+            <i class="bi bi-people-fill"></i> Tình nguyện viên
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageDonations"
+            class="db-sidebar-link active"
+            data-view="donations"
+          >
+            <i class="bi bi-gift-fill"></i> Quyên góp
+          </a>
+          <a asp-controller="Admin" asp-action="ManageRescues" class="db-sidebar-link" data-view="rescue">
+            <i class="bi bi-exclamation-triangle-fill"></i> Cứu hộ Khẩn cấp
+          </a>
+        </nav>
+
+        <div class="db-sidebar-bottom">
+          <a href="#" class="db-sidebar-link" onclick="pawsitiveLogout(); return false;"><i class="bi bi-box-arrow-left"></i> Đăng xuất</a>
+        </div>
+      </aside>
+
+      <div class="db-overlay" id="dbOverlay"></div>
+
+      <!-- ═══ Main Content ═══ -->
+      <main class="db-main">
+        <!-- Top Bar -->
+        <header class="db-topbar">
+          <button class="db-mobile-toggle" id="dbMobileToggle">
+            <i class="bi bi-list"></i>
+          </button>
+          <nav class="d-none d-md-flex gap-3 me-auto">
+            <a asp-controller="Home" asp-action="Index" class="pawsitive-nav-link">Trang chủ</a>
+            <a asp-controller="Admin" asp-action="ManageDonations" class="pawsitive-nav-link active">Quyên góp</a>
+          </nav>
+          <input
+            type="text"
+            class="db-topbar-search"
+            id="searchDonationInput"
+            placeholder="Tìm kiếm giao dịch..."
+            oninput="loadDonations()"
+          />
+          <div class="db-topbar-icon" title="Thông báo">
+            <i class="bi bi-bell-fill"></i>
+          </div>
+          <div class="db-topbar-icon" title="Cài đặt">
+            <i class="bi bi-gear-fill"></i>
+          </div>
+          <div class="db-topbar-avatar">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              alt="Admin Avatar"
+            />
+          </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="db-content">
+          <!-- Page Header -->
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+              <h1
+                class="h2 mb-1"
+                style="
+                  color: var(--pawsitive-primary-vibrant);
+                  font-weight: 800;
+                "
+              >
+                Quyên góp
+              </h1>
+              <p class="text-muted small mb-0">
+                Quản lý và theo dõi các khoản quyên góp từ nhà hảo tâm.
+              </p>
+            </div>
+            <button
+              class="db-btn db-btn-primary"
+              onclick="exportDonationsReport()"
+            >
+              <i class="bi bi-download"></i> Xuất báo cáo
+            </button>
+          </div>
+
+          <!-- ── Monthly Goal Section ── -->
+          <div class="row g-3 mb-4">
+            <div class="col-lg-7">
+              <div class="monthly-goal-card db-animate-in">
+                <h3
+                  class="h5 mb-3"
+                  style="color: var(--pawsitive-on-surface); font-weight: 700"
+                >
+                  <i class="bi bi-target"></i> <span id="monthly-goal-title">Mục tiêu tháng</span>
+                </h3>
+
+                <div class="mb-3">
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-2"
+                  >
+                    <span
+                      id="target-amount-text"
+                      style="
+                        font-weight: 700;
+                        color: var(--pawsitive-primary-vibrant);
+                        font-size: 1.25rem;
+                      "
+                      >100.000.000 đ</span
+                    >
+                    <span
+                      style="
+                        color: var(--pawsitive-on-surface-variant);
+                        font-size: 0.875rem;
+                      "
+                      >Mục tiêu</span
+                    >
+                  </div>
+                  <div class="donation-stat-progress">
+                    <div id="goal-progress-bar" class="donation-progress-bar" style="width: 0%">
+                      <div class="donation-progress-handle"></div>
+                    </div>
+                  </div>
+                  <div
+                    class="d-flex justify-content-between align-items-center mt-2"
+                  >
+                    <span
+                      id="raised-amount-text"
+                      style="
+                        font-weight: 700;
+                        color: var(--pawsitive-on-surface-variant);
+                      "
+                      >0 đ</span
+                    >
+                    <span
+                      id="goal-progress-percent"
+                      style="
+                        color: var(--pawsitive-on-surface-variant);
+                        font-size: 0.875rem;
+                      "
+                      >Đã đạt 0%</span
+                    >
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-sm-6">
+                    <div
+                      style="
+                        background-color: var(--pawsitive-secondary-fixed);
+                        padding: 1rem;
+                        border-radius: 0.75rem;
+                        text-align: center;
+                      "
+                    >
+                      <div
+                        style="
+                          color: var(--pawsitive-on-secondary-fixed);
+                          font-size: 0.875rem;
+                        "
+                      >
+                        Đã quyên góp tháng này
+                      </div>
+                      <div
+                        id="monthly-raised-amount-text"
+                        style="
+                          color: var(--pawsitive-on-secondary-fixed);
+                          font-weight: 700;
+                          font-size: 1.1rem;
+                        "
+                      >
+                        0 đ
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div
+                      style="
+                        background-color: var(--pawsitive-error-container);
+                        padding: 1rem;
+                        border-radius: 0.75rem;
+                        text-align: center;
+                      "
+                    >
+                      <div
+                        style="
+                          color: var(--pawsitive-on-error-container);
+                          font-size: 0.875rem;
+                        "
+                      >
+                        Còn thiếu để đạt mục tiêu
+                      </div>
+                      <div
+                        id="remaining-amount-text"
+                        style="
+                          color: var(--pawsitive-on-error-container);
+                          font-weight: 700;
+                          font-size: 1.1rem;
+                        "
+                      >
+                        100.000.000 đ
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-5">
+              <div class="monthly-goal-card db-animate-in">
+                <h3
+                  class="h5 mb-3"
+                  style="color: var(--pawsitive-on-surface); font-weight: 700"
+                >
+                  <i class="bi bi-graph-up"></i> Tổng quyên góp tích lũy
+                </h3>
+                <div
+                  style="
+                    background-color: var(--pawsitive-primary-vibrant);
+                    color: white;
+                    padding: 2rem;
+                    border-radius: 0.75rem;
+                    text-align: center;
+                  "
+                >
+                  <div
+                    id="total-amount-raised"
+                    style="
+                      font-size: 2rem;
+                      font-weight: 800;
+                      margin-bottom: 0.5rem;
+                    "
+                  >
+                    0 đ
+                  </div>
+                  <div style="font-size: 0.875rem; opacity: 0.9">
+                    Tổng số tiền nhận được
+                  </div>
+                </div>
+                <div
+                  style="
+                    margin-top: 1rem;
+                    padding: 1rem;
+                    background-color: var(--pawsitive-surface-container);
+                    border-radius: 0.75rem;
+                    text-align: center;
+                  "
+                >
+                  <div
+                    style="
+                      color: var(--pawsitive-on-surface-variant);
+                      font-size: 0.875rem;
+                      margin-bottom: 0.25rem;
+                    "
+                  >
+                    Số lượt quyên góp nhận được
+                  </div>
+                  <div
+                    id="total-donations-count"
+                    style="
+                      color: var(--pawsitive-primary-vibrant);
+                      font-weight: 700;
+                      font-size: 1.1rem;
+                    "
+                  >
+                    0 lượt
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Filters & Controls ── -->
+          <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+            <select class="db-filter-select" id="filterDonationCampaign" onchange="loadDonations()" style="flex: 1; min-width: 150px">
+              <option value="">Tất cả Quỹ / Chiến dịch</option>
+              <option value="Mái ấm mùa đông">Mái ấm mùa đông</option>
+              <option value="Quỹ y tế khẩn cấp">Quỹ y tế khẩn cấp</option>
+              <option value="Quỹ chung Pawsitive">Quỹ chung Pawsitive</option>
+            </select>
+          </div>
+
+          <!-- ── Donations Table ── -->
+          <div class="monthly-goal-card mb-4 db-animate-in">
+            <div class="p-0" style="border-radius: 1.25rem; overflow: hidden">
+              <div
+                style="
+                  padding: 1.25rem;
+                  border-bottom: 1px solid var(--pawsitive-surface-container);
+                  background-color: var(--pawsitive-surface-container-low);
+                "
+              >
+                <h3
+                  class="h5 m-0"
+                  style="color: var(--pawsitive-on-surface); font-weight: 700"
+                >
+                  <i class="bi bi-list-check"></i> Danh sách giao dịch gần đây
+                </h3>
+              </div>
+
+              <!-- Donation Items -->
+              <div id="donations-list-container">
+                <div class="text-center py-4 text-muted">Đang tải danh sách giao dịch...</div>
+              </div>
+
+              <div
+                style="
+                  padding: 1.25rem;
+                  text-align: center;
+                  border-top: 1px solid var(--pawsitive-surface-container);
+                "
+              >
+                <a
+                  href="#"
+                  style="
+                    color: var(--pawsitive-primary-vibrant);
+                    text-decoration: none;
+                    font-weight: 600;
+                  "
+                >
+                  Xem tất cả giao dịch <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Top Donors ── -->
+          <div class="row g-3">
+            <div class="col-lg-8">
+              <!-- Additional stats can go here -->
+            </div>
+            <div class="col-lg-4">
+              <div class="monthly-goal-card db-animate-in">
+                <h3
+                  class="h5 mb-3"
+                  style="color: var(--pawsitive-on-surface); font-weight: 700"
+                >
+                  <i class="bi bi-trophy-fill"></i> Nhà hảo tâm hàng đầu
+                </h3>
+
+                <div id="top-donors-list-container">
+                  <div class="text-center py-4 text-muted">Đang tải...</div>
+                </div>
+
+                <div
+                  style="
+                    padding: 1rem;
+                    text-align: center;
+                    border-top: 1px solid var(--pawsitive-surface-container);
+                    margin-top: 1rem;
+                  "
+                >
+                  <a
+                    href="#"
+                    style="
+                      color: var(--pawsitive-primary-vibrant);
+                      text-decoration: none;
+                      font-weight: 600;
+                      font-size: 0.875rem;
+                    "
+                  >
+                    Xem tất cả nhà hảo tâm hàng đầu →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <!-- Dashboard Script -->
+    @section Scripts {
+    <script>
+      // Sidebar Toggle
+      const dbMobileToggle = document.getElementById("dbMobileToggle");
+      const dbSidebar = document.getElementById("dbSidebar");
+      const dbOverlay = document.getElementById("dbOverlay");
+
+      if (dbMobileToggle && dbSidebar && dbOverlay) {
+        dbMobileToggle.addEventListener("click", () => {
+          dbSidebar.classList.toggle("active");
+          dbOverlay.classList.toggle("active");
+        });
+
+        dbOverlay.addEventListener("click", () => {
+          dbSidebar.classList.remove("active");
+          dbOverlay.classList.remove("active");
+        });
+      }
+
+      // Toast Notification
+      function showToast(message, type = "success") {
+        if (typeof dbToast === "function") {
+          dbToast(message);
+        } else {
+          const toast = document.createElement("div");
+          toast.className = `alert alert-${type === "error" ? "danger" : type} position-fixed`;
+          toast.style.bottom = "20px";
+          toast.style.right = "20px";
+          toast.style.zIndex = "9999";
+          toast.textContent = message;
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 3000);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadStats();
+        loadDonations();
+      });
+
+      async function loadStats() {
+        try {
+          const res = await fetch("/api/Donation/admin/stats");
+          const json = await res.json();
+          if (json.success && json.data) {
+            const data = json.data;
+            
+            // Total amount
+            const totalVal = data.totalAmount || 0;
+            document.getElementById("total-amount-raised").textContent = totalVal.toLocaleString("vi-VN") + " đ";
+
+            // Find current month stats
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1; // 1-indexed
+
+            document.getElementById("monthly-goal-title").textContent = `Mục tiêu tháng ${currentMonth}`;
+
+            let monthlyRaised = 0;
+            if (data.monthlyStats && data.monthlyStats.length > 0) {
+              const matched = data.monthlyStats.find(x => x.year === currentYear && x.month === currentMonth);
+              if (matched) {
+                monthlyRaised = matched.tongTien;
+              }
+            }
+
+            const targetVal = 100000000; // 100 million goal
+            document.getElementById("target-amount-text").textContent = targetVal.toLocaleString("vi-VN") + " đ";
+            document.getElementById("monthly-raised-amount-text").textContent = monthlyRaised.toLocaleString("vi-VN") + " đ";
+            document.getElementById("raised-amount-text").textContent = monthlyRaised.toLocaleString("vi-VN") + " đ";
+
+            const percent = Math.min(100, Math.round((monthlyRaised / targetVal) * 100));
+            document.getElementById("goal-progress-bar").style.width = percent + "%";
+            document.getElementById("goal-progress-percent").textContent = `Đã đạt ${percent}%`;
+
+            const remaining = Math.max(0, targetVal - monthlyRaised);
+            document.getElementById("remaining-amount-text").textContent = remaining.toLocaleString("vi-VN") + " đ";
+
+            // Render top donors
+            renderTopDonors(data.topDonors || []);
+          }
+        } catch (err) {
+          console.error("Error loading donation stats:", err);
+        }
+      }
+
+      function renderTopDonors(donors) {
+        const container = document.getElementById("top-donors-list-container");
+        if (donors.length === 0) {
+          container.innerHTML = `<div class="text-center py-4 text-muted">Không tìm thấy nhà hảo tâm nào.</div>`;
+          return;
+        }
+
+        container.innerHTML = donors.map((d, index) => {
+          const rankNum = index + 1;
+          let rankStyle = "";
+          if (rankNum === 2) rankStyle = 'style="background-color: #9e9e9e"';
+          else if (rankNum === 3) rankStyle = 'style="background-color: #cd7f32"';
+          else if (rankNum > 3) rankStyle = 'style="background-color: #a0aec0"';
+
+          return `
+            <div class="top-donors-item">
+              <div class="top-donors-rank" ${rankStyle}>${rankNum}</div>
+              <div class="top-donors-info">
+                <div class="top-donors-name font-bold">${escapeHtml(d.tenNguoiQuyenGop)}</div>
+                <div class="top-donors-count small text-muted">${d.soLuot} lượt giao dịch</div>
+              </div>
+              <div class="top-donors-amount font-bold text-danger">${d.tongTien.toLocaleString("vi-VN")}đ</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      async function loadDonations() {
+        const campaign = document.getElementById("filterDonationCampaign").value;
+        const q = document.getElementById("searchDonationInput").value;
+        const container = document.getElementById("donations-list-container");
+
+        try {
+          const params = new URLSearchParams();
+          if (campaign) params.append("quy", campaign);
+          if (q) params.append("q", q);
+
+          const res = await fetch(`/api/Donation/admin?${params.toString()}`);
+          const json = await res.json();
+
+          if (json.success && json.data) {
+            const list = json.data;
+            document.getElementById("total-donations-count").textContent = list.length + " lượt";
+            renderDonationsList(list);
+          } else {
+            container.innerHTML = `<div class="text-center py-4 text-danger">Lỗi: ${json.message}</div>`;
+          }
+        } catch (err) {
+          console.error("Error loading donations:", err);
+          container.innerHTML = `<div class="text-center py-4 text-danger">Lỗi kết nối máy chủ.</div>`;
+        }
+      }
+
+      function renderDonationsList(list) {
+        const container = document.getElementById("donations-list-container");
+        if (list.length === 0) {
+          container.innerHTML = `<div class="text-center py-4 text-muted">Không tìm thấy giao dịch nào.</div>`;
+          return;
+        }
+
+        container.innerHTML = list.map(d => {
+          const initials = getInitials(d.tenNguoiQuyenGop);
+          const dateFormatted = new Date(d.ngayQuyenGop).toLocaleDateString("vi-VN");
+          const noteText = d.loiNhan ? escapeHtml(d.loiNhan) : "Quyên góp ủng hộ các bé";
+          
+          return `
+            <div class="donation-table-item">
+              <div class="donation-avatar">${initials}</div>
+              <div class="donation-info">
+                <div class="donation-name">${escapeHtml(d.tenNguoiQuyenGop)}</div>
+                <div class="donation-desc small text-muted">${noteText} (${escapeHtml(d.tenQuyQuyenGop)})</div>
+              </div>
+              <div class="donation-amount">${d.soTien.toLocaleString("vi-VN")}đ</div>
+              <div class="donation-date">${dateFormatted}</div>
+              <div class="donation-method transfer">
+                <i class="bi bi-bank"></i>
+              </div>
+              <div class="donation-status success">
+                <i class="bi bi-check-circle"></i> Thành công
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function getInitials(name) {
+        if (!name) return "AN";
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function exportDonationsReport() {
+        window.location.href = "/api/Donation/admin/export";
+      }
+    </script>
+    }

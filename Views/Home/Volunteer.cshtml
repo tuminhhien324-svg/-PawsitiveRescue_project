@@ -1,0 +1,591 @@
+@{
+    ViewData["Title"] = "Tình nguyện viên";
+    Layout = "_Layout";
+}
+
+<!-- Hero Section -->
+    <header class="py-5" style="background-color: var(--pawsitive-surface-low)">
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <!-- Hero Text -->
+          <div class="col-lg-6">
+            <h1 class="display-4 mb-4 brand-font" style="font-weight: 800">
+              Trở thành người hùng của các bé
+            </h1>
+            <p class="lead mb-4 text-muted" style="font-size: 1.1rem">
+              Hãy cùng chúng mình mang lại mái ấm và tình thương cho những sinh
+              linh bé nhỏ. Mỗi sự giúp đỡ của bạn đều là một hy vọng mới.
+            </p>
+            <div class="d-flex gap-3">
+              <a
+                class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-4 py-3"
+                href="#vol-apply-form"
+              >
+                Đăng ký ngay 🐾
+              </a>
+              <a
+                class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-4 py-3"
+                href="#vol-programs"
+              >
+                Xem thêm
+              </a>
+            </div>
+          </div>
+          <!-- Hero Image -->
+          <div class="col-lg-6">
+            <div
+              class="p-3 bg-warning rounded-md border border-3 border-dark shadow-flat transform rotate-2"
+              style="background-color: #fbd38d !important"
+            >
+              <img
+                src="https://mma.prnewswire.com/media/2795506/Vantage_Foundation_Volunteers_Bring_Compassion_Care_Rescued_Dogs_Laws_Paws.jpg"
+                class="volunteer-img"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Volunteer Programs -->
+    <section class="py-5 bg-white" id="vol-programs">
+      <div class="container py-lg-4 text-center">
+        <h2 class="display-6 mb-2 brand-font">Chương trình tình nguyện</h2>
+        <p class="text-muted mb-5">
+          Đa dạng lựa chọn cống hiến phù hợp với khả năng của bạn.
+        </p>
+
+        <div class="row g-4 text-start">
+          <!-- Direct Rescue -->
+          <div class="col-lg-4">
+            <div class="card-pawsitive p-4 h-100">
+              <div
+                class="bg-danger text-white border border-2 border-dark rounded-full d-flex align-items-center justify-content-center mb-3"
+                style="width: 48px; height: 48px"
+              >
+                <i class="bi bi-asterisk fs-5"></i>
+              </div>
+              <h3 class="brand-font h5 text-danger mb-2">Cứu hộ trực tiếp</h3>
+              <p class="small text-muted m-0">
+                Tham gia đội ngũ phản ứng nhanh để giải cứu động vật bị bỏ rơi
+                hoặc gặp nguy hiểm trong khu vực lân cận của bạn.
+              </p>
+            </div>
+          </div>
+          <!-- Care at shelter -->
+          <div class="col-lg-4">
+            <div class="card-pawsitive p-4 h-100">
+              <div
+                class="bg-primary text-white border border-2 border-dark rounded-full d-flex align-items-center justify-content-center mb-3"
+                style="width: 48px; height: 48px"
+              >
+                <i class="bi bi-house-door-fill fs-5"></i>
+              </div>
+              <h3 class="brand-font h5 text-primary mb-2">Chăm sóc tại trạm</h3>
+              <p class="small text-muted m-0">
+                Giúp các bé ăn uống, làm vệ sinh và vui chơi hằng ngày tại trung
+                tâm cứu hộ chính thức của Pawsitive Rescue.
+              </p>
+            </div>
+          </div>
+          <!-- Events Support -->
+          <div class="col-lg-4">
+            <div class="card-pawsitive p-4 h-100">
+              <div
+                class="bg-warning text-dark border border-2 border-dark rounded-full d-flex align-items-center justify-content-center mb-3"
+                style="width: 48px; height: 48px"
+              >
+                <i class="bi bi-megaphone-fill fs-5"></i>
+              </div>
+              <h3 class="brand-font h5 text-warning mb-2">Hỗ trợ sự kiện</h3>
+              <p class="small text-muted m-0">
+                Đồng hành cùng chúng mình trong các ngày hội nhận nuôi, các
+                chiến dịch quyên góp quỹ và truyền thông xã hội.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- Registration Form -->
+    <section
+      class="container py-5"
+      id="vol-apply-form"
+      style="max-width: 850px"
+    >
+      <div class="card-pawsitive p-4 md-p-5 bg-white shadow-flat">
+        <div class="text-center mb-4">
+          <span class="fs-1 d-block mb-2">✍️</span>
+          <h2 class="brand-font h3 text-danger">
+            Đơn đăng ký tình nguyện viên
+          </h2>
+          <p class="small text-muted m-0">
+            Vui lòng điền đầy đủ thông tin để chúng mình sớm liên lạc với bạn
+            nhé!
+          </p>
+        </div>
+
+        <form id="volunteer-reg-form">
+          <div class="row g-4 mb-4">
+            <div class="col-md-6 form-group-pawsitive">
+              <label for="vol-name">Họ và tên</label>
+              <input
+                type="text"
+                class="form-control form-control-pawsitive"
+                id="vol-name"
+                placeholder="Nguyễn Văn A"
+                required
+              />
+            </div>
+            <div class="col-md-6 form-group-pawsitive">
+              <label for="vol-phone">Số điện thoại</label>
+              <input
+                type="tel"
+                class="form-control form-control-pawsitive"
+                id="vol-phone"
+                placeholder="090 000 0000"
+                required
+              />
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="vol-email">Email</label>
+              <input
+                type="email"
+                class="form-control form-control-pawsitive"
+                id="vol-email"
+                placeholder="email@example.com"
+                required
+              />
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="vol-namsinh">Năm sinh</label>
+              <input
+                type="number"
+                class="form-control form-control-pawsitive"
+                id="vol-namsinh"
+                min="1950"
+                max="2020"
+                placeholder="Ví dụ: 2000"
+                required
+              />
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="vol-time">Thời gian rảnh</label>
+              <select class="form-select form-control-pawsitive" id="vol-time">
+                <option value="Cuối tuần (T7 & CN)" selected>Cuối tuần (T7 & CN)</option>
+                <option value="Các ngày trong tuần">Các ngày trong tuần</option>
+                <option value="Linh hoạt">Linh hoạt</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="vol-province">Tỉnh / Thành phố</label>
+              <select class="form-select form-control-pawsitive" id="vol-province" required>
+                <option value="" disabled selected>Chọn Tỉnh / Thành phố</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="vol-district">Quận / Huyện</label>
+              <select class="form-select form-control-pawsitive" id="vol-district" required disabled>
+                <option value="" disabled selected>Chọn Quận / Huyện</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="vol-ward">Phường / Xã</label>
+              <select class="form-select form-control-pawsitive" id="vol-ward" required disabled>
+                <option value="" disabled selected>Chọn Phường / Xã</option>
+              </select>
+            </div>
+            <div class="col-12 form-group-pawsitive">
+              <label for="vol-street">Số nhà, Tên đường</label>
+              <input
+                type="text"
+                class="form-control form-control-pawsitive"
+                id="vol-street"
+                placeholder="Ví dụ: Số 12, đường Nguyễn Trãi"
+                required
+              />
+            </div>
+            <div class="col-12 form-group-pawsitive">
+              <label for="vol-skills">Kỹ năng & Sở thích</label>
+              <textarea
+                class="form-control form-control-pawsitive"
+                id="vol-skills"
+                rows="4"
+                placeholder="Chia sẻ với chúng mình về thế mạnh của bạn hoặc lý do bạn muốn tham gia..."
+                required
+              ></textarea>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-pawsitive btn-pawsitive-primary w-100 rounded-full justify-content-center py-3 fs-5"
+          >
+            Gửi đơn đăng ký
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section
+      class="py-5"
+      style="background-color: var(--pawsitive-surface-low)"
+    >
+      <div class="container py-lg-4" style="max-width: 800px">
+        <h2 class="display-6 mb-2 text-center brand-font">
+          Câu hỏi thường gặp
+        </h2>
+        <p class="text-muted text-center mb-5">
+          Giải đáp những thắc mắc phổ biến của bạn về chương trình tình nguyện.
+        </p>
+
+        <div class="d-flex flex-column gap-3">
+          <!-- Q1 -->
+          <div class="faq-card-pawsitive" onclick="toggleFaq(this)">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="brand-font fs-6 m-0 text-danger">
+                Tôi cần bao nhiêu thời gian?
+              </h4>
+              <i class="bi bi-chevron-down faq-icon text-muted"></i>
+            </div>
+            <div class="faq-answer">
+              <p class="small text-muted m-0">
+                Chúng mình linh hoạt theo lịch trình cá nhân của bạn. Tuy nhiên,
+                Pawsitive khuyên khích các tình nguyện viên dành ít nhất 4 giờ
+                mỗi tuần để đảm bảo sự ổn định và tạo kết nối tốt với các bé thú
+                cưng tại trạm.
+              </p>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="faq-card-pawsitive" onclick="toggleFaq(this)">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="brand-font fs-6 m-0 text-danger">
+                Có yêu cầu kinh nghiệm không?
+              </h4>
+              <i class="bi bi-chevron-down faq-icon text-muted"></i>
+            </div>
+            <div class="faq-answer">
+              <p class="small text-muted m-0">
+                Không bắt buộc! Quan trọng nhất là tấm lòng yêu thương động vật
+                và tinh thần trách nhiệm. Mọi kỹ năng chuyên môn khác sẽ được
+                các trạm trưởng hướng dẫn trực tiếp khi bạn gia nhập.
+              </p>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="faq-card-pawsitive" onclick="toggleFaq(this)">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="brand-font fs-6 m-0 text-danger">
+                Tôi có được đào tạo không?
+              </h4>
+              <i class="bi bi-chevron-down faq-icon text-muted"></i>
+            </div>
+            <div class="faq-answer">
+              <p class="small text-muted m-0">
+                Chắc chắn rồi! Tất cả tình nguyện viên mới đều được tham gia
+                buổi định hướng và khóa đào tạo cơ bản về cách tiếp xúc, cho ăn,
+                dọn dẹp vệ sinh và xử lý sơ cứu khẩn cấp cho chó mèo tại trạm.
+              </p>
+            </div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="faq-card-pawsitive" onclick="toggleFaq(this)">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="brand-font fs-6 m-0 text-danger">
+                Độ tuổi tối thiểu là bao nhiêu?
+              </h4>
+              <i class="bi bi-chevron-down faq-icon text-muted"></i>
+            </div>
+            <div class="faq-answer">
+              <p class="small text-muted m-0">
+                Độ tuổi tối thiểu để đăng ký trực tuyến là 16 tuổi. Đối với các
+                bạn dưới 18 tuổi, chúng mình cần có sự đồng ý ký nhận bằng văn
+                bản từ phụ huynh hoặc người giám hộ hợp pháp.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script>
+      function toggleFaq(card) {
+        const isOpen = card.classList.contains("open");
+
+        // Close all faqs first
+        document.querySelectorAll(".faq-card-pawsitive").forEach((c) => {
+          c.classList.remove("open");
+          c.querySelector(".faq-answer").style.maxHeight = null;
+        });
+
+        if (!isOpen) {
+          card.classList.add("open");
+          const answer = card.querySelector(".faq-answer");
+          answer.style.maxHeight = answer.scrollHeight + "px";
+        }
+      }
+
+      // Address Selection Logic
+      const provinceSelect = document.getElementById("vol-province");
+      const districtSelect = document.getElementById("vol-district");
+      const wardSelect = document.getElementById("vol-ward");
+
+      // Local Fallback Data (in case the API is offline or slow)
+      const fallbackAddressData = [
+        {
+          name: "Thành phố Hà Nội",
+          code: 1,
+          districts: [
+            {
+              name: "Quận Cầu Giấy",
+              code: 2,
+              wards: [{ name: "Phường Dịch Vọng" }, { name: "Phường Quan Hoa" }, { name: "Phường Nghĩa Tân" }]
+            },
+            {
+              name: "Quận Đống Đa",
+              code: 3,
+              wards: [{ name: "Phường Láng Hạ" }, { name: "Phường Quang Trung" }, { name: "Phường Khương Thượng" }]
+            }
+          ]
+        },
+        {
+          name: "Thành phố Hồ Chí Minh",
+          code: 2,
+          districts: [
+            {
+              name: "Quận 1",
+              code: 4,
+              wards: [{ name: "Phường Bến Nghé" }, { name: "Phường Bến Thành" }, { name: "Phường Tân Định" }]
+            },
+            {
+              name: "Quận Bình Thạnh",
+              code: 5,
+              wards: [{ name: "Phường 15" }, { name: "Phường 25" }, { name: "Phường Hàng Xanh" }]
+            }
+          ]
+        },
+        {
+          name: "Thành phố Đà Nẵng",
+          code: 3,
+          districts: [
+            {
+              name: "Quận Hải Châu",
+              code: 6,
+              wards: [{ name: "Phường Hòa Cường Bắc" }, { name: "Phường Thạch Thang" }]
+            },
+            {
+              name: "Quận Thanh Khê",
+              code: 7,
+              wards: [{ name: "Phường Vĩnh Trung" }, { name: "Phường Tân Chính" }]
+            }
+          ]
+        }
+      ];
+
+      let useFallback = false;
+
+      // Initialize provinces
+      async function initAddressDropdowns() {
+        try {
+          const res = await fetch("https://provinces.open-api.vn/api/p/");
+          if (!res.ok) throw new Error("API status check fail");
+          const provinces = await res.json();
+          
+          provinceSelect.innerHTML = '<option value="" disabled selected>Chọn Tỉnh / Thành phố</option>';
+          provinces.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.code;
+            opt.textContent = p.name;
+            provinceSelect.appendChild(opt);
+          });
+        } catch (err) {
+          console.warn("Failed to load provinces from API, using fallback data:", err);
+          useFallback = true;
+          provinceSelect.innerHTML = '<option value="" disabled selected>Chọn Tỉnh / Thành phố</option>';
+          fallbackAddressData.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.code;
+            opt.textContent = p.name;
+            provinceSelect.appendChild(opt);
+          });
+        }
+      }
+
+      provinceSelect?.addEventListener("change", async function() {
+        const provinceCode = this.value;
+        districtSelect.innerHTML = '<option value="" disabled selected>Chọn Quận / Huyện</option>';
+        districtSelect.disabled = false;
+        wardSelect.innerHTML = '<option value="" disabled selected>Chọn Phường / Xã</option>';
+        wardSelect.disabled = true;
+
+        if (useFallback) {
+          const province = fallbackAddressData.find(p => p.code == provinceCode);
+          if (province) {
+            province.districts.forEach(d => {
+              const opt = document.createElement("option");
+              opt.value = d.code;
+              opt.textContent = d.name;
+              districtSelect.appendChild(opt);
+            });
+          }
+        } else {
+          try {
+            const res = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+            const data = await res.json();
+            data.districts.forEach(d => {
+              const opt = document.createElement("option");
+              opt.value = d.code;
+              opt.textContent = d.name;
+              districtSelect.appendChild(opt);
+            });
+          } catch (err) {
+            console.error("Failed to fetch districts", err);
+          }
+        }
+      });
+
+      districtSelect?.addEventListener("change", async function() {
+        const districtCode = this.value;
+        wardSelect.innerHTML = '<option value="" disabled selected>Chọn Phường / Xã</option>';
+        wardSelect.disabled = false;
+
+        if (useFallback) {
+          const provinceCode = provinceSelect.value;
+          const province = fallbackAddressData.find(p => p.code == provinceCode);
+          const district = province?.districts.find(d => d.code == districtCode);
+          if (district) {
+            district.wards.forEach(w => {
+              const opt = document.createElement("option");
+              opt.value = w.name;
+              opt.textContent = w.name;
+              wardSelect.appendChild(opt);
+            });
+          }
+        } else {
+          try {
+            const res = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+            const data = await res.json();
+            data.wards.forEach(w => {
+              const opt = document.createElement("option");
+              opt.value = w.name;
+              opt.textContent = w.name;
+              wardSelect.appendChild(opt);
+            });
+          } catch (err) {
+            console.error("Failed to fetch wards", err);
+          }
+        }
+      });
+
+      initAddressDropdowns();
+
+      // Volunteer Registration Form Validation
+      document.getElementById("volunteer-reg-form")?.addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById("vol-name").value.trim();
+        const phone = document.getElementById("vol-phone").value.trim();
+        const email = document.getElementById("vol-email").value.trim();
+        
+        const provinceEl = document.getElementById("vol-province");
+        const districtEl = document.getElementById("vol-district");
+        const wardEl = document.getElementById("vol-ward");
+        const street = document.getElementById("vol-street").value.trim();
+
+        // 1. Name validation (at least 5 chars, at least 2 words, letters only)
+        if (name.length < 5) {
+          showToast("⚠️ Họ và tên phải có tối thiểu 5 ký tự!", "warning");
+          return;
+        }
+        const nameWords = name.split(/\s+/).filter(w => w.length > 0);
+        if (nameWords.length < 2) {
+          showToast("⚠️ Họ và tên phải bao gồm cả Họ và Tên (tối thiểu 2 từ)!", "warning");
+          return;
+        }
+        if (/[0-9!@@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(name)) {
+          showToast("⚠️ Họ và tên chỉ được chứa chữ cái và khoảng trắng!", "warning");
+          return;
+        }
+        
+        // 2. Phone validation (10 digits starting with 0)
+        const phoneRegex = /^0[0-9]{9}$/;
+        if (!phoneRegex.test(phone)) {
+          showToast("⚠️ Số điện thoại phải gồm đúng 10 số và bắt đầu bằng số 0!", "warning");
+          return;
+        }
+        
+        // 3. Email validation (must end with @@gmail.com)
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@@gmail\.com$/i;
+        if (!emailRegex.test(email)) {
+          showToast("⚠️ Email phải đúng định dạng và sử dụng đuôi @@gmail.com!", "warning");
+          return;
+        }
+        
+        // 4. Address validation (Province, District, Ward, Street)
+        if (!provinceEl.value || !districtEl.value || !wardEl.value) {
+          showToast("⚠️ Vui lòng chọn đầy đủ Tỉnh/TP, Quận/Huyện và Phường/Xã!", "warning");
+          return;
+        }
+
+        if (street.length < 5) {
+          showToast("⚠️ Vui lòng nhập số nhà, tên đường chi tiết hơn (tối thiểu 5 ký tự)!", "warning");
+          return;
+        }
+
+        const province = provinceEl.options[provinceEl.selectedIndex]?.text || "";
+        const district = districtEl.options[districtEl.selectedIndex]?.text || "";
+        const ward = wardEl.value || "";
+        const fullAddress = `${street}, ${ward}, ${district}, ${province}`;
+        
+        const namsinh = parseInt(document.getElementById("vol-namsinh").value);
+        const timeVal = document.getElementById("vol-time").value;
+        const skillsText = document.getElementById("vol-skills").value.trim();
+        const fullSkills = `Thời gian rảnh: ${timeVal}. Kỹ năng: ${skillsText}`;
+
+        // Send AJAX request
+        fetch("/api/Volunteer/volunteer-applications", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                HoTen: name,
+                Email: email,
+                SoDienThoai: phone,
+                NamSinh: namsinh,
+                NgheNghiep: "Tự do",
+                KyNang: fullSkills
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                showToast("🎉 Gửi đơn tình nguyện thành công! Chúng tôi sẽ phản hồi trong 48h.", "success");
+                e.target.reset();
+                
+                // Disable and clear selects
+                districtSelect.innerHTML = '<option value="" disabled selected>Chọn Quận / Huyện</option>';
+                districtSelect.disabled = true;
+                wardSelect.innerHTML = '<option value="" disabled selected>Chọn Phường / Xã</option>';
+                wardSelect.disabled = true;
+            } else {
+                showToast("❌ Gửi đơn thất bại: " + res.message, "error");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast("❌ Lỗi kết nối đến máy chủ", "error");
+        });
+      });
+    </script>

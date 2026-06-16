@@ -1,0 +1,591 @@
+@{
+    ViewData["Title"] = "Quản lý người nhận nuôi";
+    Layout = "_AdminLayout";
+}
+
+<div class="db-layout">
+      <!-- ═══ Sidebar ═══ -->
+      <aside class="db-sidebar" id="dbSidebar">
+        <a asp-controller="Admin" asp-action="Index" class="db-sidebar-logo">
+          <div class="db-sidebar-logo-icon">🐾</div>
+          <div>
+            <div class="db-sidebar-logo-text">Pawsitive Rescue</div>
+            <span class="db-sidebar-logo-sub">Hệ thống Quản trị</span>
+          </div>
+        </a>
+
+        <nav class="db-sidebar-nav">
+          <a asp-controller="Admin" asp-action="Index" class="db-sidebar-link" data-view="overview">
+            <i class="bi bi-grid-1x2-fill"></i> Tổng quan
+          </a>
+          <a asp-controller="Admin" asp-action="ManageAnimals" class="db-sidebar-link" data-view="animals">
+            <i class="bi bi-heart-pulse-fill"></i> Quản lý Động vật
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageAdopters"
+            class="db-sidebar-link active"
+            data-view="adopters"
+          >
+            <i class="bi bi-house-heart-fill"></i> Nhận nuôi
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageVolunteers"
+            class="db-sidebar-link"
+            data-view="volunteers"
+          >
+            <i class="bi bi-people-fill"></i> Tình nguyện viên
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageDonations"
+            class="db-sidebar-link"
+            data-view="donations"
+          >
+            <i class="bi bi-gift-fill"></i> Quyên góp
+          </a>
+          <a asp-controller="Admin" asp-action="ManageRescues" class="db-sidebar-link" data-view="rescue">
+            <i class="bi bi-exclamation-triangle-fill"></i> Cứu hộ Khẩn cấp
+          </a>
+        </nav>
+
+        <div class="db-sidebar-bottom">
+          <a href="#" class="db-sidebar-link" onclick="pawsitiveLogout(); return false;"><i class="bi bi-box-arrow-left"></i> Đăng xuất</a>
+        </div>
+      </aside>
+
+      <div class="db-overlay" id="dbOverlay"></div>
+
+      <!-- ═══ Main Content ═══ -->
+      <main class="db-main">
+        <!-- Top Bar -->
+        <header class="db-topbar">
+          <button class="db-mobile-toggle" id="dbMobileToggle">
+            <i class="bi bi-list"></i>
+          </button>
+          <nav class="d-none d-md-flex gap-3 me-auto">
+            <a asp-controller="Home" asp-action="Index" class="pawsitive-nav-link">Trang chủ</a>
+            <a asp-controller="Admin" asp-action="ManageAdopters" class="pawsitive-nav-link active">Nhận nuôi</a>
+          </nav>
+          <input
+            type="text"
+            class="db-topbar-search"
+            id="adopterSearchInput"
+            placeholder="Tìm kiếm hồ sơ nhận nuôi..."
+          />
+          <div class="db-topbar-icon" title="Thông báo">
+            <i class="bi bi-bell-fill"></i>
+          </div>
+          <div class="db-topbar-icon" title="Cài đặt">
+            <i class="bi bi-gear-fill"></i>
+          </div>
+          <div class="db-topbar-avatar">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              alt="Avatar Admin"
+            />
+          </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="db-content">
+          <!-- Page Header -->
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+              <h1
+                class="h2 mb-1"
+                style="
+                  color: var(--pawsitive-primary-vibrant);
+                  font-weight: 800;
+                "
+              >
+                Quản lý Nhận nuôi
+              </h1>
+              <p class="text-muted small mb-0">
+                Xem xét và quản lý các đơn xin nhận nuôi từ người dùng.
+              </p>
+            </div>
+            <button
+              class="db-btn db-btn-primary"
+              onclick="alert('Xuất báo cáo nhận nuôi')"
+            >
+              <i class="bi bi-download"></i> Xuất báo cáo
+            </button>
+          </div>
+
+          <!-- ── Stat Cards ── -->
+          <div class="row g-3 mb-4">
+            <div class="col-lg-3 col-md-6">
+              <div class="adopter-stat-card db-animate-in">
+                <div class="adopter-stat-icon primary">
+                  <i class="bi bi-file-earmark-check"></i>
+                </div>
+                <div class="adopter-stat-content">
+                  <h3>248</h3>
+                  <div class="adopter-stat-label">Tổng đơn xin nhận nuôi</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+              <div class="adopter-stat-card db-animate-in">
+                <div class="adopter-stat-icon secondary">
+                  <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="adopter-stat-content">
+                  <h3>18</h3>
+                  <div class="adopter-stat-label">Chờ xét duyệt</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+              <div class="adopter-stat-card db-animate-in">
+                <div
+                  class="adopter-stat-icon"
+                  style="background-color: #d4f4e7"
+                >
+                  <i class="bi bi-check-circle-fill" style="color: #2d8659"></i>
+                </div>
+                <div class="adopter-stat-content">
+                  <h3>215</h3>
+                  <div class="adopter-stat-label">Đã phê duyệt</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+              <div class="adopter-stat-card db-animate-in">
+                <div
+                  class="adopter-stat-icon"
+                  style="background-color: #fde8e8"
+                >
+                  <i
+                    class="bi bi-x-circle-fill"
+                    style="color: var(--pawsitive-error)"
+                  ></i>
+                </div>
+                <div class="adopter-stat-content">
+                  <h3>15</h3>
+                  <div class="adopter-stat-label">Từ chối</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Filters ── -->
+          <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+            <select class="db-filter-select" id="filterStatus" style="flex: 1; min-width: 150px">
+              <option value="">Tất cả trạng thái</option>
+              <option value="Đang xét duyệt">Đang xét duyệt</option>
+              <option value="Phỏng vấn">Phỏng vấn</option>
+              <option value="Hoàn tất">Đã phê duyệt</option>
+              <option value="Từ chối">Từ chối</option>
+            </select>
+            <select class="db-filter-select" id="filterSpecies" style="flex: 1; min-width: 150px">
+              <option value="">Tất cả loài</option>
+              <option value="Chó">Chó</option>
+              <option value="Mèo">Mèo</option>
+              <option value="Khác">Khác</option>
+            </select>
+            <div class="ms-auto">
+              <button
+                class="db-btn db-btn-secondary"
+                style="padding: 0.5rem 1rem"
+                onclick="loadApplications()"
+              >
+                <i class="bi bi-funnel"></i> Lọc
+              </button>
+            </div>
+          </div>
+
+          <!-- ── Applications List ── -->
+          <div class="mb-4" id="applications-list-container">
+            <div class="text-center py-5 text-muted">Đang tải danh sách đơn đăng ký nhận nuôi...</div>
+          </div>
+
+          <!-- ── Statistics Panel ── -->
+          <div class="row g-3">
+            <div class="col-lg-6">
+              <!-- Additional stats can be added here -->
+            </div>
+            <div class="col-lg-6">
+              <div class="adopter-panel db-animate-in">
+                <h3
+                  class="h5 mb-3"
+                  style="color: var(--pawsitive-on-surface); font-weight: 700"
+                >
+                  <i class="bi bi-bar-chart-fill"></i> Thống kê tuần này
+                </h3>
+                <div
+                  style="
+                    padding: 1.5rem;
+                    background-color: var(--pawsitive-surface-container-low);
+                    border-radius: 0.75rem;
+                    text-align: center;
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 0.875rem;
+                      color: var(--pawsitive-on-surface-variant);
+                      margin-bottom: 0.5rem;
+                    "
+                  >
+                    Đơn xin mới
+                  </div>
+                  <div
+                    style="
+                      font-size: 2rem;
+                      font-weight: 800;
+                      color: var(--pawsitive-primary-vibrant);
+                    "
+                  >
+                    12
+                  </div>
+                </div>
+                <div
+                  style="
+                    margin-top: 1rem;
+                    padding: 1rem;
+                    background-color: var(--pawsitive-surface-container-low);
+                    border-radius: 0.75rem;
+                  "
+                >
+                  <div class="d-flex justify-content-between mb-2">
+                    <span style="font-size: 0.875rem">Phê duyệt</span>
+                    <span style="font-weight: 700">8 (67%)</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span style="font-size: 0.875rem">Từ chối</span>
+                    <span style="font-weight: 700">2 (17%)</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span style="font-size: 0.875rem">Đang xét duyệt</span>
+                    <span style="font-weight: 700">2 (17%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <!-- Interview Modal -->
+    <div class="modal fade" id="interviewModal" tabindex="-1" aria-labelledby="interviewModalLabel" aria-hidden="true" style="z-index: 1055;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000; background: #fff;">
+          <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+            <h5 class="modal-title font-bold" id="interviewModalLabel">🗓️ Đặt lịch hẹn phỏng vấn</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="interviewForm">
+            <input type="hidden" id="interviewAppId" />
+            <div class="modal-body">
+              <div class="mb-3 text-start">
+                <label for="interviewDateInput" class="form-label font-semibold">Chọn Ngày và Giờ phỏng vấn <span class="text-danger">*</span></label>
+                <input type="datetime-local" class="form-control form-control-pawsitive" id="interviewDateInput" required style="border: 2px solid #000; border-radius: 8px;" />
+                <small class="text-muted mt-1 d-block">Đơn đăng ký nhận nuôi sẽ tự động chuyển sang trạng thái "Phỏng vấn".</small>
+              </div>
+            </div>
+            <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+              <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+              <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Xác nhận lịch hẹn</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS & App Logic -->
+    @section Scripts {
+    <script>
+      // Map showToast to dbToast
+      function showToast(message, type = "success") {
+          dbToast(message);
+      }
+
+      let currentApplications = [];
+      let interviewModal = null;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Sidebar Toggle
+        const dbMobileToggle = document.getElementById("dbMobileToggle");
+        const dbSidebar = document.getElementById("dbSidebar");
+        const dbOverlay = document.getElementById("dbOverlay");
+
+        if (dbMobileToggle && dbSidebar && dbOverlay) {
+          dbMobileToggle.addEventListener("click", () => {
+            dbSidebar.classList.toggle("active");
+            dbOverlay.classList.toggle("active");
+          });
+
+          dbOverlay.addEventListener("click", () => {
+            dbSidebar.classList.remove("active");
+            dbOverlay.classList.remove("active");
+          });
+        }
+
+        // Initialize interview modal
+        interviewModal = new bootstrap.Modal(document.getElementById('interviewModal'));
+        document.getElementById("interviewForm").addEventListener("submit", submitInterviewSchedule);
+
+        // Load applications
+        loadApplications();
+
+        // Bind search/filter triggers
+        document.getElementById("filterStatus").addEventListener("change", loadApplications);
+        document.getElementById("filterSpecies").addEventListener("change", loadApplications);
+        document.getElementById("adopterSearchInput").addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            loadApplications();
+          }
+        });
+      });
+
+      async function loadApplications() {
+        const status = document.getElementById("filterStatus").value;
+        const search = document.getElementById("adopterSearchInput").value.trim();
+        const listContainer = document.getElementById("applications-list-container");
+
+        listContainer.innerHTML = `<div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Đang tải danh sách hồ sơ nhận nuôi...</div>`;
+
+        try {
+          const params = new URLSearchParams();
+          if (status) params.append("trangthai", status);
+          if (search) params.append("q", search);
+
+          const res = await fetch(`/api/Adoption/admin?${params.toString()}`);
+          const json = await res.json();
+
+          if (json.success) {
+            currentApplications = json.data || [];
+            
+            // Apply client-side species filter if selected
+            const speciesFilter = document.getElementById("filterSpecies").value;
+            let filteredApps = currentApplications;
+            if (speciesFilter) {
+              filteredApps = currentApplications.filter(app => {
+                if (!app.thuCung) return false;
+                return app.thuCung.loaiNguonGoc === speciesFilter;
+              });
+            }
+
+            renderApplications(filteredApps);
+            updateSummaryCards(currentApplications);
+          } else {
+            listContainer.innerHTML = `<div class="text-center py-5 text-danger">Lỗi: ${json.message}</div>`;
+          }
+        } catch (err) {
+          console.error(err);
+          listContainer.innerHTML = `<div class="text-center py-5 text-danger">Không thể kết nối đến máy chủ.</div>`;
+        }
+      }
+
+      function renderApplications(apps) {
+        const listContainer = document.getElementById("applications-list-container");
+        if (apps.length === 0) {
+          listContainer.innerHTML = `<div class="text-center py-5 text-muted">Không tìm thấy đơn đăng ký nhận nuôi nào.</div>`;
+          return;
+        }
+
+        listContainer.innerHTML = apps.map(app => {
+          const adopter = app.nguoiDung || {};
+          const pet = app.thuCung || {};
+          const survey = app.khaoSatDieuKienSong || {};
+          const dateStr = new Date(app.ngayTao).toLocaleDateString("vi-VN");
+          const updateStr = new Date(app.ngayCapNhat).toLocaleDateString("vi-VN");
+
+          // Status badge
+          let statusBadgeClass = "adopter-status-pending";
+          let statusLabel = app.trangThaiDon;
+          if (app.trangThaiDon === "Phỏng vấn") {
+            statusBadgeClass = "bg-primary text-white rounded-pill px-3 py-1 font-bold text-xs";
+          } else if (app.trangThaiDon === "Hoàn tất" || app.trangThaiDon === "Thành công") {
+            statusBadgeClass = "adopter-status-approved";
+            statusLabel = "Đã hoàn tất";
+          } else if (app.trangThaiDon === "Từ chối") {
+            statusBadgeClass = "adopter-status-rejected";
+          }
+
+          const petImg = pet.anhChinh || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=100";
+
+          // Action buttons based on status
+          let actionButtons = "";
+          if (app.trangThaiDon === "Đang xét duyệt") {
+            actionButtons = `
+              <button class="adopter-action-btn" onclick="openInterviewModal(${app.maDonNhanNuoi})">
+                <i class="bi bi-calendar-event"></i> Hẹn phỏng vấn
+              </button>
+              <button class="adopter-action-btn approve" onclick="updateApplicationStatus(${app.maDonNhanNuoi}, 'Hoàn tất')">
+                <i class="bi bi-check-circle-fill"></i> Phê duyệt
+              </button>
+              <button class="adopter-action-btn reject" onclick="updateApplicationStatus(${app.maDonNhanNuoi}, 'Từ chối')">
+                <i class="bi bi-x-circle-fill"></i> Từ chối
+              </button>
+            `;
+          } else if (app.trangThaiDon === "Phỏng vấn") {
+            const interviewDate = app.ngayHenPhongVan ? new Date(app.ngayHenPhongVan).toLocaleString("vi-VN") : "Chưa đặt";
+            actionButtons = `
+              <span class="small text-primary font-bold me-auto d-block d-md-inline mb-2 mb-md-0"><i class="bi bi-calendar-check-fill"></i> Phỏng vấn lúc: ${interviewDate}</span>
+              <div class="d-inline-flex gap-2">
+                <button class="adopter-action-btn approve" onclick="updateApplicationStatus(${app.maDonNhanNuoi}, 'Hoàn tất')">
+                  <i class="bi bi-check-circle-fill"></i> Hoàn tất nhận nuôi
+                </button>
+                <button class="adopter-action-btn reject" onclick="updateApplicationStatus(${app.maDonNhanNuoi}, 'Từ chối')">
+                  <i class="bi bi-x-circle-fill"></i> Từ chối
+                </button>
+              </div>
+            `;
+          } else {
+            actionButtons = `<span class="small text-muted font-bold"><i class="bi bi-shield-check"></i> Đơn hàng đã được giải quyết</span>`;
+          }
+
+          // Survey summary
+          const yardText = survey.coSanVuon ? "Có sân vườn" : "Không sân";
+          const balconyText = survey.coLuoiBanCong ? "Có lưới ban công" : "Không lưới ban công";
+          const gateText = survey.coHangRaoCao ? "Có rào cao" : "Không rào";
+
+          return `
+            <div class="adopter-app-card db-animate-in">
+              <div class="adopter-header">
+                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="${adopter.hoTen || 'Người dùng'}" class="adopter-avatar" />
+                <div class="flex-grow-1">
+                  <div class="adopter-name">${adopter.hoTen || 'Người dùng ẩn danh'}</div>
+                  <div class="adopter-info">
+                    <i class="bi bi-telephone"></i> ${adopter.soDienThoai || 'Chưa cập nhật'} |
+                    <i class="bi bi-envelope"></i> ${adopter.email || ''} |
+                    <i class="bi bi-geo-alt"></i> ${adopter.diaChi || 'Chưa cập nhật'}
+                  </div>
+                </div>
+                <div class="adopter-status-badge ${statusBadgeClass}">
+                  ${statusLabel}
+                </div>
+              </div>
+
+              <div class="adopter-pet-info">
+                <img src="${petImg}" alt="${pet.tenThuCung}" class="adopter-pet-avatar" onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=100'" />
+                <div class="flex-grow-1">
+                  <div class="adopter-pet-name">${pet.tenThuCung}</div>
+                  <div class="adopter-pet-type">
+                    ${pet.loaiNguonGoc || 'Động vật'} • ${pet.giongThuCung || 'Lai'} • ${pet.giaTriTuoi || ''} ${pet.donViTuoi || 'Tuổi'} • ${pet.gioiTinh || 'Đực'}
+                  </div>
+                </div>
+              </div>
+
+              <div class="adopter-details">
+                <div class="adopter-detail-item">
+                  <div class="adopter-detail-label">Kinh nghiệm nuôi</div>
+                  <div class="adopter-detail-value">${survey.kinhNghiemNuoi || 'Không'}</div>
+                </div>
+                <div class="adopter-detail-item">
+                  <div class="adopter-detail-label">Nơi sinh sống</div>
+                  <div class="adopter-detail-value">${survey.loaiNhaO || 'Chung cư'}</div>
+                </div>
+                <div class="adopter-detail-item">
+                  <div class="adopter-detail-label">Sân vườn / Ban công / Cổng rào</div>
+                  <div class="adopter-detail-value">${yardText} • ${balconyText} • ${gateText}</div>
+                </div>
+                <div class="adopter-detail-item">
+                  <div class="adopter-detail-label">Thời gian chăm bé / Ý kiến gia đình</div>
+                  <div class="adopter-detail-value">${survey.thoiGianRanhMoiNgay || 'Trung bình'} • ${survey.suDongYCoGiaDinh || 'Đồng ý'}</div>
+                </div>
+              </div>
+
+              <div class="adopter-actions">
+                ${actionButtons}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function updateSummaryCards(apps) {
+        const total = apps.length;
+        const pending = apps.filter(a => a.trangThaiDon === "Đang xét duyệt").length;
+        const approved = apps.filter(a => a.trangThaiDon === "Hoàn tất" || a.trangThaiDon === "Thành công").length;
+        const rejected = apps.filter(a => a.trangThaiDon === "Từ chối").length;
+
+        // Update counters in layout
+        const cards = document.querySelectorAll(".adopter-stat-card");
+        if (cards.length >= 4) {
+          cards[0].querySelector("h3").textContent = total;
+          cards[1].querySelector("h3").textContent = pending;
+          cards[2].querySelector("h3").textContent = approved;
+          cards[3].querySelector("h3").textContent = rejected;
+        }
+      }
+
+      async function updateApplicationStatus(id, status) {
+        const confirmMsg = status === "Hoàn tất" 
+          ? "Bạn có chắc chắn muốn PHÊ DUYỆT đơn đăng ký nhận nuôi này?" 
+          : "Bạn có chắc chắn muốn TỪ CHỐI đơn đăng ký nhận nuôi này?";
+
+        if (!confirm(confirmMsg)) return;
+
+        showToast("💾 Đang cập nhật trạng thái đơn...", "info");
+
+        try {
+          const res = await fetch(`/api/Adoption/admin/${id}/status`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ Status: status })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("✔️ Cập nhật đơn nhận nuôi thành công!", "success");
+            loadApplications();
+          } else {
+            showToast("❌ Cập nhật thất bại: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối đến máy chủ", "error");
+        }
+      }
+
+      function openInterviewModal(id) {
+        document.getElementById("interviewAppId").value = id;
+        document.getElementById("interviewDateInput").value = "";
+        interviewModal.show();
+      }
+
+      async function submitInterviewSchedule(e) {
+        e.preventDefault();
+        const id = document.getElementById("interviewAppId").value;
+        const dateVal = document.getElementById("interviewDateInput").value;
+
+        if (!dateVal) {
+          showToast("⚠️ Vui lòng chọn ngày giờ phỏng vấn!", "error");
+          return;
+        }
+
+        showToast("💾 Đang xếp lịch hẹn phỏng vấn...", "info");
+
+        try {
+          const res = await fetch(`/api/Adoption/admin/${id}/interview`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ InterviewDate: dateVal })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("📅 Đã lên lịch hẹn phỏng vấn thành công!", "success");
+            interviewModal.hide();
+            loadApplications();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối đến máy chủ", "error");
+        }
+      }
+    </script>
+    }

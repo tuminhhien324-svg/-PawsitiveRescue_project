@@ -1,0 +1,127 @@
+@{
+    ViewData["Title"] = "Chi tiết bài viết";
+    Layout = "_Layout";
+}
+
+<main class="container py-5">
+  <!-- Back Button -->
+  <div class="mb-4">
+    <a asp-controller="Home" asp-action="Blogs" class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-4 py-2">
+      <i class="bi bi-arrow-left"></i> Quay lại danh sách
+    </a>
+  </div>
+
+  <div class="row g-4" id="blog-detail-container">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Đang tải nội dung bài viết...</p>
+    </div>
+  </div>
+</main>
+
+@section Scripts {
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const blogId = parseInt(urlParams.get("id") || "0");
+
+    if (blogId <= 0) {
+      showToast("❌ Không tìm thấy bài viết!", "error");
+      document.getElementById("blog-detail-container").innerHTML = `
+        <div class="col-12 text-center py-5">
+          <span class="fs-1">⚠️</span>
+          <h2 class="brand-font mt-3">Không tìm thấy bài viết</h2>
+          <p class="text-muted">Đường dẫn không hợp lệ hoặc bài viết đã bị xóa.</p>
+        </div>
+      `;
+      return;
+    }
+
+    fetchBlogDetails(blogId);
+  });
+
+  async function fetchBlogDetails(id) {
+    try {
+      const res = await fetch(`/api/Blog/${id}`);
+      const json = await res.json();
+
+      if (json.success && json.data) {
+        const blog = json.data;
+        renderBlog(blog);
+      } else {
+        showToast("❌ Lỗi: " + json.message, "error");
+        document.getElementById("blog-detail-container").innerHTML = `
+          <div class="col-12 text-center py-5">
+            <span class="fs-1">⚠️</span>
+            <h2 class="brand-font mt-3">Không tìm thấy bài viết</h2>
+            <p class="text-muted">${json.message || "Có lỗi xảy ra khi tải bài viết."}</p>
+          </div>
+        `;
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("❌ Lỗi kết nối đến máy chủ", "error");
+    }
+  }
+
+  function renderBlog(blog) {
+    const container = document.getElementById("blog-detail-container");
+    const dateStr = new Date(blog.ngayTao).toLocaleDateString("vi-VN", {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    
+    const authorName = blog.tacGia ? blog.tacGia.hoTen : "Ban quản trị";
+    const coverImg = blog.duongDanAnhDaiDien || "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=800";
+    
+    // Check if the blog relates to a pet
+    let petSection = "";
+    if (blog.thuCung) {
+      petSection = `
+        <div class="mt-4 p-4 border border-2 border-dark rounded-md bg-light d-flex align-items-center gap-3">
+          <div class="border border-2 border-dark rounded-full overflow-hidden" style="width: 64px; height: 64px; flex-shrink: 0;">
+            <img src="${blog.thuCung.anhChinh || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=100'}" class="w-100 h-100" style="object-fit: cover;" />
+          </div>
+          <div>
+            <h4 class="brand-font fs-6 m-0 text-danger">Câu chuyện về bé ${blog.thuCung.tenThuCung}</h4>
+            <p class="small text-muted m-0">Bé đang có tình trạng nhận nuôi là: <strong>${blog.thuCung.trangThaiNhanNuoi}</strong></p>
+            <a href="/Home/Detail?id=${blog.thuCung.maThuCung}" class="small font-bold text-primary text-decoration-none d-inline-block mt-1">Ghé thăm hồ sơ của ${blog.thuCung.tenThuCung} ➔</a>
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = `
+      <div class="col-lg-8 mx-auto">
+        <!-- Title & Meta -->
+        <h1 class="brand-font display-5 mb-3 text-dark text-start" style="font-weight: 800;">${blog.tieuDe}</h1>
+        
+        <div class="d-flex align-items-center gap-3 mb-4 text-muted small">
+          <span><i class="bi bi-person-fill"></i> Tác giả: <strong>${authorName}</strong></span>
+          <span>•</span>
+          <span><i class="bi bi-calendar3"></i> Ngày đăng: ${dateStr}</span>
+          ${blog.laCauChuyenThanhCong ? '<span>•</span> <span class="badge bg-success rounded-pill px-3 py-1 font-bold text-white text-xs">Câu chuyện thành công</span>' : ''}
+        </div>
+
+        <!-- Portrait Cover Image -->
+        <div class="p-3 bg-warning rounded-md border border-3 border-dark shadow-flat mb-5" style="background-color: #fbd38d !important;">
+          <div class="pet-frame border border-2 border-dark overflow-hidden position-relative" style="max-height: 450px;">
+            <img src="${coverImg}" alt="${blog.tieuDe}" class="w-100 h-100" style="object-fit: cover;">
+          </div>
+        </div>
+
+        <!-- Main Body Content -->
+        <div class="p-4 bg-white border border-3 border-dark rounded-md shadow-flat mb-5" style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+          <div class="blog-body-text">
+            ${blog.noiDung.replace(/\n/g, '<br/>')}
+          </div>
+          ${petSection}
+        </div>
+      </div>
+    `;
+  }
+</script>
+}

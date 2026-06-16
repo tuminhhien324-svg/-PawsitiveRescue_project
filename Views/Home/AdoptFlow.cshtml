@@ -1,0 +1,329 @@
+@{
+    ViewData["Title"] = "Quy trình nhận nuôi";
+    Layout = "_Layout";
+}
+
+<!-- Interactive Wizard Container -->
+  <main class="container py-5" style="max-width: 900px;">
+    
+    <!-- Top Progress Bar Banner -->
+    <div class="mb-5 text-center">
+      <h1 class="brand-font h2 m-0 text-danger mb-2" id="active-step-title">Bước 1: Thông tin cá nhân</h1>
+      <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+        <span class="small text-muted">Tiến trình đăng ký</span>
+        <span class="small fw-bold text-danger" id="wizard-progress-percent">0% hoàn thành</span>
+      </div>
+      <div class="progress-pawsitive">
+        <div class="progress-bar-pawsitive" id="wizard-progress-track" style="width: 0%;">
+          <div class="progress-bar-paw-icon">🐾</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-step Form Wizard -->
+    <form id="adopt-flow-form" class="card-pawsitive p-4 md-p-5 bg-white mb-5" novalidate>
+      <div class="wizard-container">
+        
+        <!-- STEP 1: Personal Info -->
+        <div class="wizard-step active" id="step-1">
+          <h2 class="brand-font h3 mb-2 text-center" style="color: var(--pawsitive-primary-vibrant);">Thông tin cá nhân</h2>
+          <p class="text-center text-muted small mb-4">Hãy cho chúng mình biết một chút về bạn nhé! 🐾</p>
+          
+          <div class="row g-4 mb-4">
+            <div class="col-md-6 form-group-pawsitive">
+              <label for="input-fullname">Họ và tên của bạn</label>
+              <input type="text" class="form-control form-control-pawsitive" id="input-fullname" placeholder="Nguyễn Văn A" required>
+            </div>
+            <div class="col-md-6 form-group-pawsitive">
+              <label for="input-phone">Số điện thoại liên lạc</label>
+              <input type="tel" class="form-control form-control-pawsitive" id="input-phone" placeholder="0901 234 567" required>
+            </div>
+            <div class="col-md-6 form-group-pawsitive">
+              <label for="input-email">Địa chỉ Email</label>
+              <input type="email" class="form-control form-control-pawsitive" id="input-email" placeholder="email@vi-du.com" required>
+            </div>
+            <div class="col-md-6 form-group-pawsitive">
+              <label for="input-birthyear">Năm sinh</label>
+              <input type="number" class="form-control form-control-pawsitive" id="input-birthyear" placeholder="1995" required>
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="select-province">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+              <select class="form-select form-control-pawsitive" id="select-province" required>
+                <option value="" disabled selected>-- Chọn Tỉnh/Thành phố --</option>
+                <option value="Thành phố Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
+                <option value="Thành phố Hà Nội">Thành phố Hà Nội</option>
+                <option value="Thành phố Đà Nẵng">Thành phố Đà Nẵng</option>
+                <option value="Khác">Tỉnh/Thành phố khác</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="select-district">Quận / Huyện <span class="text-danger">*</span></label>
+              <select class="form-select form-control-pawsitive" id="select-district" required>
+                <option value="" disabled selected>-- Chọn Quận/Huyện --</option>
+              </select>
+              <input type="text" class="form-control form-control-pawsitive d-none mt-2" id="input-district-text" placeholder="Nhập Quận/Huyện..." />
+            </div>
+            <div class="col-md-4 form-group-pawsitive">
+              <label for="input-ward">Phường / Xã <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-pawsitive" id="input-ward" placeholder="Phường Láng Hạ" required />
+            </div>
+            <div class="col-12 form-group-pawsitive">
+              <label for="input-street">Số nhà, ngõ, tên đường <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-pawsitive" id="input-street" placeholder="Ví dụ: Số 12, ngách 34, ngõ 56, đường Láng..." required />
+            </div>
+          </div>
+
+          <!-- Blue Security Alert -->
+          <div class="p-3 border border-2 border-dark rounded-md d-flex align-items-center gap-3 mb-2" style="background-color: var(--pawsitive-secondary-container);">
+            <div class="border border-2 border-dark rounded-full bg-white overflow-hidden d-none d-sm-block" style="width: 52px; height: 52px; flex-shrink: 0;">
+              <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=100" alt="Dog helper" class="w-100 h-100" style="object-fit: cover;">
+            </div>
+            <div>
+              <h4 class="brand-font fs-6 m-0 mb-1" style="color: var(--pawsitive-on-secondary-container);">Bạn đã sẵn sàng?</h4>
+              <p class="small text-muted m-0">Thông tin của bạn sẽ được bảo mật tuyệt đối và chỉ dùng cho mục đích xét duyệt hồ sơ nhận nuôi.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Experience -->
+        <div class="wizard-step d-none" id="step-2">
+          <h2 class="brand-font h3 mb-2 text-center" style="color: var(--pawsitive-primary-vibrant);">Kinh nghiệm nuôi dưỡng</h2>
+          <p class="text-center text-muted small mb-4">Chúng mình muốn hiểu thêm về trải nghiệm của bạn với các bạn nhỏ bốn chân.</p>
+          
+          <div class="mb-4">
+            <h3 class="brand-font fs-6 mb-3">1. Bạn đã từng nuôi thú cưng chưa?</h3>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="option-card-pawsitive history-card active-card" data-history="never">
+                  <div class="fs-2 mb-2">😊</div>
+                  <h4 class="brand-font fs-6 mb-1">Chưa bao giờ</h4>
+                  <span class="small text-muted">Thú cưng đầu tiên</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="option-card-pawsitive history-card" data-history="past">
+                  <div class="fs-2 mb-2">🏠</div>
+                  <h4 class="brand-font fs-6 mb-1">Đã từng nuôi</h4>
+                  <span class="small text-muted">Có kinh nghiệm trước</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="option-card-pawsitive history-card" data-history="current">
+                  <div class="fs-2 mb-2">🧳</div>
+                  <h4 class="brand-font fs-6 mb-1">Đang nuôi</h4>
+                  <span class="small text-muted">Có bé ở nhà</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4 form-group-pawsitive">
+            <label for="select-free-time" class="brand-font fs-6 mb-2">2. Thời gian rảnh rỗi mỗi ngày dành cho bé?</label>
+            <select class="form-select form-control-pawsitive" id="select-free-time" aria-label="Free time">
+              <option value="low">⏳ Ít hơn 2 tiếng (Dành cho bé ít vận động)</option>
+              <option value="medium" selected>⏳ Từ 2 đến 5 tiếng (Trung bình)</option>
+              <option value="high">⏳ Trên 5 tiếng (Rất nhiều thời gian)</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <h3 class="brand-font fs-6 mb-2">3. Ý kiến của gia đình/người cùng nhà?</h3>
+            <div class="d-flex flex-column gap-2">
+              <div class="form-check p-3 border border-2 border-dark rounded-md bg-light d-flex align-items-center gap-3">
+                <input class="form-check-input ms-0 mt-0" type="radio" name="familyConsensus" id="consensus-yes" checked>
+                <label class="form-check-label font-bold small cursor-pointer" for="consensus-yes">
+                  👨‍👩‍👧‍👦 Mọi người đều đồng ý <span class="d-block small text-muted font-normal mt-1">Môi trường lý tưởng nhất để nuôi dưỡng thú cưng lâu dài.</span>
+                </label>
+              </div>
+              <div class="form-check p-3 border border-2 border-dark rounded-md bg-light d-flex align-items-center gap-3">
+                <input class="form-check-input ms-0 mt-0" type="radio" name="familyConsensus" id="consensus-no">
+                <label class="form-check-label font-bold small cursor-pointer" for="consensus-no">
+                  🙅‍♂️ Có người dị ứng/Không thích <span class="d-block small text-muted font-normal mt-1">Cần trao đổi thêm với ban kiểm duyệt Pawsitive.</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Housing -->
+        <div class="wizard-step d-none" id="step-3">
+          <h2 class="brand-font h3 mb-2 text-center" style="color: var(--pawsitive-primary-vibrant);">Khảo sát điều kiện nơi ở</h2>
+          <p class="text-center text-muted small mb-4">Môi trường sống đóng vai trò quan trọng trong việc lựa chọn bé phù hợp.</p>
+
+          <div class="mb-4">
+            <h3 class="brand-font fs-6 mb-3">1. Bạn đang sống trong loại hình nhà ở nào?</h3>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="option-card-pawsitive house-card active-card" data-house="apartment">
+                  <div class="pet-frame ratio ratio-16x9 mb-3">
+                    <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=200" alt="Apartment">
+                  </div>
+                  <h4 class="brand-font fs-6 mb-1">Căn hộ / Chung cư</h4>
+                  <span class="small text-muted">Thích hợp mèo hoặc chó nhỏ</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="option-card-pawsitive house-card" data-house="villa">
+                  <div class="pet-frame ratio ratio-16x9 mb-3">
+                    <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=200" alt="House">
+                  </div>
+                  <h4 class="brand-font fs-6 mb-1">Nhà phố / Biệt thự</h4>
+                  <span class="small text-muted">Không gian rộng rãi, lý tưởng chó lớn</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="p-3 border border-2 border-dark rounded-md h-100 d-flex flex-column justify-content-between" style="background-color: var(--pawsitive-secondary-container);">
+                <div>
+                  <h4 class="brand-font fs-6 mb-1 text-dark">Nhà bạn có sân vườn không?</h4>
+                  <p class="small text-muted m-0 mb-3">Giúp thú cưng có không gian giải trí an toàn ngoài trời.</p>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-pawsitive btn-pawsitive-secondary btn-garden rounded-full px-3 py-1 flex-grow-1">Không có</button>
+                  <button type="button" class="btn btn-pawsitive btn-pawsitive-primary btn-garden active rounded-full px-3 py-1 flex-grow-1">Có sân vườn</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="p-3 border border-2 border-dark rounded-md h-100" style="background-color: #fff0f0;">
+                <h4 class="brand-font fs-6 mb-2 text-danger"><i class="bi bi-shield-fill-check"></i> Rào chắn an toàn?</h4>
+                <div class="d-flex flex-column gap-2 mt-2">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="fence-balcony" checked>
+                    <label class="form-check-label small cursor-pointer" for="fence-balcony">Có lưới ban công</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="fence-gate" checked>
+                    <label class="form-check-label small cursor-pointer" for="fence-gate">Cổng rào cao &gt;1.5m</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Confirm & Submit -->
+        <div class="wizard-step d-none" id="step-4">
+          <h2 class="brand-font h3 mb-2 text-center" style="color: var(--pawsitive-primary-vibrant);">Gửi Đơn Đăng Ký</h2>
+          <p class="text-center text-muted small mb-4">Bạn chỉ còn một bước nữa là có thể chào đón thành viên mới vào gia đình!</p>
+
+          <div class="row g-4 mb-4">
+            <!-- Left Pet Summary -->
+            <div class="col-md-4">
+              <div class="p-3 border border-2 border-dark rounded-md text-center bg-light">
+                <div class="border border-2 border-dark rounded-full overflow-hidden mx-auto mb-3" style="width: 100px; height: 100px;">
+                  <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&q=80&w=150" alt="Pet portrait" class="w-100 h-100" style="object-fit: cover;">
+                </div>
+                <h4 class="brand-font h5 text-danger mb-1 pet-name-placeholder">Milo</h4>
+                <span class="small text-muted d-block mb-3">Beagle Mix • 2 tuổi</span>
+                <span class="badge badge-pawsitive badge-pawsitive-primary d-block mb-2">Thân thiện</span>
+                <span class="badge badge-pawsitive badge-pawsitive-secondary d-block">Đã tiêm phòng</span>
+              </div>
+            </div>
+            
+            <!-- Right User Info Confirmation -->
+            <div class="col-md-8">
+              <div class="p-3 border border-2 border-dark rounded-md h-100 bg-light">
+                <h4 class="brand-font fs-6 mb-3 pb-2 border-bottom border-secondary border-opacity-20 text-primary">Xác nhận thông tin</h4>
+                <table class="table table-borderless table-sm small m-0 text-muted">
+                  <tbody>
+                    <tr>
+                      <td class="font-bold text-dark ps-0" style="width: 120px;">Người đăng ký:</td>
+                      <td>Nguyễn Văn A</td>
+                    </tr>
+                    <tr>
+                      <td class="font-bold text-dark ps-0">Số điện thoại:</td>
+                      <td>090 123 4567</td>
+                    </tr>
+                    <tr>
+                      <td class="font-bold text-dark ps-0">Địa chỉ nhà:</td>
+                      <td>123 Đường Hạnh Phúc, Quận Bình Thạnh, TP. HCM</td>
+                    </tr>
+                    <tr>
+                      <td class="font-bold text-dark ps-0">Kinh nghiệm:</td>
+                      <td>Chưa bao giờ nuôi thú cưng, rảnh rỗi trung bình 2-5h mỗi ngày, gia đình đồng ý.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Care Commitments Red Container -->
+          <div class="p-4 border border-2 border-dark rounded-md bg-light mb-2" style="border-color: var(--pawsitive-tertiary) !important; background-color: #fff6f5 !important;">
+            <h3 class="brand-font fs-5 text-danger mb-3"><i class="bi bi-heart-pulse-fill"></i> Cam kết chăm sóc</h3>
+            <div class="d-flex flex-column gap-3 small text-muted font-bold">
+              <div class="form-check d-flex align-items-start gap-2">
+                <input class="form-check-input mt-1" type="checkbox" id="check-commit-1" checked required>
+                <label class="form-check-label cursor-pointer" for="check-commit-1">
+                  Tôi cam kết cung cấp đầy đủ thức ăn, nước uống và môi trường sống an toàn cho <span class="pet-name-placeholder">Milo</span>.
+                </label>
+              </div>
+              <div class="form-check d-flex align-items-start gap-2">
+                <input class="form-check-input mt-1" type="checkbox" id="check-commit-2" checked required>
+                <label class="form-check-label cursor-pointer" for="check-commit-2">
+                  Tôi đồng ý đưa <span class="pet-name-placeholder">Milo</span> đi kiểm tra sức khỏe và tiêm phòng định kỳ theo hướng dẫn của bác sĩ thú y.
+                </label>
+              </div>
+              <div class="form-check d-flex align-items-start gap-2">
+                <input class="form-check-input mt-1" type="checkbox" id="check-commit-3" checked required>
+                <label class="form-check-label cursor-pointer" for="check-commit-3">
+                  Tôi cam kết sẽ không bỏ rơi, ngược đãi hoặc bán <span class="pet-name-placeholder">Milo</span> cho người khác dưới bất kỳ hình thức nào.
+                </label>
+              </div>
+              <div class="form-check d-flex align-items-start gap-2">
+                <input class="form-check-input mt-1" type="checkbox" id="check-commit-all" checked required>
+                <label class="form-check-label cursor-pointer text-danger font-black" for="check-commit-all">
+                  Tôi đồng ý để Pawsitive Rescue thăm nhà định kỳ (có báo trước) để đảm bảo các cam kết sống của bé được duy trì hiệu quả.
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Navigation Buttons -->
+      <hr class="my-4 border-secondary border-opacity-20">
+      <div class="d-flex justify-content-between gap-3">
+        <button type="button" class="btn btn-pawsitive btn-pawsitive-secondary rounded-full px-4" id="btn-prev">
+          ⎗ Quay lại
+        </button>
+        <button type="button" class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-4" id="btn-next">
+          Tiếp theo ➔
+        </button>
+        <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary rounded-full px-5 d-none" id="btn-submit">
+          Gửi đơn đăng ký ⌲
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Submit Success Overlay (Mock modal state) -->
+  <div class="position-fixed top-0 start-0 w-100 h-100 justify-content-center align-items-center d-none" id="success-modal-overlay" style="background-color: rgba(0,0,0,0.6); z-index: 10000; backdrop-filter: blur(4px);">
+    <div class="card-pawsitive text-center p-5 max-w-md bg-white border border-3 border-dark shadow-flat transform rotate-1" style="max-width: 480px; margin: 20px;">
+      <span class="fs-1 d-block mb-3">🎉</span>
+      <h2 class="brand-font text-danger mb-3">Gửi đơn thành công!</h2>
+      <p class="small text-muted mb-4">
+        Cảm ơn bạn đã nộp hồ sơ nhận nuôi bé <span class="pet-name-placeholder text-dark fw-bold">Milo</span>. Đội ngũ kiểm duyệt viên của Pawsitive Rescue sẽ liên hệ với bạn qua điện thoại/email trong vòng 48 giờ để sắp xếp lịch phỏng vấn.
+      </p>
+      <div class="d-flex flex-column gap-2">
+        <a class="btn btn-pawsitive btn-pawsitive-primary rounded-full justify-content-center" asp-controller="Account" asp-action="Profile">
+          Xem trạng thái đơn hàng
+        </a>
+        <a class="btn btn-pawsitive btn-pawsitive-secondary rounded-full justify-content-center" asp-controller="Home" asp-action="Index">
+          Quay lại trang chủ
+        </a>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <!-- Adoption Wizard Script -->
+  <script src="~/js/adopt-flow.js"></script>

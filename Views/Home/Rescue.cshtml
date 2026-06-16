@@ -1,0 +1,705 @@
+@{
+    ViewData["Title"] = "Cứu hộ";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<!-- Title Section -->
+    <header class="py-5 text-center">
+      <div class="container" style="max-width: 800px">
+        <h1
+          class="display-5 mb-3 brand-font text-danger"
+          style="font-weight: 800"
+        >
+          Cứu hộ khẩn cấp - Hãy cho chúng tôi biết bạn thấy gì
+        </h1>
+        <p class="lead text-muted" style="font-size: 1.05rem">
+          Thông tin của bạn sẽ giúp đội ngũ cứu hộ tiếp cận hiện trường nhanh
+          nhất có thể. Mỗi giây phút đều quý giá!
+        </p>
+      </div>
+    </header>
+
+    <!-- SOS Reporting Form -->
+    <main class="container mb-5" style="max-width: 850px">
+      <div class="card-pawsitive p-4 md-p-5 bg-white">
+        <form id="sos-dispatch-form" onsubmit="submitRescue(event)">
+          <!-- 1. Species Selection -->
+          <div class="mb-5">
+            <h3 class="brand-font fs-5 mb-3 text-dark">
+              <i class="bi bi-paw-fill text-danger"></i> Loài vật bạn thấy
+            </h3>
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <div class="species-card active" data-species="dog">
+                  <span class="fs-2 d-block mb-2">🐶</span>
+                  <h4 class="brand-font fs-6 m-0">Chó</h4>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="species-card" data-species="cat">
+                  <span class="fs-2 d-block mb-2">🐱</span>
+                  <h4 class="brand-font fs-6 m-0">Mèo</h4>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="species-card" data-species="other">
+                  <span class="fs-2 d-block mb-2">❓</span>
+                  <h4 class="brand-font fs-6 m-0">Khác</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Severity Selection -->
+          <div class="mb-5">
+            <h3 class="brand-font fs-5 mb-3 text-dark">
+              <i class="bi bi-heart-pulse-fill text-danger"></i> Tình trạng hiện
+              tại
+            </h3>
+            <div class="row g-3">
+              <!-- Injured -->
+              <div class="col-md-6">
+                <div class="severity-card active" data-severity="injured">
+                  <div
+                    class="bg-danger-subtle rounded-full border border-2 border-danger d-flex align-items-center justify-content-center"
+                    style="width: 44px; height: 44px; flex-shrink: 0"
+                  >
+                    <i class="bi bi-heartbreak text-danger fs-5"></i>
+                  </div>
+                  <div>
+                    <h4 class="brand-font fs-6 mb-1">Bị thương</h4>
+                    <p class="small text-muted m-0">
+                      Chảy máu, gãy xương, khó di chuyển
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Abandoned -->
+              <div class="col-md-6">
+                <div class="severity-card" data-severity="abandoned">
+                  <div
+                    class="bg-primary-subtle rounded-full border border-2 border-primary d-flex align-items-center justify-content-center"
+                    style="width: 44px; height: 44px; flex-shrink: 0"
+                  >
+                    <i class="bi bi-geo-alt-fill text-primary fs-5"></i>
+                  </div>
+                  <div>
+                    <h4 class="brand-font fs-6 mb-1">Bị bỏ rơi</h4>
+                    <p class="small text-muted m-0">
+                      Trong hộp, bị xích, không có chủ
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Sick -->
+              <div class="col-md-6">
+                <div class="severity-card" data-severity="sick">
+                  <div
+                    class="bg-secondary-subtle rounded-full border border-2 border-secondary d-flex align-items-center justify-content-center"
+                    style="width: 44px; height: 44px; flex-shrink: 0"
+                  >
+                    <i class="bi bi-virus fs-5 text-secondary"></i>
+                  </div>
+                  <div>
+                    <h4 class="brand-font fs-6 mb-1">Ốm yếu</h4>
+                    <p class="small text-muted m-0">Suy kiệt, co giật, lờ đờ</p>
+                  </div>
+                </div>
+              </div>
+              <!-- In Danger -->
+              <div class="col-md-6">
+                <div class="severity-card" data-severity="danger">
+                  <div
+                    class="bg-warning-subtle rounded-full border border-2 border-warning d-flex align-items-center justify-content-center"
+                    style="width: 44px; height: 44px; flex-shrink: 0"
+                  >
+                    <i
+                      class="bi bi-exclamation-triangle-fill text-warning fs-5"
+                    ></i>
+                  </div>
+                  <div>
+                    <h4 class="brand-font fs-6 mb-1">Nguy hiểm</h4>
+                    <p class="small text-muted m-0">
+                      Kẹt trên cao, sắp bị xâm hại, thiên tai
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Location Mapping -->
+          <div class="mb-5">
+            <h3 class="brand-font fs-5 mb-3 text-dark">
+              <i class="bi bi-geo-alt-fill text-danger"></i> Địa điểm cứu hộ
+            </h3>
+            <div class="form-group-pawsitive mb-3">
+              <input
+                type="text"
+                class="form-control form-control-pawsitive"
+                id="rescue-address-input"
+                placeholder="Nhập địa chỉ chính xác hoặc mô tả khu vực..."
+                required
+              />
+            </div>
+            <!-- Real Leaflet Map -->
+            <div class="mb-3 position-relative" style="z-index: 5;">
+              <div id="sos-map" style="height: 350px; border: 3px solid #000; border-radius: 12px; box-shadow: 5px 5px 0px #000; z-index: 1;"></div>
+              <button
+                type="button"
+                class="btn btn-pawsitive btn-pawsitive-secondary rounded-full py-2 px-3 small position-absolute"
+                style="bottom: 15px; right: 15px; z-index: 1000; font-size: 0.85rem;"
+                onclick="getLocationGPS()"
+              >
+                <i class="bi bi-geo-fill text-danger"></i> Định vị hiện tại
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. Notes -->
+          <div class="mb-5 form-group-pawsitive">
+            <h3 class="brand-font fs-5 mb-3 text-dark">
+              <i class="bi bi-pencil-square text-danger"></i> Ghi chú thêm
+            </h3>
+            <textarea
+              class="form-control form-control-pawsitive"
+              id="rescue-notes"
+              rows="4"
+              placeholder="Ví dụ: Bé chó vàng đang nấp sau thùng rác, rất nhát người, cần có lưới để bắt..."
+            ></textarea>
+          </div>
+
+          <!-- 5. Scene Photo -->
+          <div class="mb-5">
+            <h3 class="brand-font fs-5 mb-3 text-dark">
+              <i class="bi bi-camera-fill text-danger"></i> Hình ảnh hiện trường
+            </h3>
+            <div class="upload-zone" id="upload-zone-btn">
+              <i
+                class="bi bi-camera-reels-fill fs-1 text-danger d-block mb-3"
+              ></i>
+              <span class="font-bold d-block mb-1"
+                >Nhấn để chụp ảnh hoặc tải lên</span
+              >
+              <span class="small text-muted d-block"
+                >Tối đa 5 ảnh, định dạng JPG/PNG</span
+              >
+              <input type="file" id="sos-file-mock" class="d-none" accept="image/*" multiple />
+            </div>
+            <!-- Image Preview Grid -->
+            <div id="image-preview-container" class="row g-2 mt-3 d-none"></div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="btn btn-pawsitive btn-pawsitive-sos w-100 rounded-full justify-content-center py-3 fs-4 text-white"
+          >
+            🛟 GỬI YÊU CẦU CỨU HỘ KHẨN CẤP
+          </button>
+          <div class="small text-muted text-center mt-3 font-bold">
+            Bằng việc nhấn gửi, bạn cam kết cung cấp thông tin trung thực để hỗ
+            trợ cứu hộ hiệu quả.
+          </div>
+        </form>
+      </div>
+    </main>
+
+    
+
+    <!-- Dispatch Success Modal -->
+    <div
+      class="position-fixed top-0 start-0 w-100 h-100 justify-content-center align-items-center d-none"
+      id="dispatch-success-overlay"
+      style="
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 10000;
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        class="card-pawsitive text-center p-5 bg-white border border-3 border-dark shadow-flat"
+        style="max-width: 480px; margin: 20px"
+      >
+        <span class="fs-1 d-block mb-3">🚨</span>
+        <h2 class="brand-font text-danger mb-3">Đã gửi báo cáo khẩn cấp!</h2>
+        <p class="small text-muted mb-4">
+          Yêu cầu cứu hộ khẩn cấp của bạn đã được tiếp nhận. Tổng đài viên
+          Pawsitive Rescue đang tiến hành liên hệ và điều phối xe cứu nạn tại
+          khu vực của bạn.
+        </p>
+        <div class="p-3 border border-2 border-dark rounded-md bg-light mb-4">
+          <h4 class="brand-font fs-6 mb-1 text-primary">
+            Mã báo cáo: #SOS-8942
+          </h4>
+          <span class="small text-muted"
+            >Trạng thái: Đang chuẩn bị xuất phát</span
+          >
+        </div>
+        <div class="d-flex flex-column gap-2">
+          <button
+            class="btn btn-pawsitive btn-pawsitive-primary rounded-full justify-content-center text-white"
+            id="btn-track-rescue-trigger"
+          >
+            Theo dõi hành trình cứu nạn
+          </button>
+          <button
+            class="btn btn-pawsitive btn-pawsitive-secondary rounded-full justify-content-center"
+            onclick="closeOverlay()"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOS Status Tracker Overlay -->
+    <div
+      class="position-fixed top-0 start-0 w-100 h-100 justify-content-center align-items-center d-none"
+      id="status-tracker-overlay"
+      style="
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 10001;
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        class="card-pawsitive text-center p-4 bg-white border border-3 border-dark shadow-flat"
+        style="max-width: 480px; width: 90%; margin: 20px"
+      >
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-20">
+          <h3 class="brand-font text-danger m-0" style="font-weight: 800; font-size: 1.25rem;">
+            🛰️ Hành trình Cứu nạn
+          </h3>
+          <button type="button" class="btn-close" onclick="closeTrackerOverlay()"></button>
+        </div>
+
+        <div class="p-3 border border-2 border-dark rounded-md bg-light mb-4 text-start">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="font-bold text-primary" id="track-report-code">Mã: #SOS-Loading</span>
+            <span class="badge bg-warning text-dark font-bold" id="track-report-status">Chờ xử lý</span>
+          </div>
+          <div class="small text-muted mb-1"><i class="bi bi-geo-alt-fill text-danger"></i> <span id="track-report-address">Đang tải...</span></div>
+          <div class="small text-muted"><i class="bi bi-calendar-fill"></i> <span id="track-report-date">Đang tải...</span></div>
+          <div id="track-report-image-container" class="mt-2 border border-2 border-dark rounded-md overflow-hidden d-none" style="height: 150px;">
+            <img id="track-report-image" src="" alt="Ảnh hiện trường" class="w-100 h-100" style="object-fit: cover;" />
+          </div>
+        </div>
+
+        <!-- 3-Step Timeline -->
+        <div class="px-3 mb-4">
+          <div class="d-flex flex-column gap-4 text-start position-relative">
+            <!-- Vertical connector line -->
+            <div style="position: absolute; left: 17px; top: 18px; bottom: 18px; width: 3px; background-color: var(--pawsitive-on-surface); z-index: 1;"></div>
+
+            <!-- Step 1: Received -->
+            <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2;" id="track-step-1">
+              <div class="progress-step-circle active" id="track-circle-1">1</div>
+              <div>
+                <h4 class="brand-font fs-6 mb-1">Đã tiếp nhận báo cáo</h4>
+                <p class="small text-muted m-0">Báo cáo cứu hộ khẩn cấp đã được ghi nhận trên hệ thống.</p>
+              </div>
+            </div>
+
+            <!-- Step 2: Dispatching -->
+            <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2;" id="track-step-2">
+              <div class="progress-step-circle" id="track-circle-2">2</div>
+              <div>
+                <h4 class="brand-font fs-6 mb-1">Đang điều phối / Cứu nạn</h4>
+                <p class="small text-muted m-0">Tình nguyện viên đã được phân công và đang tiếp cận hiện trường.</p>
+              </div>
+            </div>
+
+            <!-- Step 3: Completed -->
+            <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2;" id="track-step-3">
+              <div class="progress-step-circle" id="track-circle-3">3</div>
+              <div>
+                <h4 class="brand-font fs-6 mb-1">Đã hoàn thành cứu hộ</h4>
+                <p class="small text-muted m-0">Bé đã được cứu nạn an toàn và đưa về trạm chăm sóc.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button
+            class="btn btn-pawsitive btn-pawsitive-primary rounded-full justify-content-center flex-grow-1 text-white"
+            onclick="refreshTrackerStatus()"
+          >
+            🔄 Tải lại
+          </button>
+          <button
+            class="btn btn-pawsitive btn-pawsitive-secondary rounded-full justify-content-center"
+            onclick="closeTrackerOverlay()"
+          >
+            Đóng
+          </button>
+        </div>
+
+    <!-- Map and Report Logic -->
+    <script>
+      let map;
+      let marker;
+      let selectedLat = 10.762622; // Default to HCM city Center
+      let selectedLng = 106.660172;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Initialize Map
+        initMap();
+
+        // Species interactive selectors
+        const speciesCards = document.querySelectorAll(".species-card");
+        speciesCards.forEach((card) => {
+          card.addEventListener("click", () => {
+            speciesCards.forEach((c) => c.classList.remove("active"));
+            card.classList.add("active");
+            showToast("🐾 Đã chọn loài vật cần cứu hộ!", "success");
+          });
+        });
+
+        // Severity interactive selectors
+        const severityCards = document.querySelectorAll(".severity-card");
+        severityCards.forEach((card) => {
+          card.addEventListener("click", () => {
+            severityCards.forEach((c) => c.classList.remove("active"));
+            card.classList.add("active");
+            showToast("🚨 Đã chọn mức độ/tình trạng khẩn cấp!", "success");
+          });
+        });
+      });
+
+      function initMap() {
+        // Create map at default center
+        map = L.map('sos-map').setView([selectedLat, selectedLng], 13);
+
+        // Add OSM tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add draggable marker
+        marker = L.marker([selectedLat, selectedLng], { draggable: true }).addTo(map);
+
+        // Listen to dragend events
+        marker.on('dragend', function (e) {
+          const position = marker.getLatLng();
+          selectedLat = position.lat;
+          selectedLng = position.lng;
+          reverseGeocode(selectedLat, selectedLng);
+        });
+
+        // Listen to map click events
+        map.on('click', function(e) {
+          selectedLat = e.latlng.lat;
+          selectedLng = e.latlng.lng;
+          marker.setLatLng(e.latlng);
+          reverseGeocode(selectedLat, selectedLng);
+        });
+
+        // Do initial reverse geocode
+        reverseGeocode(selectedLat, selectedLng);
+      }
+
+      function reverseGeocode(lat, lng) {
+        showToast("🔍 Đang lấy địa chỉ từ bản đồ...", "info");
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+          headers: {
+            'User-Agent': 'PawsitiveRescueSOSReporter/1.0'
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.display_name) {
+            document.getElementById("rescue-address-input").value = data.display_name;
+            showToast("📍 Đã cập nhật địa chỉ từ vị trí ghim!", "success");
+            
+            // Extract district details for backend
+            const address = data.address;
+            const district = address.suburb || address.town || address.quarter || address.city_district || address.district || "";
+            document.getElementById("rescue-address-input").dataset.district = district;
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          showToast("⚠️ Không thể lấy địa chỉ tự động, vui lòng nhập thủ công.", "warning");
+        });
+      }
+
+      function getLocationGPS() {
+        if (!navigator.geolocation) {
+          showToast("❌ Trình duyệt của bạn không hỗ trợ định vị!", "error");
+          return;
+        }
+
+        showToast("📍 Đang xác định tọa độ GPS của bạn...", "info");
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            selectedLat = position.coords.latitude;
+            selectedLng = position.coords.longitude;
+            map.setView([selectedLat, selectedLng], 16);
+            marker.setLatLng([selectedLat, selectedLng]);
+            reverseGeocode(selectedLat, selectedLng);
+          },
+          (error) => {
+            console.error(error);
+            showToast("❌ Lỗi định vị GPS. Vui lòng chọn trên bản đồ hoặc nhập thủ công.", "error");
+          },
+          { enableHighAccuracy: true, timeout: 5000 }
+        );
+      }
+
+      let selectedFiles = [];
+      document.addEventListener("DOMContentLoaded", () => {
+        // Init file upload preview logic
+        const fileInput = document.getElementById("sos-file-mock");
+        const uploadZone = document.getElementById("upload-zone-btn");
+        
+        if (uploadZone && fileInput) {
+          uploadZone.addEventListener("click", () => fileInput.click());
+          fileInput.addEventListener("change", (e) => {
+            const files = Array.from(e.target.files);
+            if (selectedFiles.length + files.length > 5) {
+              showToast("⚠️ Chỉ được chọn tối đa 5 hình ảnh!", "error");
+              return;
+            }
+            selectedFiles = selectedFiles.concat(files);
+            renderImagePreviews();
+            showToast(`📸 Đã đính kèm ${files.length} ảnh hiện trường!`, "success");
+          });
+        }
+      });
+
+      function renderImagePreviews() {
+        const previewContainer = document.getElementById("image-preview-container");
+        if (!previewContainer) return;
+        
+        if (selectedFiles.length === 0) {
+          previewContainer.classList.add("d-none");
+          previewContainer.innerHTML = "";
+          return;
+        }
+
+        previewContainer.classList.remove("d-none");
+        previewContainer.innerHTML = selectedFiles.map((file, idx) => {
+          const url = URL.createObjectURL(file);
+          return `
+            <div class="col-4 col-sm-3 col-md-2" style="position: relative;">
+              <div class="border border-2 border-dark rounded-md overflow-hidden" style="height: 100px;">
+                <img src="${url}" class="w-100 h-100" style="object-fit: cover;" onload="URL.revokeObjectURL(this.src)" />
+              </div>
+              <button type="button" class="btn btn-danger btn-sm rounded-full p-0 d-flex align-items-center justify-content-center shadow-none" 
+                style="position: absolute; top: -5px; right: 2px; width: 22px; height: 22px; border: 2px solid #000; font-weight: bold; z-index: 10;" 
+                onclick="removeSelectedImage(${idx})">
+                ✕
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function removeSelectedImage(index) {
+        selectedFiles.splice(index, 1);
+        renderImagePreviews();
+        showToast("🗑️ Đã gỡ hình ảnh!", "info");
+      }
+
+      function submitRescue(e) {
+        e.preventDefault();
+        const address = document.getElementById("rescue-address-input").value;
+        if (!address) {
+          showToast("⚠️ Vui lòng cung cấp địa chỉ cứu hộ!", "error");
+          return;
+        }
+
+        const activeSpeciesCard = document.querySelector(".species-card.active");
+        const species = activeSpeciesCard ? activeSpeciesCard.dataset.species : "Khác";
+
+        const activeSeverityCard = document.querySelector(".severity-card.active");
+        const severityKey = activeSeverityCard ? activeSeverityCard.dataset.severity : "sick";
+
+        let severityName = "Bình thường";
+        if (severityKey === "injured" || severityKey === "danger") {
+          severityName = "Khẩn cấp";
+        }
+
+        const notes = document.getElementById("rescue-notes").value;
+        const district = document.getElementById("rescue-address-input").dataset.district || "";
+
+        const speciesText = species === "dog" ? "Chó" : (species === "cat" ? "Mèo" : "Khác");
+        let severityText = "Ốm yếu";
+        if (severityKey === "injured") severityText = "Bị thương";
+        else if (severityKey === "abandoned") severityText = "Bị bỏ rơi";
+        else if (severityKey === "danger") severityText = "Nguy hiểm";
+
+        const imgCountText = selectedFiles.length > 0 ? `\n[Có đính kèm ${selectedFiles.length} hình ảnh hiện trường]` : "";
+        const detailDescription = `Loài vật: ${speciesText}\nTình trạng: ${severityText}\nGhi chú: ${notes}${imgCountText}`;
+
+        // Function to upload a single file
+        const uploadFile = (file) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          return fetch("/api/pets/upload-image", {
+            method: "POST",
+            body: formData
+          })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success && res.data && res.data.path) {
+              return res.data.path;
+            }
+            throw new Error(res.message || "Tải ảnh lên thất bại");
+          });
+        };
+
+        // Sequential or parallel file upload
+        const uploadPromises = selectedFiles.map(file => uploadFile(file));
+
+        showToast("📤 Đang tải lên hình ảnh hiện trường...", "info");
+
+        Promise.all(uploadPromises)
+        .then(imagePaths => {
+          const joinedPaths = imagePaths.join(",");
+
+          const payload = {
+            tenNguoiBaoCao: "Người dùng ẩn danh",
+            soDienThoai: "",
+            diaDiem: address,
+            quanHuyen: district || "Quận Bình Thạnh",
+            moTaChiTiet: detailDescription,
+            mucDoKhanCap: severityName,
+            anhBaoCao: joinedPaths
+          };
+
+          showToast("📤 Đang gửi báo cáo cứu hộ...", "info");
+
+          return fetch("/api/Rescue/rescue-reports", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            document.querySelector("#dispatch-success-overlay h4.brand-font").innerText = `Mã báo cáo: #${res.data.code}`;
+            
+            // Wire tracking click handler
+            document.getElementById("btn-track-rescue-trigger").onclick = () => openStatusTrackerFromSuccessOverlay(res.data.id);
+            
+            const overlay = document.getElementById("dispatch-success-overlay");
+            overlay.classList.remove("d-none");
+            overlay.classList.add("d-flex");
+            showToast("🚨 Gửi báo cáo thành công!", "success");
+
+            // Reset upload queue
+            selectedFiles = [];
+            renderImagePreviews();
+          } else {
+            showToast("❌ Lỗi: " + (res.message || "Không thể gửi báo cáo"), "error");
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          showToast("❌ Lỗi: " + err.message, "error");
+        });
+      }
+
+      function closeOverlay() {
+        const overlay = document.getElementById("dispatch-success-overlay");
+        overlay.classList.remove("d-flex");
+        overlay.classList.add("d-none");
+      }
+
+      let trackingReportId = null;
+      function openStatusTrackerFromSuccessOverlay(reportId) {
+        closeOverlay();
+        trackingReportId = reportId;
+        
+        const trackerModal = document.getElementById("status-tracker-overlay");
+        trackerModal.classList.remove("d-none");
+        trackerModal.classList.add("d-flex");
+        
+        refreshTrackerStatus();
+      }
+
+      function closeTrackerOverlay() {
+        const trackerModal = document.getElementById("status-tracker-overlay");
+        trackerModal.classList.remove("d-flex");
+        trackerModal.classList.add("d-none");
+        trackingReportId = null;
+      }
+
+      function refreshTrackerStatus() {
+        if (!trackingReportId) return;
+        
+        showToast("🔄 Đang cập nhật trạng thái...", "info");
+        fetch(`/api/Rescue/rescue-reports/track/${trackingReportId}`)
+          .then(res => res.json())
+          .then(res => {
+            if (res.success && res.data) {
+              const report = res.data;
+              
+              document.getElementById("track-report-code").innerText = `Mã báo cáo: #SOS-${report.maBaoCao}`;
+              document.getElementById("track-report-status").innerText = report.trangThai;
+              document.getElementById("track-report-address").innerText = report.diaDiem;
+              
+              const reportDate = new Date(report.ngayBaoCao).toLocaleString("vi-VN");
+              document.getElementById("track-report-date").innerText = reportDate;
+
+              // Render scene photo if exists
+              const imgContainer = document.getElementById("track-report-image-container");
+              const imgEl = document.getElementById("track-report-image");
+              if (imgContainer && imgEl) {
+                if (report.anhBaoCao) {
+                  const firstImg = report.anhBaoCao.split(",")[0];
+                  imgEl.src = firstImg;
+                  imgContainer.classList.remove("d-none");
+                } else {
+                  imgContainer.classList.add("d-none");
+                }
+              }
+              
+              // Update step timelines
+              updateTimelineSteps(report.trangThai);
+              
+              showToast("✔️ Trạng thái đã được cập nhật!", "success");
+            } else {
+              showToast("❌ Không thể tải trạng thái: " + res.message, "error");
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            showToast("❌ Lỗi kết nối đến máy chủ", "error");
+          });
+      }
+
+      function updateTimelineSteps(status) {
+        // Reset classes
+        const circles = [
+          document.getElementById("track-circle-1"),
+          document.getElementById("track-circle-2"),
+          document.getElementById("track-circle-3")
+        ];
+        
+        circles.forEach(c => {
+          c.className = "progress-step-circle";
+        });
+        
+        if (status === "Chờ xử lý") {
+          circles[0].classList.add("active");
+        } else if (status === "Đang thực hiện") {
+          circles[0].classList.add("completed");
+          circles[1].classList.add("active");
+        } else if (status === "Đã hoàn thành") {
+          circles[0].classList.add("completed");
+          circles[1].classList.add("completed");
+          circles[2].classList.add("completed");
+        }
+      }
+    </script>

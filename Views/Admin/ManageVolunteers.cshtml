@@ -1,0 +1,975 @@
+@{
+    ViewData["Title"] = "Quản lý tình nguyện viên";
+    Layout = "_AdminLayout";
+}
+
+<div class="db-layout">
+      <!-- ═══ Sidebar ═══ -->
+      <aside class="db-sidebar" id="dbSidebar">
+        <a asp-controller="Admin" asp-action="Index" class="db-sidebar-logo">
+          <div class="db-sidebar-logo-icon">🐾</div>
+          <div>
+            <div class="db-sidebar-logo-text">Pawsitive Rescue</div>
+            <span class="db-sidebar-logo-sub">Hệ thống Quản trị</span>
+          </div>
+        </a>
+
+        <nav class="db-sidebar-nav">
+          <a asp-controller="Admin" asp-action="Index" class="db-sidebar-link" data-view="overview">
+            <i class="bi bi-grid-1x2-fill"></i> Tổng quan
+          </a>
+          <a asp-controller="Admin" asp-action="ManageAnimals" class="db-sidebar-link" data-view="animals">
+            <i class="bi bi-heart-pulse-fill"></i> Quản lý Động vật
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageAdopters"
+            class="db-sidebar-link"
+            data-view="adopters"
+          >
+            <i class="bi bi-house-heart-fill"></i> Nhận nuôi
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageVolunteers"
+            class="db-sidebar-link active"
+            data-view="volunteers"
+          >
+            <i class="bi bi-people-fill"></i> Tình nguyện viên
+          </a>
+          <a
+            asp-controller="Admin" asp-action="ManageDonations"
+            class="db-sidebar-link"
+            data-view="donations"
+          >
+            <i class="bi bi-gift-fill"></i> Quyên góp
+          </a>
+          <a asp-controller="Admin" asp-action="ManageRescues" class="db-sidebar-link" data-view="rescue">
+            <i class="bi bi-exclamation-triangle-fill"></i> Cứu hộ Khẩn cấp
+          </a>
+        </nav>
+
+        <div class="db-sidebar-bottom">
+          <a href="#" class="db-sidebar-link" onclick="pawsitiveLogout(); return false;"><i class="bi bi-box-arrow-left"></i> Đăng xuất</a>
+        </div>
+      </aside>
+
+      <div class="db-overlay" id="dbOverlay"></div>
+
+      <!-- ═══ Main Content ═══ -->
+      <main class="db-main">
+        <!-- Top Bar -->
+        <header class="db-topbar">
+          <button class="db-mobile-toggle" id="dbMobileToggle">
+            <i class="bi bi-list"></i>
+          </button>
+          <nav class="d-none d-md-flex gap-3 me-auto">
+            <a asp-controller="Home" asp-action="Index" class="pawsitive-nav-link">Trang chủ</a>
+            <a asp-controller="Admin" asp-action="ManageVolunteers" class="pawsitive-nav-link active">Tình nguyện viên</a>
+          </nav>
+          <input
+            type="text"
+            class="db-topbar-search"
+            placeholder="Tìm kiếm tình nguyện viên..."
+          />
+          <div class="db-topbar-icon" title="Thông báo">
+            <i class="bi bi-bell-fill"></i>
+          </div>
+          <div class="db-topbar-icon" title="Cài đặt">
+            <i class="bi bi-gear-fill"></i>
+          </div>
+          <div class="db-topbar-avatar">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              alt="Admin Avatar"
+            />
+          </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="db-content">
+          <!-- Page Header -->
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+              <h1
+                class="h2 mb-1"
+                style="
+                  color: var(--pawsitive-primary-vibrant);
+                  font-weight: 800;
+                "
+              >
+                Quản lý Tình nguyện viên
+              </h1>
+              <p class="text-muted small mb-0">
+                Theo dõi và quản lý đội ngũ tình nguyện viên.
+              </p>
+            </div>
+            <button
+              class="db-btn db-btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#promoteVolunteerModal"
+            >
+              <i class="bi bi-plus-lg"></i> Tuyển mới
+            </button>
+          </div>
+
+          <!-- ── Stat Cards ── -->
+          <div class="row g-3 mb-4">
+            <div class="col-lg-3 col-md-6">
+              <div class="volunteer-stat-card db-animate-in">
+                <div class="volunteer-stat-icon primary">
+                  <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="volunteer-stat-content">
+                  <h3 id="total-volunteers-stat">0</h3>
+                  <div class="volunteer-stat-label">
+                    Tổng số Tình nguyện viên
+                  </div>
+                  <div class="volunteer-stat-badge">
+                    Đang hoạt động trên hệ thống
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+              <div class="volunteer-stat-card db-animate-in">
+                <div class="volunteer-stat-icon secondary">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="volunteer-stat-content">
+                  <h3 id="active-volunteers-stat">0</h3>
+                  <div class="volunteer-stat-label">Đang hoạt động</div>
+                  <div class="volunteer-stat-badge" id="active-volunteers-percent">0% tổng số</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Performance Stats ── -->
+          <div class="volunteer-work-panel mb-4 db-animate-in">
+            <h3
+              class="h5 mb-3"
+              style="color: var(--pawsitive-on-surface); font-weight: 700"
+            >
+              <i class="bi bi-graph-up"></i> Hiệu suất hoạt động tuần này
+            </h3>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 1.5rem;
+                    background-color: var(--pawsitive-surface-container-low);
+                    border-radius: 0.75rem;
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 0.875rem;
+                      color: var(--pawsitive-on-surface-variant);
+                      margin-bottom: 0.5rem;
+                    "
+                  >
+                    Tỷ lệ hoàn thành công việc
+                  </div>
+                  <div
+                    id="completion-target-stat"
+                    style="
+                      font-size: 2rem;
+                      font-weight: 800;
+                      color: var(--pawsitive-primary-vibrant);
+                    "
+                  >
+                    0%
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 1.5rem;
+                    background-color: var(--pawsitive-surface-container-low);
+                    border-radius: 0.75rem;
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 0.875rem;
+                      color: var(--pawsitive-on-surface-variant);
+                      margin-bottom: 0.5rem;
+                    "
+                  >
+                    Hiệu suất trung bình
+                  </div>
+                  <div
+                    id="average-attendance-stat"
+                    style="
+                      font-size: 2rem;
+                      font-weight: 800;
+                      color: var(--pawsitive-primary-vibrant);
+                    "
+                  >
+                    0%
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Filters ── -->
+          <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+            <select class="db-filter-select" id="filterVolunteerStatus" style="flex: 1; min-width: 150px">
+              <option value="">Tất cả trạng thái</option>
+              <option value="Đang hoạt động">Đang hoạt động</option>
+              <option value="Nghỉ phép">Nghỉ phép</option>
+              <option value="Đang đào tạo">Đang đào tạo</option>
+              <option value="Không hoạt động">Không hoạt động</option>
+            </select>
+            <div class="ms-auto">
+              <button
+                class="db-btn db-btn-secondary"
+                style="padding: 0.5rem 1rem"
+                onclick="loadVolunteers()"
+              >
+                <i class="bi bi-funnel"></i> Bộ lọc
+              </button>
+            </div>
+          </div>
+
+          <!-- ── Volunteer List ── -->
+          <div class="mb-4" id="volunteers-list-container">
+            <div class="text-center py-5 text-muted">Đang tải danh sách tình nguyện viên...</div>
+          </div>
+
+          <!-- ── Task Assignments ── -->
+          <div class="row g-3">
+            <div class="col-lg-8"></div>
+            <div class="col-lg-4">
+              <div class="volunteer-work-panel db-animate-in">
+                <h3
+                  class="h5 mb-3"
+                  style="color: var(--pawsitive-on-surface); font-weight: 700"
+                >
+                  <i class="bi bi-clipboard-check"></i> Công việc hôm nay
+                </h3>
+
+                <div id="tasks-list-container">
+                  <div class="text-center py-3 text-muted">Đang tải danh sách công việc...</div>
+                </div>
+
+                <div
+                  style="
+                    margin-top: 1rem;
+                    padding-top: 1rem;
+                    border-top: 1px solid var(--pawsitive-outline-variant);
+                  "
+                >
+                  <button
+                    class="db-btn db-btn-secondary w-100"
+                    style="padding: 0.75rem; font-size: 0.875rem"
+                    data-bs-toggle="modal" data-bs-target="#createTaskModal"
+                  >
+                    <i class="bi bi-plus-circle"></i> Giao việc mới
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Promote User to Volunteer Modal -->
+    <div class="modal fade" id="promoteVolunteerModal" tabindex="-1" aria-labelledby="promoteVolunteerModalLabel" aria-hidden="true" style="z-index: 1055;">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000; background: #fff;">
+          <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+            <h5 class="modal-title font-bold" id="promoteVolunteerModalLabel">🤝 Tuyển dụng Tình nguyện viên mới</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-start">
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs mb-3 border-bottom border-2 border-dark" id="promoteTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active font-bold text-dark" id="app-tab" data-bs-toggle="tab" data-bs-target="#app-tab-pane" type="button" role="tab" aria-controls="app-tab-pane" aria-selected="true">
+                  📋 Đơn đăng ký chờ duyệt
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link font-bold text-dark" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-tab-pane" type="button" role="tab" aria-controls="manual-tab-pane" aria-selected="false">
+                  ➕ Nâng quyền thủ công
+                </button>
+              </li>
+            </ul>
+            
+            <div class="tab-content" id="promoteTabContent">
+              <!-- Tab 1: Pending Applications -->
+              <div class="tab-pane fade show active" id="app-tab-pane" role="tabpanel" aria-labelledby="app-tab" tabindex="0">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                  <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Họ tên</th>
+                        <th>Liên hệ</th>
+                        <th>Năm sinh</th>
+                        <th>Thời gian rảnh</th>
+                        <th>Hành động</th>
+                      </tr>
+                    </thead>
+                    <tbody id="pendingApplicationsBody">
+                      <tr>
+                        <td colspan="5" class="text-center text-muted">Đang tải đơn đăng ký...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <!-- Tab 2: Manual promote (existing form) -->
+              <div class="tab-pane fade" id="manual-tab-pane" role="tabpanel" aria-labelledby="manual-tab" tabindex="0">
+                <form id="promoteVolunteerForm">
+                  <div class="mb-3">
+                    <label for="promoteUserSelect" class="form-label font-semibold">Chọn tài khoản người dùng <span class="text-danger">*</span></label>
+                    <select class="form-select border-2 border-dark" id="promoteUserSelect" required style="border-radius: 8px;">
+                      <option value="">-- Đang tải người dùng... --</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="promoteSkillsInput" class="form-label font-semibold">Kỹ năng hiện có</label>
+                    <input type="text" class="form-control border-2 border-dark" id="promoteSkillsInput" placeholder="Ví dụ: Chăm sóc, Vận chuyển, Y tế..." style="border-radius: 8px;" />
+                  </div>
+                  <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Xác nhận tuyển dụng</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Volunteer Modal -->
+    <div class="modal fade" id="editVolunteerModal" tabindex="-1" aria-labelledby="editVolunteerModalLabel" aria-hidden="true" style="z-index: 1055;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000; background: #fff;">
+          <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+            <h5 class="modal-title font-bold" id="editVolunteerModalLabel">✏️ Chỉnh sửa thông tin tình nguyện viên</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="editVolunteerForm">
+            <input type="hidden" id="editVolId" />
+            <div class="modal-body text-start">
+              <div class="mb-3">
+                <label for="editVolSkillsInput" class="form-label font-semibold">Kỹ năng hiện có</label>
+                <input type="text" class="form-control border-2 border-dark" id="editVolSkillsInput" placeholder="Ví dụ: Chăm sóc, Vận chuyển..." style="border-radius: 8px;" />
+              </div>
+              <div class="mb-3">
+                <label for="editVolAttendanceInput" class="form-label font-semibold">Tỷ lệ chuyên cần (%)</label>
+                <input type="number" class="form-control border-2 border-dark" id="editVolAttendanceInput" min="0" max="100" placeholder="Ví dụ: 90" style="border-radius: 8px;" />
+              </div>
+            </div>
+            <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+              <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+              <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Lưu thay đổi</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assign Task Modal -->
+    <div class="modal fade" id="assignTaskModal" tabindex="-1" aria-labelledby="assignTaskModalLabel" aria-hidden="true" style="z-index: 1055;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000; background: #fff;">
+          <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+            <h5 class="modal-title font-bold" id="assignTaskModalLabel">📋 Phân công công việc</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="assignTaskForm">
+            <input type="hidden" id="assignVolId" />
+            <div class="modal-body text-start">
+              <div class="mb-3">
+                <label for="assignTaskSelect" class="form-label font-semibold">Chọn công việc hôm nay <span class="text-danger">*</span></label>
+                <select class="form-select border-2 border-dark" id="assignTaskSelect" required style="border-radius: 8px;">
+                  <option value="">-- Đang tải công việc... --</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+              <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+              <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Giao việc</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Task Modal -->
+    <div class="modal fade" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true" style="z-index: 1055;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000; background: #fff;">
+          <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+            <h5 class="modal-title font-bold" id="createTaskModalLabel">➕ Tạo công việc mới tại trạm</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="createTaskForm">
+            <div class="modal-body text-start">
+              <div class="mb-3">
+                <label for="taskNameInput" class="form-label font-semibold">Tên công việc <span class="text-danger">*</span></label>
+                <input type="text" class="form-control border-2 border-dark" id="taskNameInput" required placeholder="Ví dụ: Dọn chuồng mèo..." style="border-radius: 8px;" />
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                  <label for="taskStartInput" class="form-label font-semibold">Giờ bắt đầu <span class="text-danger">*</span></label>
+                  <input type="time" class="form-control border-2 border-dark" id="taskStartInput" required style="border-radius: 8px;" />
+                </div>
+                <div class="col-md-6">
+                  <label for="taskEndInput" class="form-label font-semibold">Giờ kết thúc <span class="text-danger">*</span></label>
+                  <input type="time" class="form-control border-2 border-dark" id="taskEndInput" required style="border-radius: 8px;" />
+                </div>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                  <label for="taskVolRequiredInput" class="form-label font-semibold">Số lượng TNV yêu cầu</label>
+                  <input type="number" class="form-control border-2 border-dark" id="taskVolRequiredInput" value="1" min="1" style="border-radius: 8px;" />
+                </div>
+                <div class="col-md-6">
+                  <label for="taskDateInput" class="form-label font-semibold">Ngày thực hiện</label>
+                  <input type="date" class="form-control border-2 border-dark" id="taskDateInput" required style="border-radius: 8px;" />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+              <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+              <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Tạo công việc</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    @section Scripts {
+    <script>
+      // Global toast mapping
+      function showToast(message, type = "success") {
+        dbToast(message);
+      }
+
+      // Bootstrap Modal instances
+      const promoteVolunteerModal = new bootstrap.Modal(document.getElementById('promoteVolunteerModal'));
+      const editVolunteerModal = new bootstrap.Modal(document.getElementById('editVolunteerModal'));
+      const assignTaskModal = new bootstrap.Modal(document.getElementById('assignTaskModal'));
+      const createTaskModal = new bootstrap.Modal(document.getElementById('createTaskModal'));
+
+      let currentVolunteers = [];
+      let currentTasks = [];
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Sidebar Toggle
+        const dbMobileToggle = document.getElementById("dbMobileToggle");
+        const dbSidebar = document.getElementById("dbSidebar");
+        const dbOverlay = document.getElementById("dbOverlay");
+
+        if (dbMobileToggle && dbSidebar && dbOverlay) {
+          dbMobileToggle.addEventListener("click", () => {
+            dbSidebar.classList.toggle("active");
+            dbOverlay.classList.toggle("active");
+          });
+
+          dbOverlay.addEventListener("click", () => {
+            dbSidebar.classList.remove("active");
+            dbOverlay.classList.remove("active");
+          });
+        }
+
+        // Initialize lists
+        loadVolunteers();
+        loadTasks();
+        loadNonVolunteers();
+        loadPendingApplications();
+
+        // Forms bindings
+        document.getElementById('promoteVolunteerForm').addEventListener('submit', handlePromoteVolunteer);
+        document.getElementById('editVolunteerForm').addEventListener('submit', handleEditVolunteer);
+        document.getElementById('assignTaskForm').addEventListener('submit', handleAssignTask);
+        document.getElementById('createTaskForm').addEventListener('submit', handleCreateTask);
+
+        // Pre-fill today's date in create task modal
+        document.getElementById('taskDateInput').value = new Date().toISOString().substring(0, 10);
+      });
+
+      // 1. Load volunteers
+      async function loadVolunteers() {
+        const status = document.getElementById("filterVolunteerStatus").value;
+        const listContainer = document.getElementById("volunteers-list-container");
+        listContainer.innerHTML = `<div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Đang tải danh sách...</div>`;
+
+        try {
+          const params = new URLSearchParams();
+          if (status) params.append("trangthai", status);
+          
+          const res = await fetch(`/api/Volunteer/admin/volunteers?${params.toString()}`);
+          const json = await res.json();
+
+          if (json.success) {
+            currentVolunteers = json.data || [];
+            renderVolunteers(currentVolunteers);
+          } else {
+            listContainer.innerHTML = `<div class="text-center py-5 text-danger">Lỗi: ${json.message}</div>`;
+          }
+        } catch (err) {
+          console.error(err);
+          listContainer.innerHTML = `<div class="text-center py-5 text-danger">Không thể kết nối đến máy chủ.</div>`;
+        }
+      }
+
+      function renderVolunteers(volunteers) {
+        // Update stats dynamically
+        const totalCount = volunteers.length;
+        const activeCount = volunteers.filter(v => v.trangThai === "Đang hoạt động").length;
+        const percent = totalCount > 0 ? Math.round((activeCount / totalCount) * 100) : 0;
+        
+        const totalStat = document.getElementById("total-volunteers-stat");
+        const activeStat = document.getElementById("active-volunteers-stat");
+        const activePercent = document.getElementById("active-volunteers-percent");
+        
+        if (totalStat) totalStat.textContent = totalCount;
+        if (activeStat) activeStat.textContent = activeCount;
+        if (activePercent) activePercent.textContent = `${percent}% tổng số`;
+
+        // Compute and update average attendance
+        const averageAttendanceStat = document.getElementById("average-attendance-stat");
+        if (averageAttendanceStat) {
+          const totalAttendance = volunteers.reduce((sum, v) => sum + (v.tyLeChuyenCan || 0), 0);
+          const averageAttendance = totalCount > 0 ? Math.round(totalAttendance / totalCount) : 0;
+          averageAttendanceStat.textContent = `${averageAttendance}%`;
+        }
+
+        const listContainer = document.getElementById("volunteers-list-container");
+        if (volunteers.length === 0) {
+          listContainer.innerHTML = `<div class="text-center py-5 text-muted">Không tìm thấy tình nguyện viên nào.</div>`;
+          return;
+        }
+
+        listContainer.innerHTML = volunteers.map(v => {
+          const user = v.nguoiDung || {};
+          const skills = v.kyNangHienTai || "Chưa có";
+          const isLocked = v.trangThai === "Bị khóa";
+          const statusClass = v.trangThai === "Đang hoạt động" ? "active" : isLocked ? "inactive" : "pending";
+          const toggleActionLabel = isLocked ? "Mở khóa" : "Khóa TNV";
+          const toggleActionClass = isLocked ? "btn-outline-success" : "btn-outline-danger";
+          const toggleIcon = isLocked ? "bi-unlock-fill" : "bi-lock-fill";
+          const newStatus = isLocked ? "Đang hoạt động" : "Bị khóa";
+
+          return `
+            <div class="volunteer-list-item db-animate-in">
+              <div class="volunteer-header">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  alt="${user.hoTen}"
+                  class="volunteer-avatar"
+                />
+                <div class="flex-grow-1">
+                  <div class="volunteer-name">${user.hoTen || 'Tình nguyện viên'}</div>
+                  <div class="volunteer-location">
+                    <i class="bi bi-geo-alt-fill"></i> ${user.diaChi || 'Chưa cập nhật'} | <i class="bi bi-envelope"></i> ${user.email || ''}
+                  </div>
+                </div>
+                <div class="volunteer-badge ${statusClass}">
+                  <i class="bi bi-check-circle"></i> ${v.trangThai}
+                </div>
+              </div>
+              <div class="volunteer-specialization">
+                ${skills.split(',').map(s => `
+                  <div class="volunteer-spec-tag">
+                    <i class="bi bi-heart-fill"></i> ${s.trim()}
+                  </div>
+                `).join('')}
+              </div>
+              <div class="volunteer-progress-section">
+                <div class="volunteer-progress-item">
+                  <div class="volunteer-progress-value">${v.tyLeChuyenCan}%</div>
+                  <div class="volunteer-progress-label">Chuyên cần</div>
+                </div>
+                <div class="volunteer-progress-item">
+                  <div class="volunteer-progress-value">${v.maTinhNguyenVien}</div>
+                  <div class="volunteer-progress-label">Mã số TNV</div>
+                </div>
+              </div>
+              <div class="volunteer-actions">
+                <button class="volunteer-action-btn" onclick="openEditVolModal(${v.maTinhNguyenVien}, '${skills}', ${v.tyLeChuyenCan})">
+                  <i class="bi bi-pencil"></i> Sửa
+                </button>
+                <button class="volunteer-action-btn" onclick="openAssignTaskModal(${v.maTinhNguyenVien})">
+                  <i class="bi bi-plus-circle"></i> Giao việc
+                </button>
+                <button class="volunteer-action-btn ${toggleActionClass}" onclick="toggleVolunteerStatus(${v.maTinhNguyenVien}, '${v.trangThai}', '${newStatus}')">
+                  <i class="bi ${toggleIcon}"></i> ${toggleActionLabel}
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 2. Load today's tasks
+      async function loadTasks() {
+        const tasksContainer = document.getElementById("tasks-list-container");
+        tasksContainer.innerHTML = `<div class="text-center py-3 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Đang tải...</div>`;
+
+        try {
+          const res = await fetch("/api/Volunteer/admin/tasks");
+          const json = await res.json();
+
+          if (json.success) {
+            currentTasks = json.data || [];
+            
+            // Format tasks dropdown list for assignment
+            const select = document.getElementById("assignTaskSelect");
+            select.innerHTML = '<option value="">-- Chọn công việc --</option>';
+            currentTasks.forEach(t => {
+              const opt = document.createElement("option");
+              opt.value = t.maCongViec;
+              opt.textContent = `${t.tenCongViec} (${t.thoiGianBatDau.substring(0, 5)} - ${t.thoiGianKetThuc.substring(0, 5)})`;
+              select.appendChild(opt);
+            });
+
+            renderTasks(currentTasks);
+          } else {
+            tasksContainer.innerHTML = `<div class="text-center py-3 text-danger">Lỗi loading</div>`;
+          }
+        } catch (err) {
+          console.error(err);
+          tasksContainer.innerHTML = `<div class="text-center py-3 text-danger">Lỗi kết nối.</div>`;
+        }
+      }
+
+      function renderTasks(tasks) {
+        // Compute and update completion target
+        const completionTargetStat = document.getElementById("completion-target-stat");
+        if (completionTargetStat) {
+          const completedTasks = tasks.filter(t => t.daHoanThanh).length;
+          const totalTasks = tasks.length;
+          const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+          completionTargetStat.textContent = `${completionRate}%`;
+        }
+
+        const tasksContainer = document.getElementById("tasks-list-container");
+        // Take top 5
+        const items = tasks.slice(0, 5);
+        if (items.length === 0) {
+          tasksContainer.innerHTML = `<div class="text-center py-3 text-muted">Hôm nay không có công việc nào.</div>`;
+          return;
+        }
+
+        tasksContainer.innerHTML = items.map((t, idx) => {
+          const assignedVolunteers = t.diemDanhCongViecs || [];
+          const assignedNames = assignedVolunteers.map(dd => {
+            const name = dd.tinhNguyenVien && dd.tinhNguyenVien.nguoiDung ? dd.tinhNguyenVien.nguoiDung.hoTen : 'TNV';
+            const statusVal = dd.trangThai || 'Đang chờ';
+            const badgeColor = statusVal === 'Hoàn thành' ? 'text-success' : 'text-warning';
+            return `<span class="me-2">${name} (<span class="${badgeColor}">${statusVal}</span>)</span>`;
+          }).join(', ') || '<span class="text-muted">Chưa giao</span>';
+
+          const isTaskCompleted = assignedVolunteers.length > 0 && assignedVolunteers.every(dd => dd.trangThai === "Hoàn thành");
+          const statusText = isTaskCompleted ? "Hoàn thành" : "Đang chờ";
+          const colorClass = isTaskCompleted ? "text-success" : "text-warning";
+
+          return `
+            <div class="volunteer-work-item" style="border-left: 4px solid #319795; padding-left: 10px; margin-bottom: 12px;">
+              <div class="volunteer-work-icon" style="background: #e6fffa; color: #319795;">${idx + 1}</div>
+              <div class="volunteer-work-info">
+                <div class="volunteer-work-title font-bold">${t.tenCongViec}</div>
+                <div class="volunteer-work-detail small text-muted">
+                  ${t.thoiGianBatDau.substring(0, 5)} - ${t.thoiGianKetThuc.substring(0, 5)} • ${assignedVolunteers.length}/${t.soLuongTNVYeuCau} TNV • <span class="${colorClass} font-bold">${statusText}</span>
+                  <div class="mt-1 text-xs text-muted" style="line-height: 1.4;">TNV: ${assignedNames}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 3. Load user account lists that can be promoted
+      async function loadNonVolunteers() {
+        try {
+          const res = await fetch("/api/Volunteer/admin/non-volunteers");
+          const json = await res.json();
+          if (json.success) {
+            const select = document.getElementById("promoteUserSelect");
+            select.innerHTML = '<option value="">-- Chọn tài khoản người dùng --</option>';
+            json.data.forEach(user => {
+              const opt = document.createElement("option");
+              opt.value = user.maNguoiDung;
+              opt.textContent = `${user.hoTen} (${user.email})`;
+              select.appendChild(opt);
+            });
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      // 4. Handle forms submitting
+      async function handlePromoteVolunteer(e) {
+        e.preventDefault();
+        const userId = parseInt(document.getElementById("promoteUserSelect").value);
+        const skills = document.getElementById("promoteSkillsInput").value.trim();
+
+        if (!userId) {
+          showToast("⚠️ Vui lòng chọn người dùng!", "error");
+          return;
+        }
+
+        showToast("💾 Đang xử lý nâng quyền...", "info");
+
+        try {
+          const res = await fetch("/api/Volunteer/admin/volunteers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ UserId: userId, KyNang: skills })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("🎉 Đã tuyển dụng tình nguyện viên thành công!", "success");
+            promoteVolunteerModal.hide();
+            e.target.reset();
+            loadVolunteers();
+            loadNonVolunteers();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      function openEditVolModal(id, skills, attendance) {
+        document.getElementById("editVolId").value = id;
+        document.getElementById("editVolSkillsInput").value = skills === "Chưa có" ? "" : skills;
+        document.getElementById("editVolAttendanceInput").value = attendance;
+        editVolunteerModal.show();
+      }
+
+      async function handleEditVolunteer(e) {
+        e.preventDefault();
+        const id = document.getElementById("editVolId").value;
+        const skills = document.getElementById("editVolSkillsInput").value.trim();
+        const attendance = parseInt(document.getElementById("editVolAttendanceInput").value);
+
+        showToast("💾 Đang lưu thông tin...", "info");
+
+        try {
+          const res = await fetch(`/api/Volunteer/admin/volunteers/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ KyNangHienTai: skills, TyLeChuyenCan: attendance })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("✔️ Cập nhật thông tin thành công!", "success");
+            editVolunteerModal.hide();
+            loadVolunteers();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      async function toggleVolunteerStatus(id, currentStatus, targetStatus) {
+        const confirmMsg = `Bạn có chắc chắn muốn đổi trạng thái TNV thành "${targetStatus}"?`;
+
+        if (!confirm(confirmMsg)) return;
+
+        showToast("💾 Đang xử lý thay đổi trạng thái...", "info");
+
+        try {
+          const res = await fetch(`/api/Volunteer/admin/volunteers/${id}/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ Status: targetStatus })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("✔️ Thay đổi trạng thái tình nguyện viên thành công!", "success");
+            loadVolunteers();
+          } else {
+            showToast("❌ Thao tác thất bại: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      async function loadPendingApplications() {
+        const body = document.getElementById("pendingApplicationsBody");
+        if (!body) return;
+        body.innerHTML = `<tr><td colspan="5" class="text-center text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Đang tải...</td></tr>`;
+        
+        try {
+          const res = await fetch("/api/Volunteer/admin/applications?trangthai=Chờ xử lý");
+          const json = await res.json();
+          if (json.success) {
+            const apps = json.data || [];
+            if (apps.length === 0) {
+              body.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Không có đơn đăng ký nào chờ duyệt.</td></tr>`;
+              return;
+            }
+            body.innerHTML = apps.map(app => `
+              <tr>
+                <td><strong>${app.hoTen}</strong></td>
+                <td>
+                  <small class="d-block">📧 ${app.email}</small>
+                  <small class="d-block">📞 ${app.soDienThoai}</small>
+                </td>
+                <td>${app.namSinh}</td>
+                <td><small style="display: block; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${app.kyNang}">${app.kyNang || 'Chưa cập nhật'}</small></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-success py-1 px-2 text-white" onclick="approveApplication(${app.maDonDangKy})">Duyệt</button>
+                    <button class="btn btn-sm btn-danger py-1 px-2 text-white" onclick="rejectApplication(${app.maDonDangKy})">Từ chối</button>
+                  </div>
+                </td>
+              </tr>
+            `).join('');
+          } else {
+            body.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Lỗi: ${json.message}</td></tr>`;
+          }
+        } catch (err) {
+          console.error(err);
+          body.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Lỗi kết nối.</td></tr>`;
+        }
+      }
+
+      async function approveApplication(id) {
+        if (!confirm("Xác nhận duyệt đơn đăng ký này và cấp quyền Tình nguyện viên?")) return;
+        showToast("💾 Đang phê duyệt...", "info");
+        try {
+          const res = await fetch(`/api/Volunteer/admin/applications/${id}/approve`, { method: "POST" });
+          const json = await res.json();
+          if (json.success) {
+            showToast("✔️ Duyệt đơn đăng ký thành công!", "success");
+            loadPendingApplications();
+            loadVolunteers();
+            loadNonVolunteers();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      async function rejectApplication(id) {
+        if (!confirm("Bạn có chắc chắn muốn từ chối đơn đăng ký này?")) return;
+        showToast("💾 Đang xử lý từ chối...", "info");
+        try {
+          const res = await fetch(`/api/Volunteer/admin/applications/${id}/reject`, { method: "POST" });
+          const json = await res.json();
+          if (json.success) {
+            showToast("✔️ Đã từ chối đơn đăng ký.", "success");
+            loadPendingApplications();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      function openAssignTaskModal(volId) {
+        document.getElementById("assignVolId").value = volId;
+        document.getElementById("assignTaskSelect").value = "";
+        assignTaskModal.show();
+      }
+
+      async function handleAssignTask(e) {
+        e.preventDefault();
+        const volId = parseInt(document.getElementById("assignVolId").value);
+        const taskId = parseInt(document.getElementById("assignTaskSelect").value);
+
+        if (!taskId) {
+          showToast("⚠️ Vui lòng chọn công việc!", "error");
+          return;
+        }
+
+        showToast("💾 Đang thực hiện phân công việc...", "info");
+
+        try {
+          const res = await fetch(`/api/Volunteer/admin/tasks/${taskId}/assign`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ VolunteerId: volId })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("✔️ Phân công công việc thành công!", "success");
+            assignTaskModal.hide();
+            loadTasks();
+          } else {
+            showToast("❌ Thao tác thất bại: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+
+      async function handleCreateTask(e) {
+        e.preventDefault();
+        const name = document.getElementById("taskNameInput").value.trim();
+        const start = document.getElementById("taskStartInput").value + ":00";
+        const end = document.getElementById("taskEndInput").value + ":00";
+        const reqCount = parseInt(document.getElementById("taskVolRequiredInput").value);
+        const date = document.getElementById("taskDateInput").value;
+
+        showToast("💾 Đang tạo công việc mới...", "info");
+
+        const payload = {
+          tenCongViec: name,
+          thoiGianBatDau: start,
+          thoiGianKetThuc: end,
+          soLuongTNVYeuCau: reqCount,
+          ngayLamViec: date,
+          daHoanThanh: false
+        };
+
+        try {
+          const res = await fetch("/api/Volunteer/admin/tasks", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            showToast("✔️ Tạo công việc tại trạm mới thành công!", "success");
+            createTaskModal.hide();
+            e.target.reset();
+            // Reset today's date default
+            document.getElementById('taskDateInput').value = new Date().toISOString().substring(0, 10);
+            loadTasks();
+          } else {
+            showToast("❌ Lỗi: " + json.message, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("❌ Lỗi kết nối", "error");
+        }
+      }
+    </script>
+    }
