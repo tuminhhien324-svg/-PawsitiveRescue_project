@@ -399,5 +399,94 @@ namespace WebApplication1.Controllers
             var relativePath = "/uploads/" + uniqueFileName;
             return Ok(ApiResponse.Ok(new { path = relativePath }, "Tải ảnh lên thành công!"));
         }
+
+        // GET: api/pets/{petId}/costs
+        [HttpGet("{petId}/costs")]
+        public async Task<IActionResult> GetRescueCosts(int petId)
+        {
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole("Quản trị viên"))
+            {
+                return Ok(ApiResponse.Fail("Không có quyền thực hiện hành động này."));
+            }
+
+            var costs = await _context.ChiPhiCuHos
+                .Where(c => c.MaThuCung == petId)
+                .OrderByDescending(c => c.NgayChiTieu)
+                .ToListAsync();
+
+            return Ok(ApiResponse.Ok(costs));
+        }
+
+        // POST: api/pets/{petId}/costs
+        [HttpPost("{petId}/costs")]
+        public async Task<IActionResult> AddRescueCost(int petId, [FromBody] ChiPhiCuuHo model)
+        {
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole("Quản trị viên"))
+            {
+                return Ok(ApiResponse.Fail("Không có quyền thực hiện hành động này."));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Ok(ApiResponse.Fail("Dữ liệu không hợp lệ", ModelState));
+            }
+
+            var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            
+            model.MaThuCung = petId;
+            model.NguoiXacNhan = adminId;
+            if (model.NgayChiTieu == default)
+            {
+                model.NgayChiTieu = DateTime.Now;
+            }
+
+            _context.ChiPhiCuHos.Add(model);
+            await _context.SaveChangesAsync();
+
+            // Log activity
+            var pet = await _context.ThuCungs.FindAsync(petId);
+            var petName = pet?.TenThuCung ?? "Không xác định";
+            _context.NhatKyHeThongs.Add(new NhatKyHeThong
+            {
+                MaNguoiDung = adminId,
+                MoTaHoatDong = $"Thêm chi phí cứu hộ: {model.LoaiChiPhi} - {model.SoTien:N0} VND cho bé {petName} (ID: {petId})",
+                DiaChiIP = HttpContext.Connection.RemoteIpAddress?.ToString()
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok(ApiResponse.Ok(model, "Thêm chi phí cứu hộ thành công!"));
+        }
+
+        // DELETE: api/pets/costs/{costId}
+        [HttpDelete("costs/{costId}")]
+        public async Task<IActionResult> DeleteRescueCost(int costId)
+        {
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole("Quản trị viên"))
+            {
+                return Ok(ApiResponse.Fail("Không có quyền thực hiện hành động này."));
+            }
+
+            var cost = await _context.ChiPhiCuHos.FindAsync(costId);
+            if (cost == null)
+            {
+                return Ok(ApiResponse.Fail("Không tìm thấy thông tin chi phí"));
+            }
+
+            var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var pet = await _context.ThuCungs.FindAsync(cost.MaThuCung);
+            var petName = pet?.TenThuCung ?? "Không xác định";
+
+            _context.NhatKyHeThongs.Add(new NhatKyHeThong
+            {
+                MaNguoiDung = adminId,
+                MoTaHoatDong = $"Xóa chi phí cứu hộ: {cost.LoaiChiPhi} - {cost.SoTien:N0} VND của bé {petName} (ID: {cost.MaThuCung})",
+                DiaChiIP = HttpContext.Connection.RemoteIpAddress?.ToString()
+            });
+
+            _context.ChiPhiCuHos.Remove(cost);
+            await _context.SaveChangesAsync();
+
+            return Ok(ApiResponse.Ok(null, "Xóa chi phí thành công!"));
+        }
     }
 }

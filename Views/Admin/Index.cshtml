@@ -107,8 +107,10 @@
           </div>
 
           <!-- ── Stat Cards Row ── -->
+          <!-- ── Stat Cards Row ── -->
           <div class="row g-3 mb-4">
-            <div class="col-xl-3 col-md-6">
+            <!-- Card 1: Pets -->
+            <div class="col-xl-4 col-md-6">
               <div class="db-stat-card db-animate-in">
                 <div class="db-stat-icon primary">
                   <i class="bi bi-heart-pulse-fill"></i>
@@ -120,7 +122,8 @@
                 <span class="db-stat-change positive" id="change-total-pets">+0%</span>
               </div>
             </div>
-            <div class="col-xl-3 col-md-6">
+            <!-- Card 2: Adoptions -->
+            <div class="col-xl-4 col-md-6">
               <div class="db-stat-card db-animate-in">
                 <div class="db-stat-icon secondary">
                   <i class="bi bi-house-heart-fill"></i>
@@ -132,7 +135,8 @@
                 <span class="db-stat-change positive" id="change-total-adoptions">+0%</span>
               </div>
             </div>
-            <div class="col-xl-3 col-md-6">
+            <!-- Card 3: Volunteers -->
+            <div class="col-xl-4 col-md-6">
               <div class="db-stat-card db-animate-in">
                 <div class="db-stat-icon tertiary">
                   <i class="bi bi-people-fill"></i>
@@ -144,7 +148,8 @@
                 <span class="db-stat-change positive" id="change-total-volunteers">+0</span>
               </div>
             </div>
-            <div class="col-xl-3 col-md-6">
+            <!-- Card 4: Total Donations -->
+            <div class="col-xl-4 col-md-6">
               <div class="db-stat-card db-animate-in">
                 <div class="db-stat-icon accent">
                   <i class="bi bi-cash-coin"></i>
@@ -153,7 +158,33 @@
                   <div class="db-stat-label">Tổng quyên góp</div>
                   <div class="db-stat-value" id="overview-total-donations">0đ</div>
                 </div>
-                <span class="db-stat-change positive" id="change-total-donations">+0đ</span>
+                <span class="db-stat-change positive" id="change-total-donations">Quyên góp</span>
+              </div>
+            </div>
+            <!-- Card 5: Rescue Costs -->
+            <div class="col-xl-4 col-md-6">
+              <div class="db-stat-card db-animate-in">
+                <div class="db-stat-icon" style="background-color: var(--pawsitive-error-container); color: var(--pawsitive-on-error-container);">
+                  <i class="bi bi-cash-stack"></i>
+                </div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Tổng chi phí cứu hộ</div>
+                  <div class="db-stat-value" id="overview-total-costs">0đ</div>
+                </div>
+                <span class="db-stat-change negative" id="change-total-costs">-0đ</span>
+              </div>
+            </div>
+            <!-- Card 6: Remaining Balance -->
+            <div class="col-xl-4 col-md-6">
+              <div class="db-stat-card db-animate-in">
+                <div class="db-stat-icon" style="background-color: #e6f9f0; color: #00cc66;">
+                  <i class="bi bi-wallet2"></i>
+                </div>
+                <div class="db-stat-info">
+                  <div class="db-stat-label">Số dư quỹ còn lại</div>
+                  <div class="db-stat-value" id="overview-remaining-balance">0đ</div>
+                </div>
+                <span class="db-stat-change positive" id="change-remaining-balance" style="color: #00cc66; background-color: #e6f9f0;">Số dư</span>
               </div>
             </div>
           </div>
@@ -340,12 +371,18 @@
                         document.getElementById("overview-total-adoptions").textContent = data.tongDonNhanNuoi.toLocaleString();
                         document.getElementById("overview-total-volunteers").textContent = data.tongTinhNguyenVien.toLocaleString();
                         document.getElementById("overview-total-donations").textContent = data.tongTienQuyenGop.toLocaleString() + "đ";
+                        document.getElementById("overview-total-costs").textContent = data.tongChiPhiYTe.toLocaleString() + "đ";
+
+                        const remainingBalance = data.tongTienQuyenGop - data.tongChiPhiYTe;
+                        document.getElementById("overview-remaining-balance").textContent = remainingBalance.toLocaleString() + "đ";
 
                         // Dynamic changes badge representation
                         document.getElementById("change-total-pets").textContent = `+${data.tongBaoCaoCuuHo} báo cáo`;
                         document.getElementById("change-total-adoptions").textContent = `+${Math.round((data.tongDonNhanNuoi / (data.tongThuCung || 1)) * 100)}% tỉ lệ`;
                         document.getElementById("change-total-volunteers").textContent = `+${data.soCongViecHoanThanh} việc xong`;
-                        document.getElementById("change-total-donations").textContent = `Y tế: ${data.tongChiPhiYTe.toLocaleString()}đ`;
+                        document.getElementById("change-total-donations").textContent = `Quyên góp`;
+                        document.getElementById("change-total-costs").textContent = `-${data.tongChiPhiYTe.toLocaleString()}đ`;
+                        document.getElementById("change-remaining-balance").textContent = `Số dư`;
                     }
                 })
                 .catch(err => console.error("Error loading overview stats:", err));

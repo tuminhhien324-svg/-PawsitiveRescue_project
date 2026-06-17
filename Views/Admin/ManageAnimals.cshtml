@@ -428,21 +428,100 @@
   </div>
 </div>
 
+<!-- Manage Rescue Costs Modal -->
+<div class="modal fade" id="manageRescueCostsModal" tabindex="-1" aria-labelledby="manageRescueCostsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000;">
+      <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+        <h5 class="modal-title font-bold" id="manageRescueCostsModalLabel">🐾 Quản lý Chi phí Cứu hộ: <span id="costsPetName" class="text-danger"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-4">
+          <!-- Left side: Costs list -->
+          <div class="col-lg-7 border-end border-2 border-secondary border-opacity-10">
+            <h6 class="font-bold mb-3"><i class="bi bi-card-list"></i> Danh sách chi phí phát sinh</h6>
+            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+              <table class="table table-sm table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th>Loại</th>
+                    <th>Số tiền</th>
+                    <th>Ngày chi</th>
+                    <th style="width: 50px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="rescueCostsTableBody">
+                  <tr>
+                    <td colspan="4" class="text-center text-muted">Không có chi phí nào.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-2 border-secondary border-opacity-10">
+              <span class="font-bold">Tổng chi phí cứu hộ:</span>
+              <span class="font-bold text-danger fs-5" id="costsTotalSum">0 đ</span>
+            </div>
+          </div>
+          <!-- Right side: Add cost form -->
+          <div class="col-lg-5">
+            <h6 class="font-bold mb-3"><i class="bi bi-plus-circle"></i> Thêm khoản chi mới</h6>
+            <form id="addRescueCostForm">
+              <div class="mb-3">
+                <label class="form-label font-semibold">Loại chi phí <span class="text-danger">*</span></label>
+                <select class="form-select" name="LoaiChiPhi" required>
+                  <option value="Viện phí">Viện phí</option>
+                  <option value="Thức ăn">Thức ăn</option>
+                  <option value="Phụ kiện">Phụ kiện</option>
+                  <option value="Vận chuyển">Vận chuyển</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label font-semibold">Số tiền (VND) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" name="SoTien" required min="1000" placeholder="Ví dụ: 150000" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label font-semibold">Ngày chi thực tế</label>
+                <input type="date" class="form-control" name="NgayChiTieu" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label font-semibold">Ghi chú / Mô tả <span class="text-danger">*</span></label>
+                <textarea class="form-control" name="MucDichChiTiet" rows="2" required placeholder="Chi tiết thuốc men, xét nghiệm..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white w-100 rounded-xl py-2 mt-2">
+                <i class="bi bi-check-lg"></i> Thêm khoản chi
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+        <button type="button" class="btn btn-secondary rounded-xl py-2 px-4 border border-dark" data-bs-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="db-toast" id="dbToast"></div>
 
 @section Scripts {
   <script>
     let currentPets = [];
     let deleteTargetId = null;
+    let currentPetCostsId = null;
 
     // Bootstrap Modal instances
     const addPetModal = new bootstrap.Modal(document.getElementById('addPetModal'));
     const editPetModal = new bootstrap.Modal(document.getElementById('editPetModal'));
     const deletePetModal = new bootstrap.Modal(document.getElementById('deletePetModal'));
+    const manageRescueCostsModal = new bootstrap.Modal(document.getElementById('manageRescueCostsModal'));
 
     document.addEventListener('DOMContentLoaded', () => {
         loadPets();
         loadCompletedRescues();
+
+        // Register form submissions
+        document.getElementById('addRescueCostForm').addEventListener('submit', handleAddRescueCost);
 
         // Toggle Custom Animal Species input
         const addSelect = document.getElementById('addPetSpeciesSelect');
@@ -729,6 +808,9 @@
                 <td>${adoptBadge}</td>
                 <td>
                   <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-success border-0" onclick="openRescueCostsModal(${pet.maThuCung}, '${pet.tenThuCung}')" title="Quản lý chi phí">
+                      <i class="bi bi-cash-stack"></i>
+                    </button>
                     <button class="btn btn-sm btn-outline-primary border-0" onclick="openEditModal(${pet.maThuCung})" title="Chỉnh sửa">
                       <i class="bi bi-pencil-fill"></i>
                     </button>
@@ -874,6 +956,158 @@
         } finally {
             deleteTargetId = null;
         }
+    }
+
+    // ── Rescue Costs Operations ──
+    let currentRescueCosts = [];
+
+    window.openRescueCostsModal = async function(petId, petName) {
+        currentPetCostsId = petId;
+        document.getElementById('costsPetName').textContent = petName;
+        
+        // Reset form
+        const form = document.getElementById('addRescueCostForm');
+        form.reset();
+        const dateInput = form.querySelector('input[name="NgayChiTieu"]');
+        if (dateInput) {
+            dateInput.value = new Date().toISOString().substring(0, 10);
+        }
+
+        // Load costs
+        await loadRescueCosts(petId);
+        
+        manageRescueCostsModal.show();
+    }
+
+    async function loadRescueCosts(petId) {
+        const tbody = document.getElementById('rescueCostsTableBody');
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Đang tải...</td></tr>';
+        
+        try {
+            const res = await fetch(`/api/pets/${petId}/costs`);
+            const json = await res.json();
+            
+            if (json.success) {
+                currentRescueCosts = json.data || [];
+                renderRescueCostsTable(currentRescueCosts);
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-3 text-danger">Lỗi: ${json.message}</td></tr>`;
+            }
+        } catch (err) {
+            console.error(err);
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-danger">Lỗi kết nối máy chủ.</td></tr>';
+        }
+    }
+
+    function renderRescueCostsTable(costs) {
+        const tbody = document.getElementById('rescueCostsTableBody');
+        const totalSumEl = document.getElementById('costsTotalSum');
+        
+        if (costs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-muted">Chưa phát sinh chi phí nào cho bé này.</td></tr>';
+            totalSumEl.textContent = '0 đ';
+            return;
+        }
+
+        let total = 0;
+        tbody.innerHTML = costs.map(c => {
+            total += c.soTien;
+            const dateStr = new Date(c.ngayChiTieu).toLocaleDateString("vi-VN");
+            
+            let badgeClass = "bg-primary-subtle text-primary border border-primary-subtle";
+            if (c.loaiChiPhi === 'Viện phí') badgeClass = "bg-danger-subtle text-danger border border-danger-subtle";
+            else if (c.loaiChiPhi === 'Thức ăn') badgeClass = "bg-success-subtle text-success border border-success-subtle";
+            else if (c.loaiChiPhi === 'Vận chuyển') badgeClass = "bg-warning-subtle text-warning border border-warning-subtle";
+
+            const notesHtml = c.mucDichChiTiet ? `<div class="text-muted small mt-1 text-truncate" style="max-width: 180px;" title="${escapeHtml(c.mucDichChiTiet)}">${escapeHtml(c.mucDichChiTiet)}</div>` : '';
+
+            return `
+                <tr>
+                    <td>
+                        <span class="badge ${badgeClass}">${escapeHtml(c.loaiChiPhi)}</span>
+                        ${notesHtml}
+                    </td>
+                    <td class="font-bold">${c.soTien.toLocaleString("vi-VN")}đ</td>
+                    <td class="small text-muted">${dateStr}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger border-0 p-1" onclick="deleteRescueCost(${c.maChiPhi})" title="Xóa">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        totalSumEl.textContent = total.toLocaleString("vi-VN") + ' đ';
+    }
+
+    async function handleAddRescueCost(e) {
+        e.preventDefault();
+        if (!currentPetCostsId) return;
+
+        const formData = new FormData(e.target);
+        const data = {};
+        formData.forEach((value, key) => {
+            if (key === 'SoTien') data[key] = parseFloat(value);
+            else data[key] = value;
+        });
+
+        try {
+            dbToast('💸 Đang lưu chi phí...');
+            const res = await fetch(`/api/pets/${currentPetCostsId}/costs`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                dbToast('✔️ Thêm chi phí thành công!');
+                e.target.reset();
+                const dateInput = e.target.querySelector('input[name="NgayChiTieu"]');
+                if (dateInput) {
+                    dateInput.value = new Date().toISOString().substring(0, 10);
+                }
+                await loadRescueCosts(currentPetCostsId);
+            } else {
+                alert('Lỗi: ' + json.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi khi thêm chi phí cứu hộ.');
+        }
+    }
+
+    window.deleteRescueCost = async function(costId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa khoản chi phí này?')) return;
+
+        try {
+            dbToast('🗑️ Đang xóa...');
+            const res = await fetch(`/api/pets/costs/${costId}`, {
+                method: 'DELETE'
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                dbToast('✔️ Đã xóa chi phí thành công.');
+                await loadRescueCosts(currentPetCostsId);
+            } else {
+                alert('Lỗi: ' + json.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi kết nối khi xóa chi phí.');
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
   </script>
 }

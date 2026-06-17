@@ -112,7 +112,24 @@
             </button>
           </div>
 
-          <!-- ── Monthly Goal Section ── -->
+          <!-- Nav Tabs -->
+          <ul class="nav nav-tabs custom-tabs mb-4 border-2 border-dark" id="donationTabs" role="tablist" style="border-radius: 10px; overflow: hidden; background-color: var(--pawsitive-surface-container);">
+            <li class="nav-item" role="presentation" style="flex: 1;">
+              <button class="nav-link active w-100 font-bold text-dark py-3" id="transactions-tab" data-bs-toggle="tab" data-bs-target="#transactions-pane" type="button" role="tab" aria-controls="transactions-pane" aria-selected="true" style="border: none; border-radius: 0;">
+                <i class="bi bi-list-check"></i> Lịch sử Quyên góp
+              </button>
+            </li>
+            <li class="nav-item" role="presentation" style="flex: 1;">
+              <button class="nav-link w-100 font-bold text-dark py-3" id="campaigns-tab" data-bs-toggle="tab" data-bs-target="#campaigns-pane" type="button" role="tab" aria-controls="campaigns-pane" aria-selected="false" style="border: none; border-radius: 0;">
+                <i class="bi bi-megaphone-fill"></i> Quản lý Chiến dịch
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="donationTabsContent">
+            <!-- TAB 1: Transactions -->
+            <div class="tab-pane fade show active" id="transactions-pane" role="tabpanel" aria-labelledby="transactions-tab">
+              <!-- ── Monthly Goal Section ── -->
           <div class="row g-3 mb-4">
             <div class="col-lg-7">
               <div class="monthly-goal-card db-animate-in">
@@ -302,9 +319,6 @@
           <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
             <select class="db-filter-select" id="filterDonationCampaign" onchange="loadDonations()" style="flex: 1; min-width: 150px">
               <option value="">Tất cả Quỹ / Chiến dịch</option>
-              <option value="Mái ấm mùa đông">Mái ấm mùa đông</option>
-              <option value="Quỹ y tế khẩn cấp">Quỹ y tế khẩn cấp</option>
-              <option value="Quỹ chung Pawsitive">Quỹ chung Pawsitive</option>
             </select>
           </div>
 
@@ -393,7 +407,162 @@
               </div>
             </div>
           </div>
+          </div> <!-- Close TAB 1 Transactions Pane -->
+
+          <!-- TAB 2: Campaigns -->
+          <div class="tab-pane fade" id="campaigns-pane" role="tabpanel" aria-labelledby="campaigns-tab">
+            <div class="d-flex align-items-center justify-content-between mb-4 mt-2">
+              <h3 class="h4 m-0 font-bold" style="color: var(--pawsitive-primary-vibrant)"><i class="bi bi-megaphone-fill"></i> Các Chiến dịch / Quỹ quyên góp</h3>
+              <button class="db-btn db-btn-primary animate-hover" data-bs-toggle="modal" data-bs-target="#addCampaignModal">
+                <i class="bi bi-plus-lg"></i> Thêm chiến dịch
+              </button>
+            </div>
+
+            <div class="monthly-goal-card mb-4 p-0" style="border-radius: 1.25rem; overflow: hidden; border: 2px solid #000; box-shadow: 4px 4px 0px #000;">
+              <div class="table-responsive">
+                <table class="db-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 80px">Ảnh</th>
+                      <th>Tên chiến dịch</th>
+                      <th>Mục tiêu</th>
+                      <th>Đã quyên góp</th>
+                      <th>Ngày tạo</th>
+                      <th style="width: 120px">Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody id="campaignTableBody">
+                    <tr>
+                      <td colspan="6" class="text-center py-4 text-muted">Đang tải danh sách chiến dịch...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          </div> <!-- Close Tab Content -->
         </div>
+
+        <!-- Add Campaign Modal -->
+        <div class="modal fade" id="addCampaignModal" tabindex="-1" aria-labelledby="addCampaignModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000;">
+              <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+                <h5 class="modal-title font-bold" id="addCampaignModalLabel">📣 Thêm chiến dịch mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form id="addCampaignForm">
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label font-semibold">Tên chiến dịch <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" name="TenChienDich" required placeholder="Nhập tên chiến dịch..." />
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label font-semibold">Mô tả chi tiết</label>
+                      <textarea class="form-control" name="MoTa" rows="3" placeholder="Mô tả về chiến dịch..."></textarea>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label font-semibold">Số tiền mục tiêu (VND) <span class="text-danger">*</span></label>
+                      <input type="number" class="form-control" name="SoTienMucTieu" required min="1000" placeholder="Ví dụ: 50000000" />
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label font-semibold">Ảnh đại diện chiến dịch</label>
+                      <input type="file" class="form-control" id="addCampaignImageFile" accept="image/*" />
+                      <input type="hidden" name="AnhChienDich" id="addCampaignImageUrl" />
+                      <div class="mt-2 border border-2 border-dark rounded-md overflow-hidden d-none" id="addCampaignImagePreviewContainer" style="width: 120px; height: 80px;">
+                        <img id="addCampaignImagePreview" class="w-100 h-100" style="object-fit: cover;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+                  <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+                  <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Lưu chiến dịch</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Campaign Modal -->
+        <div class="modal fade" id="editCampaignModal" tabindex="-1" aria-labelledby="editCampaignModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000;">
+              <div class="modal-header border-bottom border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+                <h5 class="modal-title font-bold" id="editCampaignModalLabel">✏️ Chỉnh sửa chiến dịch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form id="editCampaignForm">
+                <input type="hidden" name="MaChienDich" />
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label font-semibold">Tên chiến dịch <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" name="TenChienDich" required placeholder="Nhập tên chiến dịch..." />
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label font-semibold">Mô tả chi tiết</label>
+                      <textarea class="form-control" name="MoTa" rows="3" placeholder="Mô tả về chiến dịch..."></textarea>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label font-semibold">Số tiền mục tiêu (VND) <span class="text-danger">*</span></label>
+                      <input type="number" class="form-control" name="SoTienMucTieu" required min="1000" placeholder="Ví dụ: 50000000" />
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label font-semibold">Ảnh đại diện chiến dịch</label>
+                      <input type="file" class="form-control" id="editCampaignImageFile" accept="image/*" />
+                      <input type="hidden" name="AnhChienDich" id="editCampaignImageUrl" />
+                      <div class="mt-2 border border-2 border-dark rounded-md overflow-hidden" id="editCampaignImagePreviewContainer" style="width: 120px; height: 80px;">
+                        <img id="editCampaignImagePreview" class="w-100 h-100" style="object-fit: cover;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+                  <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Đóng</button>
+                  <button type="submit" class="btn btn-pawsitive btn-pawsitive-primary text-white rounded-xl py-2 px-4">Cập nhật</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Campaign Modal -->
+        <div class="modal fade" id="deleteCampaignModal" tabindex="-1" aria-labelledby="deleteCampaignModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content custom-modal-content border-2 border-dark" style="border-radius: 20px; box-shadow: 6px 6px 0px #000;">
+              <div class="modal-header border-bottom border-2 border-dark bg-danger bg-opacity-10 text-danger">
+                <h5 class="modal-title font-bold" id="deleteCampaignModalLabel">⚠️ Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body py-4 text-center">
+                <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 3rem;"></i>
+                <h5 class="font-bold mt-3">Xóa chiến dịch <span id="deleteCampaignName" class="text-danger"></span>?</h5>
+                <p class="text-muted small mt-2 mb-0">Hành động này không thể hoàn tác. Mọi dữ liệu liên quan sẽ bị xóa vĩnh viễn.</p>
+              </div>
+              <div class="modal-footer border-top border-2 border-dark" style="background-color: var(--pawsitive-surface-container);">
+                <button type="button" class="btn btn-secondary rounded-xl py-2 px-3 border border-dark" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="confirmDeleteCampaignBtn" class="btn btn-danger text-white rounded-xl py-2 px-4">Đồng ý xóa</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <style>
+          .custom-tabs .nav-link {
+            border: none;
+            border-radius: 0;
+            transition: all 0.2s ease;
+          }
+          .custom-tabs .nav-link.active {
+            background-color: var(--pawsitive-primary-vibrant) !important;
+            color: white !important;
+          }
+          .custom-tabs .nav-link:hover:not(.active) {
+            background-color: var(--pawsitive-surface-container-high);
+          }
+        </style>
       </main>
     </div>
 
@@ -436,7 +605,76 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadStats();
+        loadCampaigns();
         loadDonations();
+
+        // Form submissions for Campaigns
+        const addForm = document.getElementById('addCampaignForm');
+        if (addForm) addForm.addEventListener('submit', handleAddCampaign);
+        const editForm = document.getElementById('editCampaignForm');
+        if (editForm) editForm.addEventListener('submit', handleEditCampaign);
+        const delBtn = document.getElementById('confirmDeleteCampaignBtn');
+        if (delBtn) delBtn.addEventListener('click', handleDeleteCampaign);
+
+        // Upload image events
+        const addImgFile = document.getElementById('addCampaignImageFile');
+        if (addImgFile) {
+          addImgFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                showToast('📤 Đang tải ảnh lên...');
+                const res = await fetch('/api/pets/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                const json = await res.json();
+                if (json.success) {
+                    document.getElementById('addCampaignImageUrl').value = json.data.path;
+                    const preview = document.getElementById('addCampaignImagePreview');
+                    preview.src = json.data.path;
+                    document.getElementById('addCampaignImagePreviewContainer').classList.remove('d-none');
+                    showToast('✔️ Tải ảnh lên thành công!');
+                } else {
+                    alert('Tải ảnh thất bại: ' + json.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi khi tải ảnh lên.');
+            }
+          });
+        }
+
+        const editImgFile = document.getElementById('editCampaignImageFile');
+        if (editImgFile) {
+          editImgFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                showToast('📤 Đang tải ảnh lên...');
+                const res = await fetch('/api/pets/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                const json = await res.json();
+                if (json.success) {
+                    document.getElementById('editCampaignImageUrl').value = json.data.path;
+                    const preview = document.getElementById('editCampaignImagePreview');
+                    preview.src = json.data.path;
+                    showToast('✔️ Tải ảnh lên thành công!');
+                } else {
+                    alert('Tải ảnh thất bại: ' + json.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi khi tải ảnh lên.');
+            }
+          });
+        }
       });
 
       async function loadStats() {
@@ -589,6 +827,183 @@
 
       function exportDonationsReport() {
         window.location.href = "/api/Donation/admin/export";
+      }
+
+      // ── Campaigns CRUD Operations ──
+      let currentCampaigns = [];
+      let deleteCampaignTargetId = null;
+
+      const addCampaignModal = new bootstrap.Modal(document.getElementById('addCampaignModal'));
+      const editCampaignModal = new bootstrap.Modal(document.getElementById('editCampaignModal'));
+      const deleteCampaignModal = new bootstrap.Modal(document.getElementById('deleteCampaignModal'));
+
+      async function loadCampaigns() {
+        try {
+          const res = await fetch('/api/Donation/campaigns');
+          const json = await res.json();
+          if (json.success && json.data) {
+            currentCampaigns = json.data;
+            populateCampaignsFilter(currentCampaigns);
+            renderCampaignsTable(currentCampaigns);
+          }
+        } catch (err) {
+          console.error("Error loading campaigns:", err);
+        }
+      }
+
+      function populateCampaignsFilter(campaigns) {
+        const select = document.getElementById("filterDonationCampaign");
+        if (!select) return;
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">Tất cả Quỹ / Chiến dịch</option>';
+        campaigns.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.tenChienDich;
+          opt.textContent = c.tenChienDich;
+          select.appendChild(opt);
+        });
+        select.value = currentValue;
+      }
+
+      function renderCampaignsTable(campaigns) {
+        const tbody = document.getElementById("campaignTableBody");
+        if (!tbody) return;
+        if (campaigns.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Chưa có chiến dịch quyên góp nào.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = campaigns.map(c => {
+          const imgUrl = c.anhChienDich || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=200';
+          const dateStr = new Date(c.ngayTao).toLocaleDateString("vi-VN");
+          return `
+            <tr>
+              <td>
+                <div class="db-pet-avatar" style="width: 60px; height: 40px; border-radius: 4px; overflow: hidden;">
+                  <img src="${imgUrl}" alt="${escapeHtml(c.tenChienDich)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=200'" />
+                </div>
+              </td>
+              <td><strong>${escapeHtml(c.tenChienDich)}</strong><br/><small class="text-muted text-truncate d-inline-block" style="max-width: 250px">${escapeHtml(c.moTa || '')}</small></td>
+              <td>${c.soTienMucTieu.toLocaleString("vi-VN")}đ</td>
+              <td><span class="text-success font-bold">${c.soTienDaQuyenGop.toLocaleString("vi-VN")}đ</span> (${Math.round((c.soTienDaQuyenGop / (c.soTienMucTieu || 1)) * 100)}%)</td>
+              <td>${dateStr}</td>
+              <td>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-primary border-0" onclick="openEditCampaignModal(${c.maChienDich})">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger border-0" onclick="openDeleteCampaignModal(${c.maChienDich}, '${escapeHtml(c.tenChienDich)}')">
+                    <i class="bi bi-trash3-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      async function handleAddCampaign(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = {};
+        formData.forEach((value, key) => {
+          if (key === 'SoTienMucTieu') data[key] = parseFloat(value);
+          else data[key] = value;
+        });
+
+        try {
+          const res = await fetch('/api/Donation/admin/campaigns', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const json = await res.json();
+          if (json.success) {
+            showToast('🎉 Thêm chiến dịch thành công!');
+            addCampaignModal.hide();
+            e.target.reset();
+            document.getElementById('addCampaignImagePreviewContainer').classList.add('d-none');
+            loadCampaigns();
+          } else {
+            alert('Lỗi: ' + json.message);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Lỗi khi thêm chiến dịch.');
+        }
+      }
+
+      window.openEditCampaignModal = function(id) {
+        const campaign = currentCampaigns.find(c => c.maChienDich === id);
+        if (!campaign) return;
+
+        const form = document.getElementById('editCampaignForm');
+        form.querySelector('input[name="MaChienDich"]').value = campaign.maChienDich;
+        form.querySelector('input[name="TenChienDich"]').value = campaign.tenChienDich;
+        form.querySelector('textarea[name="MoTa"]').value = campaign.moTa || '';
+        form.querySelector('input[name="SoTienMucTieu"]').value = campaign.soTienMucTieu;
+        form.querySelector('input[name="AnhChienDich"]').value = campaign.anhChienDich || '';
+
+        const preview = document.getElementById('editCampaignImagePreview');
+        preview.src = campaign.anhChienDich || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=200';
+
+        editCampaignModal.show();
+      }
+
+      async function handleEditCampaign(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = {};
+        formData.forEach((value, key) => {
+          if (key === 'SoTienMucTieu') data[key] = parseFloat(value);
+          else data[key] = value;
+        });
+        const id = formData.get('MaChienDich');
+
+        try {
+          const res = await fetch(`/api/Donation/admin/campaigns/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const json = await res.json();
+          if (json.success) {
+            showToast('🎉 Cập nhật chiến dịch thành công!');
+            editCampaignModal.hide();
+            loadCampaigns();
+          } else {
+            alert('Lỗi: ' + json.message);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Lỗi khi cập nhật chiến dịch.');
+        }
+      }
+
+      window.openDeleteCampaignModal = function(id, name) {
+        deleteCampaignTargetId = id;
+        document.getElementById('deleteCampaignName').textContent = name;
+        deleteCampaignModal.show();
+      }
+
+      async function handleDeleteCampaign() {
+        if (!deleteCampaignTargetId) return;
+        try {
+          const res = await fetch(`/api/Donation/admin/campaigns/${deleteCampaignTargetId}`, {
+            method: 'DELETE'
+          });
+          const json = await res.json();
+          if (json.success) {
+            showToast('✔️ Đã xóa chiến dịch thành công!');
+            deleteCampaignModal.hide();
+            loadCampaigns();
+          } else {
+            alert('Lỗi: ' + json.message);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Lỗi khi xóa chiến dịch.');
+        }
       }
     </script>
     }

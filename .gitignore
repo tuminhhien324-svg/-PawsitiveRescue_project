@@ -1,0 +1,33 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x88/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userworkspace
+*.userprefs
+
+# Rider
+.idea/
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Uploaded files
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep

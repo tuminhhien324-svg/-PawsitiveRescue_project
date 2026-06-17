@@ -210,5 +210,99 @@ namespace WebApplication1.Controllers
 
             return File(fileBytes, "text/csv", $"donations_export_{DateTime.Now:yyyyMMddHHmmss}.csv");
         }
+
+        // POST: api/Donation/admin/campaigns
+        [HttpPost("admin/campaigns")]
+        public async Task<IActionResult> CreateCampaign([FromBody] ChienDichQuyenGop model)
+        {
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole("Quản trị viên"))
+            {
+                return Ok(ApiResponse.Fail("Không có quyền thực hiện hành động này."));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Ok(ApiResponse.Fail("Dữ liệu không hợp lệ", ModelState));
+            }
+
+            model.NgayTao = DateTime.Now;
+            _context.ChienDichQuyenGops.Add(model);
+            await _context.SaveChangesAsync();
+
+            var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            _context.NhatKyHeThongs.Add(new NhatKyHeThong
+            {
+                MaNguoiDung = adminId,
+                MoTaHoatDong = $"Tạo chiến dịch quyên góp mới: '{model.TenChienDich}' (ID: {model.MaChienDich})",
+                DiaChiIP = HttpContext.Connection.RemoteIpAddress?.ToString()
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok(ApiResponse.Ok(model, "Tạo chiến dịch thành công!"));
+        }
+
+        // PUT: api/Donation/admin/campaigns/{id}
+        [HttpPut("admin/campaigns/{id}")]
+        public async Task<IActionResult> UpdateCampaign(int id, [FromBody] ChienDichQuyenGop model)
+        {
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole("Quản trị viên"))
+            {
+                return Ok(ApiResponse.Fail("Không có quyền thực hiện hành động này."));
+            }
+
+            var campaign = await _context.ChienDichQuyenGops.FindAsync(id);
+            if (campaign == null)
+            {
+                return Ok(ApiResponse.Fail("Không tìm thấy chiến dịch"));
+            }
+
+            campaign.TenChienDich = model.TenChienDich;
+            campaign.MoTa = model.MoTa;
+            campaign.SoTienMucTieu = model.SoTienMucTieu;
+            if (!string.IsNullOrEmpty(model.AnhChienDich))
+            {
+                campaign.AnhChienDich = model.AnhChienDich;
+            }
+
+            var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            _context.NhatKyHeThongs.Add(new NhatKyHeThong
+            {
+                MaNguoiDung = adminId,
+                MoTaHoatDong = $"Cập nhật chiến dịch quyên góp: '{campaign.TenChienDich}' (ID: {campaign.MaChienDich})",
+                DiaChiIP = HttpContext.Connection.RemoteIpAddress?.ToString()
+            });
+
+            await _context.SaveChangesAsync();
+            return Ok(ApiResponse.Ok(campaign, "Cập nhật chiến dịch thành công!"));
+        }
+
+        // DELETE: api/Donation/admin/campaigns/{id}
+        [HttpDelete("admin/campaigns/{id}")]
+        public async Task<IActionResult> DeleteCampaign(int id)
+        {
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole("Quản trị viên"))
+            {
+                return Ok(ApiResponse.Fail("Không có quyền thực hiện hành động này."));
+            }
+
+            var campaign = await _context.ChienDichQuyenGops.FindAsync(id);
+            if (campaign == null)
+            {
+                return Ok(ApiResponse.Fail("Không tìm thấy chiến dịch"));
+            }
+
+            var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            _context.NhatKyHeThongs.Add(new NhatKyHeThong
+            {
+                MaNguoiDung = adminId,
+                MoTaHoatDong = $"Xóa chiến dịch quyên góp: '{campaign.TenChienDich}' (ID: {campaign.MaChienDich})",
+                DiaChiIP = HttpContext.Connection.RemoteIpAddress?.ToString()
+            });
+
+            _context.ChienDichQuyenGops.Remove(campaign);
+            await _context.SaveChangesAsync();
+
+            return Ok(ApiResponse.Ok(null, "Xóa chiến dịch thành công!"));
+        }
     }
 }
